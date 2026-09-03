@@ -1,0 +1,3301 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Superadmin Dashboard | MyKelabCBP CSC 2026</title>
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="icon" href="../assets/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16.png">
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+    <meta name="theme-color" content="#ffffff">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        if (window.tailwind) tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        sport: ['Rajdhani', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        motorsport: {
+                            accent: '#ef4444', 
+                            accentCyan: '#06b6d4',
+                            accentPurple: '#8b5cf6',
+                            border: '#334155'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --text-color: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --sidebar-bg: #ffffff;
+            --input-bg: #f8fafc;
+            --input-border: #cbd5e1;
+            --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+            --table-hover: #f1f5f9;
+        }
+
+        .dark {
+            --bg-color: #0f111a;
+            --text-color: #f8fafc;
+            --glass-bg: rgba(21, 24, 37, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --sidebar-bg: #151825;
+            --input-bg: #1a1e30;
+            --input-border: #334155;
+            --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            --table-hover: #1e2238;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow: hidden;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .neo-input {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            border-radius: 0.6rem;
+            padding: 0.65rem 1rem;
+            width: 100%;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        .neo-input:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+        }
+
+        .btn-sport {
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-sport.primary {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        .btn-sport.primary:hover {
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-sport.cyan {
+            background: linear-gradient(90deg, #06b6d4 0%, #0284c7 100%);
+            color: white;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+        .hide { display: none !important; }
+        .view-section { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .telemetry-bar-container {
+            width: 100%;
+            height: 6px;
+            background: var(--input-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .telemetry-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease-out;
+        }
+
+        .toggle-checkbox:checked { right: 0; border-color: #06b6d4; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #06b6d4; }
+        
+        #sidebar { transition: transform 0.3s ease-in-out; }
+        .sidebar-open { transform: translateX(0) !important; }
+    </style>
+</head>
+<body class="antialiased h-screen flex">
+
+    <!-- FULLSCREEN LOADER -->
+    <div id="global-loader" class="fixed inset-0 z-[999] bg-[var(--bg-color)] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative w-24 h-24">
+            <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-800 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-motorsport-accentCyan rounded-full border-t-transparent animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i data-lucide="shield-alert" class="w-8 h-8 text-motorsport-accentCyan animate-pulse"></i>
+            </div>
+        </div>
+        <h2 class="mt-6 font-sport font-bold text-2xl tracking-widest uppercase text-slate-800 dark:text-white animate-pulse">Menyegerak Data</h2>
+        <p class="text-xs text-slate-500 mt-2 font-mono">Superadmin CSC 2026 • Sila tunggu...</p>
+    </div>
+
+
+    <!-- LOG MASUK ADMIN -->
+    <div id="login-gate" class="fixed inset-0 z-[998] bg-[var(--bg-color)] hide items-center justify-center p-6 overflow-y-auto">
+        <div class="w-full max-w-sm my-auto">
+            <div class="glass-card p-8 flex flex-col gap-5">
+                <div class="flex flex-col items-center text-center gap-2 mb-1">
+                    <div class="w-14 h-14 rounded-2xl bg-motorsport-accentCyan/10 flex items-center justify-center">
+                        <i data-lucide="shield-alert" class="w-7 h-7 text-motorsport-accentCyan"></i>
+                    </div>
+                    <h1 class="font-sport font-bold text-2xl tracking-wider uppercase text-slate-900 dark:text-white">Portal Admin</h1>
+                    <p class="text-[11px] text-slate-500 uppercase tracking-widest font-bold">MyKelab CSC 2026</p>
+                </div>
+
+                <div id="gate-msg" class="hide"></div>
+
+                <div>
+                    <label class="block text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">Username</label>
+                    <input type="text" id="gate-user" autocomplete="username" autocapitalize="none" spellcheck="false" class="neo-input text-sm" placeholder="username">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">Kata Laluan</label>
+                    <input type="password" id="gate-pass" autocomplete="current-password" class="neo-input text-sm" placeholder="••••••••••">
+                </div>
+
+                <button id="btn-gate-login" onclick="adminApp.login()" class="btn-sport primary w-full py-3.5 rounded-xl mt-1 flex items-center justify-center gap-2">
+                    <span>Log Masuk</span>
+                </button>
+
+                <a href="../" class="text-center text-[11px] text-slate-500 hover:text-motorsport-accentCyan transition">&larr; Kembali ke portal atlet</a>
+            </div>
+            <p class="text-center text-[10px] text-slate-400 mt-4 font-mono">Setiap akses direkodkan dalam log audit</p>
+        </div>
+    </div>
+
+    <aside id="sidebar" class="w-64 bg-[var(--sidebar-bg)] border-r border-[var(--glass-border)] flex flex-col h-full fixed md:relative z-50 transform -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none">
+        <div class="h-20 flex items-center justify-between px-6 border-b border-[var(--glass-border)]">
+            <div class="flex items-center gap-2">
+                <span id="brand-logo-slot" class="w-6 h-6 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="shield-alert" class="text-motorsport-accentCyan w-6 h-6"></i>
+                </span>
+                <div>
+                    <h1 class="font-sport font-bold text-xl tracking-wider leading-none text-slate-900 dark:text-white">SUPERADMIN</h1>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">MyKelab CSC 2026</p>
+                </div>
+            </div>
+            <button id="close-sidebar" class="md:hidden text-slate-500"><i data-lucide="x"></i></button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-1.5" id="nav-menu">
+            <button onclick="adminApp.navigate('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors bg-motorsport-accentCyan/10 text-motorsport-accentCyan" data-target="dashboard">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+            </button>
+            
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-4 mb-1 px-4">Pengurusan Utama</p>
+            
+            <button onclick="adminApp.navigate('participants')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="participants">
+                <i data-lucide="users" class="w-5 h-5"></i> Senarai Peserta
+            </button>
+            <button onclick="adminApp.navigate('staff')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="staff">
+                <i data-lucide="contact-2" class="w-5 h-5"></i> Senarai Staf (Master)
+            </button>
+            <button onclick="adminApp.navigate('sports')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="sports">
+                <i data-lucide="medal" class="w-5 h-5"></i> Kawalan Sukan
+            </button>
+            <button onclick="adminApp.navigate('upload')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="upload">
+                <i data-lucide="upload-cloud" class="w-5 h-5"></i> Upload Master CSV
+            </button>
+            
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-4 mb-1 px-4">Komunikasi & Eksport</p>
+            
+            <button onclick="adminApp.navigate('announcements')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="announcements">
+                <i data-lucide="megaphone" class="w-5 h-5"></i> Hebahan Berita
+            </button>
+            <button onclick="adminApp.navigate('reports-preview')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="reports-preview">
+                <i data-lucide="file-bar-chart-2" class="w-5 h-5"></i> Laporan & Arkib
+            </button>
+
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-4 mb-1 px-4">Pemarkahan</p>
+
+            <button onclick="adminApp.navigate('scoring')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="scoring">
+                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                <span class="flex-1 text-left">Pengesahan Markah</span>
+                <span id="nav-pending-badge" class="hide text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-motorsport-accent text-white">0</span>
+            </button>
+            <button onclick="adminApp.navigate('events')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="events">
+                <i data-lucide="calendar" class="w-5 h-5"></i> Jadual Acara
+            </button>
+            <button onclick="adminApp.navigate('contingents')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="contingents">
+                <i data-lucide="flag" class="w-5 h-5"></i> Kontinjen &amp; Mata
+            </button>
+            <button onclick="adminApp.navigate('judges')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="judges">
+                <i data-lucide="user-plus" class="w-5 h-5"></i> Akaun Juri
+            </button>
+
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-4 mb-1 px-4">Operasi Acara</p>
+
+            <button onclick="adminApp.navigate('checkin')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="checkin">
+                <i data-lucide="qr-code" class="w-5 h-5"></i> QR / Check-In
+            </button>
+
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-4 mb-1 px-4">Sistem</p>
+
+            <button onclick="adminApp.navigate('settings')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="settings">
+                <i data-lucide="settings" class="w-5 h-5"></i> Tetapan Sistem
+            </button>
+            <button onclick="adminApp.navigate('audit')" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5" data-target="audit">
+                <i data-lucide="scroll-text" class="w-5 h-5"></i> Log Audit
+            </button>
+        </div>
+
+        <div class="p-4 border-t border-[var(--glass-border)]">
+            <div class="flex items-center gap-3 px-2">
+                <div id="who-initials" class="w-10 h-10 rounded-full bg-gradient-to-tr from-motorsport-accent to-orange-500 flex items-center justify-center text-white font-bold flex-shrink-0">—</div>
+                <div class="min-w-0 flex-1">
+                    <p id="who-name" class="text-sm font-bold leading-tight truncate">—</p>
+                    <p id="who-role" class="text-[10px] text-slate-500 uppercase tracking-wider">—</p>
+                </div>
+                <button onclick="adminApp.logout()" title="Log Keluar" class="p-2 rounded-lg text-slate-500 hover:text-motorsport-accent hover:bg-slate-100 dark:hover:bg-white/5 transition flex-shrink-0">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden"></div>
+
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        <header class="h-20 flex items-center justify-between px-4 md:px-8 glass-card border-x-0 border-t-0 rounded-none z-30 flex-shrink-0">
+            <div class="flex items-center gap-4">
+                <button id="open-sidebar" class="md:hidden text-slate-600 dark:text-white p-2 rounded-lg bg-slate-100 dark:bg-white/5">
+                    <i data-lucide="menu"></i>
+                </button>
+                <h2 id="page-title" class="font-sport font-bold text-2xl uppercase tracking-wide">Overview</h2>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="adminApp.refreshData()" title="Segarkan Data" class="p-2.5 rounded-lg bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300">
+                    <i data-lucide="refresh-cw" class="w-4 h-4" id="refresh-icon"></i>
+                </button>
+                <button onclick="adminApp.toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300">
+                    <i id="theme-icon" data-lucide="sun" class="w-5 h-5"></i>
+                </button>
+                <div class="hidden md:flex items-center gap-2 bg-slate-100 dark:bg-[var(--input-bg)] px-3 py-1.5 rounded-lg border border-[var(--glass-border)]">
+                    <div id="status-dot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span id="status-text" class="text-xs font-mono text-slate-600 dark:text-slate-400">Live Sync</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 relative" id="main-scroll-area">
+            
+            <!-- 1. DASHBOARD OVERVIEW (SELARAS DENGAN PORTAL AWAM) -->
+            <section id="view-dashboard" class="view-section flex flex-col gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-card p-5 border-t-2 border-t-motorsport-accentCyan">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Jumlah Peserta</p>
+                        <h3 id="stat-total-athletes" class="font-sport text-4xl font-bold">0</h3>
+                        <p class="text-[10px] text-slate-500 font-mono mt-1">Daripada <span id="stat-total-staff">0</span> staf berdaftar</p>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Pecahan Jantina</p>
+                        <div class="flex justify-between items-end mt-2">
+                            <div>
+                                <p id="stat-male" class="font-mono text-xl font-bold leading-none">0</p>
+                                <p class="text-[9px] text-slate-400 uppercase">Lelaki</p>
+                            </div>
+                            <div class="text-right">
+                                <p id="stat-female" class="font-mono text-xl font-bold leading-none">0</p>
+                                <p class="text-[9px] text-slate-400 uppercase">Wanita</p>
+                            </div>
+                        </div>
+                        <div class="telemetry-bar-container mt-2 flex rounded h-2">
+                            <div id="bar-male" class="h-full bg-slate-300 dark:bg-slate-600 transition-all duration-500" style="width: 50%"></div>
+                            <div id="bar-female" class="h-full bg-pink-500 transition-all duration-500" style="width: 50%"></div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Sukan Aktif</p>
+                        <h3 id="stat-sports-active" class="font-sport text-4xl font-bold">0</h3>
+                        <p class="text-[10px] text-slate-500 font-mono mt-1">Dalam penganjuran CSC</p>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Status Pendaftaran</p>
+                        <div class="flex flex-col gap-1 mt-2 font-mono text-[11px] font-bold">
+                            <div class="flex justify-between"><span class="text-green-500">Registered</span> <span id="stat-reg-count">0</span></div>
+                            <div class="flex justify-between"><span class="text-yellow-500">Pending</span> <span id="stat-pend-count">0</span></div>
+                            <div class="flex justify-between"><span class="text-red-500">Cancelled</span> <span id="stat-canc-count">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1 glass-card p-6 flex flex-col h-full">
+                        <h3 class="font-bold text-xs uppercase tracking-wider mb-4 flex items-center justify-between text-slate-800 dark:text-white">
+                            Pecahan Kontinjen 
+                            <i data-lucide="flag" class="w-3 h-3 text-slate-400"></i>
+                        </h3>
+                        <div class="flex flex-col gap-3.5" id="contingent-stats"></div>
+                    </div>
+
+                    <div class="lg:col-span-2 glass-card p-6 flex flex-col h-full">
+                        <h3 class="font-bold text-xs uppercase tracking-wider mb-6 text-slate-800 dark:text-white">Kapasiti & Pengisian Sukan</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5" id="sport-capacity-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. PARTICIPANTS VIEW -->
+            <section id="view-participants" class="view-section hide flex flex-col h-full min-h-[600px]">
+                <div class="glass-card p-4 mb-4 flex flex-col md:flex-row gap-4 justify-between items-center">
+                    <div class="relative w-full md:w-96">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                        <input type="text" id="search-participant" placeholder="Cari Nama, ID, No Reg..." class="neo-input pl-10" oninput="adminApp.filterParticipants()">
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                        <select id="filter-contingent" class="neo-input w-auto text-xs py-2" onchange="adminApp.filterParticipants()">
+                            <option value="">Semua Kontinjen</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="glass-card flex-1 overflow-hidden flex flex-col">
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-black/20 border-b border-[var(--glass-border)] text-xs uppercase tracking-wider text-slate-500 font-bold">
+                                    <th class="p-4">Reg No.</th>
+                                    <th class="p-4">Peserta (ID)</th>
+                                    <th class="p-4">Kontinjen</th>
+                                    <th class="p-4">Sukan / Kategori</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4 text-right">Tindakan Superadmin</th>
+                                </tr>
+                            </thead>
+                            <tbody id="participant-table-body" class="text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. SENARAI STAF MASTER (STAFF DIRECTORY) -->
+            <section id="view-staff" class="view-section hide flex flex-col gap-4">
+                <div class="glass-card p-4 flex flex-col md:flex-row gap-4 justify-between items-center">
+                    <div class="relative w-full md:w-96">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                        <input type="text" id="search-staff" placeholder="Cari Nama Staf, Staff ID, Jabatan..." class="neo-input pl-10" oninput="adminApp.filterStaff()">
+                    </div>
+                    
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <button onclick="adminApp.openStaffModal('add')" class="btn-sport cyan px-4 py-2.5 rounded-lg text-xs flex items-center gap-2">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Tambah Staf Baru
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-card overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-black/20 border-b border-[var(--glass-border)] text-xs uppercase tracking-wider text-slate-500 font-bold">
+                                    <th class="p-4">Staff ID</th>
+                                    <th class="p-4">Nama Staf</th>
+                                    <th class="p-4">Jabatan & Jawatan</th>
+                                    <th class="p-4">Kontinjen</th>
+                                    <th class="p-4">Hubungan</th>
+                                    <th class="p-4 text-right">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staff-table-body" class="text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. KAWALAN SUKAN (SUPERADMIN FULL CRUD) -->
+            <section id="view-sports" class="view-section hide flex flex-col gap-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="font-sport font-bold text-2xl uppercase tracking-wide">Pengurusan Sukan & Kategori</h3>
+                        <p class="text-sm text-slate-500">Kawal, tambah, kemaskini kapasiti atau padam sukan yang dipertandingkan.</p>
+                    </div>
+                    <button onclick="adminApp.openSportModal('add')" class="btn-sport primary px-5 py-2.5 rounded-lg text-xs flex items-center gap-2 shadow-lg shadow-red-500/20">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah Sukan Baru
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="manage-sports-list"></div>
+            </section>
+
+            <!-- 5. UPLOAD MASTER STAF (CSV) -->
+            <section id="view-upload" class="view-section hide flex flex-col gap-6 max-w-3xl mx-auto w-full">
+                <div class="glass-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-l-4 border-l-motorsport-accentCyan">
+                    <div>
+                        <h4 class="font-bold text-base flex items-center gap-2">
+                            <i data-lucide="file-down" class="text-motorsport-accentCyan w-5 h-5"></i>
+                            Template Rasmi Senarai Staf
+                        </h4>
+                        <p class="text-xs text-slate-500 mt-1">Muat turun template CSV ini dahulu untuk memastikan susunan lajur betul & tidak ralat.</p>
+                    </div>
+                    <button onclick="adminApp.downloadCSVTemplate()" class="btn-sport cyan px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 whitespace-nowrap shadow-md">
+                        <i data-lucide="download" class="w-4 h-4"></i> Download Template CSV
+                    </button>
+                </div>
+
+                <div class="glass-card p-8 flex flex-col items-center justify-center text-center border-dashed border-2 border-slate-300 dark:border-slate-600 hover:border-motorsport-accentCyan transition-colors">
+                    <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                        <i data-lucide="file-spreadsheet" class="w-8 h-8 text-motorsport-accentCyan"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-1">Muat Naik Senarai Staf (CSV)</h3>
+                    <p class="text-xs text-slate-500 max-w-md mb-4">Wajib: StaffID, Name, Department, Position, Contingent &nbsp;•&nbsp; Pilihan: Gender (M/F), Email, Phone</p>
+                    
+                    <input type="file" id="csv-file-input" accept=".csv,.xlsx,.xls" class="hidden" onchange="adminApp.handleCSVUpload(event)">
+                    <button class="btn-sport px-6 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 font-mono text-xs bg-slate-100 dark:bg-white/5 hover:bg-slate-200" onclick="document.getElementById('csv-file-input').click()">
+                        Pilih Fail CSV / XLSX
+                    </button>
+                </div>
+
+                <div id="upload-validation" class="glass-card p-6 hide flex-col gap-4">
+                    <div id="upload-report"></div>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-end mt-2 border-t border-[var(--glass-border)] pt-4">
+                        <select id="upload-mode" class="neo-input text-xs sm:w-auto">
+                            <option value="upsert">Kemas kini + tambah (upsert)</option>
+                            <option value="append">Tambah baharu sahaja</option>
+                            <option value="replace">Ganti semua (superadmin)</option>
+                        </select>
+                        <button id="btn-commit-upload" class="btn-sport primary px-6 py-2.5 rounded-lg text-xs shadow-lg shadow-red-500/20 whitespace-nowrap" onclick="adminApp.confirmCSVUpload()">
+                            Sahkan &amp; Masukkan Ke Database
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- QR / CHECK-IN -->
+            <section id="view-checkin" class="view-section hide flex flex-col gap-6 max-w-5xl mx-auto w-full">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 flex flex-col gap-4">
+                        <h4 class="font-bold text-base flex items-center gap-2">
+                            <i data-lucide="scan-line" class="text-motorsport-accentCyan w-5 h-5"></i> Imbas Kod QR
+                        </h4>
+                        <div id="scan-unsupported" class="hide text-xs rounded-xl border border-yellow-300 dark:border-yellow-500/30 bg-yellow-50 dark:bg-yellow-500/10 text-yellow-800 dark:text-yellow-300 px-4 py-3">
+                            Pengimbas kamera tidak disokong pada pelayar ini. Gunakan carian manual di sebelah.
+                        </div>
+                        <video id="scan-video" playsinline muted class="hide w-full rounded-xl bg-black aspect-square object-cover"></video>
+                        <div class="flex gap-3">
+                            <button id="btn-scan-start" onclick="adminApp.startScan()" class="btn-sport cyan flex-1 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+                                <i data-lucide="camera" class="w-4 h-4"></i> Mula Imbas
+                            </button>
+                            <button id="btn-scan-stop" onclick="adminApp.stopScan()" disabled class="btn-sport flex-1 py-2.5 rounded-xl text-xs">Henti</button>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 flex flex-col gap-4">
+                        <h4 class="font-bold text-base flex items-center gap-2">
+                            <i data-lucide="search" class="text-motorsport-accent w-5 h-5"></i> Carian Manual
+                        </h4>
+                        <div>
+                            <label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Staff ID / No. Pendaftaran / Token QR</label>
+                            <input type="text" id="ci-query" class="neo-input text-sm font-sport uppercase" placeholder="CBP001 atau CSC26-00001">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Lokasi Check-In</label>
+                            <input type="text" id="ci-location" class="neo-input text-sm" placeholder="cth. Kaunter Utama / Dewan A">
+                        </div>
+                        <button onclick="adminApp.lookupCheckIn()" class="btn-sport primary w-full py-3 rounded-xl text-xs shadow-lg shadow-red-500/20">Cari Atlet</button>
+                    </div>
+                </div>
+                <div class="glass-card p-6" id="ci-result">
+                    <p class="text-xs text-slate-500">Belum ada atlet dipilih. Imbas kod QR atau cari secara manual.</p>
+                </div>
+            </section>
+
+            <!-- TETAPAN SISTEM -->
+            <section id="view-settings" class="view-section hide flex flex-col gap-6 max-w-3xl mx-auto w-full">
+                <div class="glass-card p-6 border-l-4 border-l-motorsport-accent">
+                    <h4 class="font-bold text-base flex items-center gap-2">
+                        <i data-lucide="settings" class="text-motorsport-accent w-5 h-5"></i> Tetapan Sistem
+                    </h4>
+                    <p class="text-xs text-slate-500 mt-1">Perubahan berkuat kuasa serta-merta untuk semua pengguna. Setiap perubahan direkodkan dalam log audit.</p>
+                </div>
+
+                <div id="settings-msg" class="hide"></div>
+
+                <div class="glass-card p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Nama Acara</label><input type="text" id="cf-EVENT_NAME" class="neo-input text-sm"></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Nama Ringkas</label><input type="text" id="cf-EVENT_SHORT" class="neo-input text-sm"></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Pendaftaran Dibuka (ISO)</label><input type="text" id="cf-REG_OPEN" class="neo-input text-sm font-mono" placeholder="2026-09-01T09:00:00+08:00"></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Pendaftaran Ditutup (ISO)</label><input type="text" id="cf-REG_CLOSE" class="neo-input text-sm font-mono" placeholder="Kosong = tiada had"></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Maksimum Sukan</label><input type="number" id="cf-MAX_SPORTS" min="1" max="5" class="neo-input text-sm"></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Saiz Gambar Maks (KB)</label><input type="number" id="cf-PHOTO_MAX_KB" min="100" class="neo-input text-sm"></div>
+                    <div class="md:col-span-2"><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">URL Portal Atlet (untuk QR)</label><input type="text" id="cf-PORTAL_URL" class="neo-input text-sm font-mono" placeholder="https://akaun.github.io/csc2026/"></div>
+                    <div class="md:col-span-2"><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">ID Folder Google Drive</label><input type="text" id="cf-DRIVE_FOLDER_ID" class="neo-input text-sm font-mono"></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Emel Urus Setia</label><input type="text" id="cf-SUPPORT_CONTACT" class="neo-input text-sm"></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Faktor Kedua (4 digit telefon)</label><select id="cf-REQUIRE_SECOND_FACTOR" class="neo-input text-sm"><option value="FALSE">Tidak</option><option value="TRUE">Ya — lebih selamat</option></select></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Papar Statistik Awam</label><select id="cf-PUBLIC_STATS" class="neo-input text-sm"><option value="TRUE">Ya</option><option value="FALSE">Tidak</option></select></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Mod Penyelenggaraan</label><select id="cf-MAINTENANCE_MODE" class="neo-input text-sm"><option value="FALSE">Tidak</option><option value="TRUE">Ya — sekat pendaftaran</option></select></div>
+                    <div class="md:col-span-2 border-t border-[var(--glass-border)] pt-4 mt-1">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Papan Markah</p>
+                    </div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Papan Markah</label><select id="cf-SCOREBOARD_ENABLED" class="neo-input text-sm"><option value="TRUE">Dibuka</option><option value="FALSE">Ditutup</option></select></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Siapa Boleh Lihat</label><select id="cf-SCOREBOARD_PUBLIC" class="neo-input text-sm"><option value="TRUE">Semua orang</option><option value="FALSE">Perlu Staff ID sah</option></select></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Markah Perlu Disahkan</label><select id="cf-SCORE_REQUIRE_VERIFY" class="neo-input text-sm"><option value="TRUE">Ya — juri hantar draf</option><option value="FALSE">Tidak — terus dipapar</option></select></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Selang Semakan (saat)</label><input type="number" id="cf-SCORE_POLL_SECONDS" min="10" max="300" class="neo-input text-sm"><p class="text-[10px] text-slate-500 mt-1">Minimum 10. Lebih rendah = lebih pantas tetapi lebih berat.</p></div>
+
+                    <div class="md:col-span-2 flex justify-end pt-2 border-t border-[var(--glass-border)]">
+                        <button id="btn-save-config" onclick="adminApp.saveConfig()" class="btn-sport primary px-6 py-2.5 rounded-lg text-xs shadow-lg shadow-red-500/20">Simpan Tetapan</button>
+                    </div>
+                </div>
+
+                <!-- LOGO ORGANISASI (superadmin sahaja) -->
+                <div class="glass-card p-6 flex flex-col gap-4" id="logo-card" data-requires-super>
+                    <div>
+                        <h4 class="font-bold text-base flex items-center gap-2">
+                            <i data-lucide="image" class="text-motorsport-accentCyan w-5 h-5"></i> Logo Organisasi
+                        </h4>
+                        <p class="text-xs text-slate-500 mt-1">
+                            Dipapar pada portal atlet, portal juri dan panel admin. Disimpan dalam
+                            folder Google Drive yang sama seperti gambar peserta (subfolder
+                            <span class="font-mono">Sistem</span>). PNG dengan latar telus disyorkan.
+                        </p>
+                    </div>
+
+                    <div id="logo-msg" class="hide"></div>
+
+                    <div class="flex flex-wrap items-center gap-5">
+                        <div class="w-28 h-28 rounded-2xl border border-[var(--glass-border)] bg-slate-100 dark:bg-black/30 flex items-center justify-center overflow-hidden flex-shrink-0">
+                            <img id="logo-preview" alt="Logo" class="max-w-full max-h-full object-contain hide">
+                            <span id="logo-empty" class="text-[10px] text-slate-400 text-center px-2">Tiada logo<br>(ikon lalai digunakan)</span>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <input type="file" id="logo-file" accept="image/png,image/jpeg,image/webp" class="hidden" onchange="adminApp.handleLogoPick(event)">
+                            <button onclick="document.getElementById('logo-file').click()" class="btn-sport cyan px-4 py-2 rounded-lg text-xs flex items-center gap-1">
+                                <i data-lucide="upload-cloud" class="w-4 h-4"></i> Pilih Fail Logo
+                            </button>
+                            <button id="btn-logo-upload" onclick="adminApp.uploadLogo()" class="btn-sport primary px-4 py-2 rounded-lg text-xs hide">
+                                <span>Muat Naik Logo</span>
+                            </button>
+                            <button id="btn-logo-remove" onclick="adminApp.removeLogo()" class="text-xs text-red-500 font-bold text-left px-1 hide">
+                                Buang logo semasa
+                            </button>
+                            <p class="text-[10px] text-slate-500 max-w-xs leading-relaxed">
+                                Maksimum 4MB. Imej akan diubah saiz kepada 512px dan dimampatkan
+                                secara automatik sebelum dimuat naik.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LOG AUDIT -->
+            <section id="view-audit" class="view-section hide flex flex-col gap-6 w-full">
+                <div class="glass-card p-4 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                    <div class="relative flex-1">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="audit-search" class="neo-input text-sm pl-9" placeholder="Tapis mengikut pengguna, tindakan atau sasaran...">
+                    </div>
+                    <button onclick="adminApp.loadAudit(1)" class="btn-sport cyan px-5 py-2.5 rounded-xl text-xs whitespace-nowrap">Cari</button>
+                </div>
+                <div class="glass-card p-0 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm min-w-[820px]">
+                            <thead class="bg-slate-50 dark:bg-black/20 border-b border-[var(--glass-border)]">
+                                <tr class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
+                                    <th class="text-left px-5 py-3">Masa</th>
+                                    <th class="text-left px-5 py-3">Pengguna</th>
+                                    <th class="text-left px-5 py-3">Tindakan</th>
+                                    <th class="text-left px-5 py-3">Sasaran</th>
+                                    <th class="text-left px-5 py-3">Nota</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="flex items-center justify-center gap-4 p-4 border-t border-[var(--glass-border)]">
+                        <button onclick="adminApp.loadAudit(adminApp.page.audit-1)" class="btn-sport px-4 py-2 rounded-lg text-xs">&lsaquo;</button>
+                        <span id="audit-page" class="text-xs font-mono text-slate-500">—</span>
+                        <button onclick="adminApp.loadAudit(adminApp.page.audit+1)" class="btn-sport px-4 py-2 rounded-lg text-xs">&rsaquo;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. HEBAHAN BERITA (CRUD & GAMBAR) -->
+            <section id="view-announcements" class="view-section hide flex flex-col gap-6 max-w-5xl mx-auto w-full">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="font-sport font-bold text-2xl uppercase tracking-wide">Pengurusan Hebahan & Berita</h3>
+                        <p class="text-sm text-slate-500">Siarkan berita terkini berserta gambar rasmi terus ke portal peserta.</p>
+                    </div>
+                    <button onclick="adminApp.openNewsModal('add')" class="btn-sport primary px-5 py-2.5 rounded-lg text-xs flex items-center gap-2 shadow-lg shadow-red-500/20">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Cipta Berita Baru
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="admin-news-list"></div>
+            </section>
+
+            <!-- 7. LAPORAN & EKSPORT (PREVIEW) -->
+            <section id="view-reports-preview" class="view-section hide flex flex-col gap-6">
+                <div class="glass-card p-6 border-l-4 border-l-motorsport-accentCyan">
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="font-sport font-bold text-2xl uppercase">Preview Laporan Data</h3>
+                            <p class="text-xs text-slate-500 mt-1">Sila buat pilihan tapisan sebelum menjana fail CSV.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4 border-b border-[var(--glass-border)] mb-4">
+                        <button onclick="adminApp.switchReportTab('report-tab-participants')" class="pb-2 font-bold text-sm border-b-2 border-motorsport-accentCyan text-motorsport-accentCyan transition-colors" id="tab-btn-participants">Laporan Peserta Didaftar</button>
+                        <button onclick="adminApp.switchReportTab('report-tab-staff')" class="pb-2 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition-colors" id="tab-btn-staff">Laporan Direktori Staf</button>
+                    </div>
+
+                    <div id="report-tab-participants" class="flex flex-col gap-4">
+                        <div class="flex flex-wrap gap-3">
+                            <select id="report-p-cont" class="neo-input w-auto text-xs py-2" onchange="adminApp.previewReportData()"><option value="">Semua Kontinjen</option></select>
+                            <select id="report-p-sport" class="neo-input w-auto text-xs py-2" onchange="adminApp.previewReportData()"><option value="">Semua Sukan</option></select>
+                            <select id="report-p-status" class="neo-input w-auto text-xs py-2" onchange="adminApp.previewReportData()">
+                                <option value="">Semua Status</option>
+                                <option value="Registered">Registered Sahaja</option>
+                                <option value="Pending">Pending Sahaja</option>
+                            </select>
+                            <button onclick="adminApp.exportParticipantsCSV()" class="btn-sport cyan px-5 py-2 rounded-lg text-xs flex items-center gap-1 shadow-md ml-auto">
+                                <i data-lucide="download" class="w-4 h-4"></i> Eksport Data Terpilih
+                            </button>
+                        </div>
+                        <div class="border border-[var(--glass-border)] rounded-xl overflow-hidden bg-slate-50 dark:bg-black/20">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
+                                <thead>
+                                    <tr class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                        <th class="p-2.5">Reg No</th><th class="p-2.5">Nama</th><th class="p-2.5">Kontinjen</th><th class="p-2.5">Sukan</th><th class="p-2.5">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-p-table"></tbody>
+                            </table>
+                            <div class="p-2 text-center text-[10px] text-slate-500 bg-white dark:bg-[#111118]">* Preview memaparkan maksimum 20 rekod terawal sahaja. Download untuk laporan penuh.</div>
+                        </div>
+                    </div>
+
+                    <div id="report-tab-staff" class="flex flex-col gap-4 hide">
+                        <div class="flex flex-wrap gap-3">
+                            <select id="report-s-cont" class="neo-input w-auto text-xs py-2" onchange="adminApp.previewReportData()"><option value="">Semua Kontinjen</option></select>
+                            <button onclick="adminApp.exportStaffCSV()" class="btn-sport cyan px-5 py-2 rounded-lg text-xs flex items-center gap-1 shadow-md ml-auto">
+                                <i data-lucide="download" class="w-4 h-4"></i> Eksport Direktori Staf
+                            </button>
+                        </div>
+                        <div class="border border-[var(--glass-border)] rounded-xl overflow-hidden bg-slate-50 dark:bg-black/20">
+                            <table class="w-full text-left text-xs whitespace-nowrap">
+                                <thead>
+                                    <tr class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                        <th class="p-2.5">Staff ID</th><th class="p-2.5">Nama</th><th class="p-2.5">Jabatan</th><th class="p-2.5">Kontinjen</th><th class="p-2.5">No. Tel</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="report-s-table"></tbody>
+                            </table>
+                            <div class="p-2 text-center text-[10px] text-slate-500 bg-white dark:bg-[#111118]">* Preview memaparkan maksimum 20 rekod terawal sahaja. Download untuk laporan penuh.</div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 8. PENGESAHAN MARKAH -->
+            <section id="view-scoring" class="view-section hide flex flex-col gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="glass-card p-5 border-t-2 border-t-motorsport-accent">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Menunggu Pengesahan</p>
+                        <h3 id="sc-stat-pending" class="font-sport text-4xl font-bold">0</h3>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Markah Disahkan</p>
+                        <h3 id="sc-stat-verified" class="font-sport text-4xl font-bold">0</h3>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Acara Selesai</p>
+                        <h3 id="sc-stat-events" class="font-sport text-4xl font-bold">0</h3>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Versi Papan Markah</p>
+                        <h3 id="sc-stat-version" class="font-sport text-4xl font-bold">0</h3>
+                        <p class="text-[10px] text-slate-500 font-mono mt-1">Naik setiap pengesahan</p>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 flex flex-col gap-4">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div>
+                            <h3 class="font-sport font-bold text-2xl uppercase">Markah Menunggu Pengesahan</h3>
+                            <p class="text-xs text-slate-500 mt-1">Markah draf tidak kelihatan di papan markah awam sehingga anda sahkan.</p>
+                        </div>
+                        <button onclick="adminApp.loadScoring()" class="btn-sport cyan px-4 py-2 rounded-lg text-xs flex items-center gap-1">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Segarkan
+                        </button>
+                    </div>
+                    <div id="pending-groups" class="flex flex-col gap-4"></div>
+                </div>
+
+                <div class="glass-card p-6 flex flex-col gap-4">
+                    <div>
+                        <h3 class="font-sport font-bold text-xl uppercase">Kedudukan Semasa</h3>
+                        <p class="text-xs text-slate-500 mt-1">Sama seperti yang dilihat oleh staf di portal awam.</p>
+                    </div>
+                    <div id="sc-standings" class="flex flex-col gap-3"></div>
+                </div>
+            </section>
+
+            <!-- 9. JADUAL ACARA -->
+            <section id="view-events" class="view-section hide flex flex-col gap-6">
+                <div class="glass-card p-6 flex flex-col gap-4">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div>
+                            <h3 class="font-sport font-bold text-2xl uppercase">Jadual Acara</h3>
+                            <p class="text-xs text-slate-500 mt-1">Setiap markah mesti terikat kepada satu acara.</p>
+                        </div>
+                        <button onclick="adminApp.openEventModal()" class="btn-sport cyan px-4 py-2 rounded-lg text-xs flex items-center gap-1" data-requires-edit>
+                            <i data-lucide="plus" class="w-4 h-4"></i> Tambah Acara
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <select id="ev-filter-sport" class="neo-input w-auto text-xs py-2" onchange="adminApp.renderEvents()">
+                            <option value="">Semua sukan</option>
+                        </select>
+                        <select id="ev-filter-status" class="neo-input w-auto text-xs py-2" onchange="adminApp.renderEvents()">
+                            <option value="">Semua status</option>
+                            <option value="SCHEDULED">Berjadual</option>
+                            <option value="ONGOING">Sedang berlangsung</option>
+                            <option value="COMPLETED">Selesai</option>
+                            <option value="CANCELLED">Dibatalkan</option>
+                        </select>
+                    </div>
+                    <div class="border border-[var(--glass-border)] rounded-xl overflow-x-auto">
+                        <table class="w-full text-left text-xs whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                    <th class="p-2.5">Acara</th><th class="p-2.5">Sukan</th><th class="p-2.5">Pusingan</th>
+                                    <th class="p-2.5">Tempat</th><th class="p-2.5">Tarikh</th><th class="p-2.5">Markah</th>
+                                    <th class="p-2.5">Status</th><th class="p-2.5"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="events-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 10. KONTINJEN & MATA -->
+            <section id="view-contingents" class="view-section hide flex flex-col gap-6">
+                <div class="glass-card p-6 flex flex-col gap-4">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div>
+                            <h3 class="font-sport font-bold text-2xl uppercase">Kontinjen</h3>
+                            <p class="text-xs text-slate-500 mt-1">Kod di sini dipadankan dengan medan Kontinjen dalam data staf.</p>
+                        </div>
+                        <button onclick="adminApp.openContingentModal()" class="btn-sport cyan px-4 py-2 rounded-lg text-xs flex items-center gap-1" data-requires-edit>
+                            <i data-lucide="plus" class="w-4 h-4"></i> Tambah Kontinjen
+                        </button>
+                    </div>
+                    <div id="cont-unregistered" class="hide rounded-xl border border-yellow-300 dark:border-yellow-500/30 bg-yellow-50 dark:bg-yellow-500/10 px-4 py-3 text-xs text-yellow-800 dark:text-yellow-300"></div>
+                    <div id="contingents-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                </div>
+
+                <div class="glass-card p-6 flex flex-col gap-4">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div>
+                            <h3 class="font-sport font-bold text-xl uppercase">Jadual Mata</h3>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Sukan <b>*</b> ialah peraturan lalai. Tambah baris khusus sukan untuk mengatasinya
+                                (contoh: acara berpasukan membawa mata lebih besar).
+                            </p>
+                        </div>
+                        <button onclick="adminApp.recalcPoints()" class="btn-sport px-4 py-2 rounded-lg text-xs flex items-center gap-1" data-requires-edit>
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Kira Semula Semua Mata
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap items-end gap-3">
+                        <div><label class="block text-[10px] uppercase font-bold mb-1 text-slate-500">Sukan</label>
+                            <select id="pr-sport" class="neo-input w-auto text-xs py-2"><option value="*">* (semua)</option></select></div>
+                        <div><label class="block text-[10px] uppercase font-bold mb-1 text-slate-500">Kedudukan</label>
+                            <input id="pr-placing" type="number" min="1" max="99" class="neo-input w-24 text-xs py-2" placeholder="1"></div>
+                        <div><label class="block text-[10px] uppercase font-bold mb-1 text-slate-500">Mata</label>
+                            <input id="pr-points" type="number" min="0" class="neo-input w-24 text-xs py-2" placeholder="5"></div>
+                        <button onclick="adminApp.savePointsRule()" class="btn-sport cyan px-4 py-2 rounded-lg text-xs" data-requires-edit>Simpan</button>
+                    </div>
+                    <div class="border border-[var(--glass-border)] rounded-xl overflow-x-auto">
+                        <table class="w-full text-left text-xs whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                    <th class="p-2.5">Sukan</th><th class="p-2.5">Kedudukan</th><th class="p-2.5">Mata</th><th class="p-2.5"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="points-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 11. AKAUN JURI -->
+            <section id="view-judges" class="view-section hide flex flex-col gap-6">
+                <div class="glass-card p-6 flex flex-col gap-4">
+                    <div class="flex flex-wrap justify-between items-center gap-3">
+                        <div>
+                            <h3 class="font-sport font-bold text-2xl uppercase">Akaun Juri &amp; Pengguna</h3>
+                            <p class="text-xs text-slate-500 mt-1">
+                                Juri hanya boleh memasukkan markah bagi sukan yang disenaraikan dalam skop mereka.
+                                Kawalan ini dikuatkuasakan di pelayan.
+                            </p>
+                        </div>
+                        <button onclick="adminApp.openJudgeModal()" class="btn-sport cyan px-4 py-2 rounded-lg text-xs flex items-center gap-1">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Tambah Akaun
+                        </button>
+                    </div>
+                    <div class="rounded-xl border border-[var(--glass-border)] bg-slate-50 dark:bg-black/20 px-4 py-3 text-xs text-slate-600 dark:text-slate-400">
+                        Pautan portal juri: <span class="font-mono font-bold" id="juri-link">../juri/</span>
+                    </div>
+                    <div class="border border-[var(--glass-border)] rounded-xl overflow-x-auto">
+                        <table class="w-full text-left text-xs whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                                    <th class="p-2.5">Username</th><th class="p-2.5">Nama</th><th class="p-2.5">Peranan</th>
+                                    <th class="p-2.5">Skop Sukan</th><th class="p-2.5">Status</th><th class="p-2.5">Log Masuk Akhir</th><th class="p-2.5"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="judges-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL ACARA -->
+    <div id="modal-event" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center hide opacity-0 transition-opacity duration-300 p-4">
+        <div class="glass-card bg-white dark:bg-[#151825] p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-[var(--glass-border)] pb-3 mb-4">
+                <h3 id="modal-event-title" class="font-sport font-bold text-2xl uppercase">Tambah Acara</h3>
+                <button onclick="adminApp.closeModal('modal-event')" class="text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <input type="hidden" id="ev-id">
+            <div class="flex flex-col gap-4">
+                <div><label class="block text-xs uppercase font-bold mb-1">Nama Acara</label>
+                    <input id="ev-name" class="neo-input" placeholder="cth: Badminton Perseorangan Lelaki — Akhir"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs uppercase font-bold mb-1">Sukan</label>
+                        <select id="ev-sport" class="neo-input text-xs" onchange="adminApp.fillEventCategories()"></select></div>
+                    <div><label class="block text-xs uppercase font-bold mb-1">Kategori</label>
+                        <select id="ev-cat" class="neo-input text-xs"><option value="">— Semua kategori —</option></select></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs uppercase font-bold mb-1">Pusingan</label>
+                        <input id="ev-round" class="neo-input" placeholder="Saringan / Separuh Akhir / Akhir"></div>
+                    <div><label class="block text-xs uppercase font-bold mb-1">Tempat</label>
+                        <input id="ev-venue" class="neo-input" placeholder="cth: Dewan Utama"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs uppercase font-bold mb-1">Tarikh &amp; Masa</label>
+                        <input id="ev-at" type="datetime-local" class="neo-input text-xs"></div>
+                    <div><label class="block text-xs uppercase font-bold mb-1">Status</label>
+                        <select id="ev-status" class="neo-input text-xs">
+                            <option value="SCHEDULED">Berjadual</option>
+                            <option value="ONGOING">Sedang berlangsung</option>
+                            <option value="COMPLETED">Selesai</option>
+                            <option value="CANCELLED">Dibatalkan</option>
+                        </select></div>
+                </div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Nota</label>
+                    <input id="ev-notes" class="neo-input" placeholder="Pilihan"></div>
+                <button onclick="adminApp.saveEvent()" class="btn-sport cyan w-full py-3 rounded-xl text-sm mt-2">Simpan Acara</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL KONTINJEN -->
+    <div id="modal-contingent" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center hide opacity-0 transition-opacity duration-300 p-4">
+        <div class="glass-card bg-white dark:bg-[#151825] p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-[var(--glass-border)] pb-3 mb-4">
+                <h3 id="modal-cont-title" class="font-sport font-bold text-2xl uppercase">Tambah Kontinjen</h3>
+                <button onclick="adminApp.closeModal('modal-contingent')" class="text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <div class="flex flex-col gap-4">
+                <div><label class="block text-xs uppercase font-bold mb-1">Kod</label>
+                    <input id="cont-code" class="neo-input font-mono" placeholder="cth: ALPHA">
+                    <p class="text-[10px] text-slate-500 mt-1">Kod ini akan dipadankan dengan medan Kontinjen dalam Staff_Master.</p></div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Nama Penuh</label>
+                    <input id="cont-name" class="neo-input" placeholder="cth: Kontinjen Alpha"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs uppercase font-bold mb-1">Nama Ringkas</label>
+                        <input id="cont-short" class="neo-input" placeholder="ALPHA" maxlength="12"></div>
+                    <div><label class="block text-xs uppercase font-bold mb-1">Warna</label>
+                        <input id="cont-color" type="color" class="neo-input h-11 p-1" value="#0ea5e9"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs uppercase font-bold mb-1">Ketua</label>
+                        <input id="cont-leader" class="neo-input" placeholder="Pilihan"></div>
+                    <div><label class="block text-xs uppercase font-bold mb-1">Susunan</label>
+                        <input id="cont-order" type="number" class="neo-input" value="1"></div>
+                </div>
+                <button onclick="adminApp.saveContingent()" class="btn-sport cyan w-full py-3 rounded-xl text-sm mt-2">Simpan Kontinjen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AKAUN JURI -->
+    <div id="modal-judge" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center hide opacity-0 transition-opacity duration-300 p-4">
+        <div class="glass-card bg-white dark:bg-[#151825] p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-[var(--glass-border)] pb-3 mb-4">
+                <h3 id="modal-judge-title" class="font-sport font-bold text-2xl uppercase">Tambah Akaun</h3>
+                <button onclick="adminApp.closeModal('modal-judge')" class="text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <div class="flex flex-col gap-4">
+                <div><label class="block text-xs uppercase font-bold mb-1">Username</label>
+                    <input id="ju-user" class="neo-input font-mono" placeholder="cth: juri.badminton">
+                    <p class="text-[10px] text-slate-500 mt-1">Huruf kecil, nombor, titik. Tidak boleh diubah selepas dicipta.</p></div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Nama Penuh</label>
+                    <input id="ju-name" class="neo-input" placeholder="cth: Encik Rahim (Juri Badminton)"></div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Peranan</label>
+                    <select id="ju-role" class="neo-input text-xs" onchange="adminApp.toggleJudgeScope()">
+                        <option value="juri">Juri (markah sahaja)</option>
+                        <option value="viewer">Viewer (lihat sahaja)</option>
+                        <option value="admin">Admin (boleh sahkan markah)</option>
+                    </select></div>
+                <div id="ju-scope-wrap">
+                    <label class="block text-xs uppercase font-bold mb-1">Skop Sukan</label>
+                    <div id="ju-scope-boxes" class="flex flex-wrap gap-2"></div>
+                    <p class="text-[10px] text-slate-500 mt-1">Juri hanya boleh memasukkan markah bagi sukan yang ditanda.</p>
+                </div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Kata Laluan</label>
+                    <input id="ju-pass" type="password" class="neo-input" placeholder="Minimum 8 aksara">
+                    <p class="text-[10px] text-slate-500 mt-1">Biarkan kosong semasa mengemas kini untuk mengekalkan kata laluan sedia ada.</p></div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Status</label>
+                    <select id="ju-active" class="neo-input text-xs">
+                        <option value="true">Aktif</option><option value="false">Tidak Aktif</option>
+                    </select></div>
+                <button onclick="adminApp.saveJudge()" class="btn-sport cyan w-full py-3 rounded-xl text-sm mt-2">Simpan Akaun</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. MODAL KAWALAN SUKAN -->
+    <div id="modal-sport" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center hide opacity-0 transition-opacity duration-300 p-4">
+        <div class="glass-card bg-white dark:bg-[#151825] p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-[var(--glass-border)] pb-3 mb-4">
+                <h3 id="modal-sport-title" class="font-sport font-bold text-2xl uppercase">Tambah Sukan Baru</h3>
+                <button onclick="adminApp.closeModal('modal-sport')" class="text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <input type="hidden" id="sport-id-input">
+            <div class="flex flex-col gap-4">
+                <div><label class="block text-xs uppercase font-bold mb-1">Nama Sukan</label><input type="text" id="sport-name-input" class="neo-input" placeholder="cth: Badminton, Futsal, Bola Jaring"></div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Keterangan Ringkas</label><input type="text" id="sport-desc-input" class="neo-input" placeholder="cth: Perseorangan & beregu"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs uppercase font-bold mb-1">Jumlah Kapasiti Keseluruhan</label><input type="number" id="sport-cap-input" class="neo-input" placeholder="cth: 150"></div>
+                    <div><label class="block text-xs uppercase font-bold mb-1">Status</label><select id="sport-status-input" class="neo-input text-xs"><option value="true">Aktif</option><option value="false">Tidak Aktif</option></select></div>
+                </div>
+                <div class="border-t border-[var(--glass-border)] pt-3" id="sport-categories-wrapper">
+                    <div class="flex justify-between items-center mb-2"><label class="text-xs uppercase font-bold text-slate-500">Kategori Awal (Pisahkan dengan koma)</label></div>
+                    <textarea id="sport-cats-input" class="neo-input h-20 text-xs" placeholder="cth: Men's Singles, Women's Singles, Mixed Doubles"></textarea>
+                </div>
+                <div class="flex gap-3 justify-end mt-4">
+                    <button onclick="adminApp.closeModal('modal-sport')" class="btn-sport px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white text-xs">Batal</button>
+                    <button id="btn-save-sport" onclick="adminApp.saveSport()" class="btn-sport primary px-6 py-2 rounded-lg text-xs">Simpan Sukan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MODAL TAMBAH KATEGORI KHUSUS -->
+    <div id="modal-category" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center hide opacity-0 transition-opacity duration-300 p-4">
+        <div class="glass-card bg-white dark:bg-[#151825] p-6 w-full max-w-sm">
+            <div class="flex justify-between items-center border-b border-[var(--glass-border)] pb-3 mb-4">
+                <h3 class="font-sport font-bold text-xl uppercase">Tambah Kategori Sukan</h3>
+                <button onclick="adminApp.closeModal('modal-category')" class="text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <input type="hidden" id="cat-sport-id">
+            <div class="flex flex-col gap-4">
+                <div><label class="block text-xs uppercase font-bold mb-1">Nama Kategori</label><input type="text" id="cat-name-input" class="neo-input" placeholder="cth: Veteran Men's Team"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs uppercase font-bold mb-1">Had Kapasiti</label><input type="number" id="cat-cap-input" class="neo-input" placeholder="cth: 32"></div>
+                    <div><label class="block text-xs uppercase font-bold mb-1">Jantina</label><select id="cat-gender-input" class="neo-input text-xs"><option value="ANY">Terbuka</option><option value="M">Lelaki</option><option value="F">Wanita</option></select></div>
+                </div>
+                <input type="hidden" id="cat-id-input">
+                <div class="flex gap-3 justify-end mt-2">
+                    <button onclick="adminApp.closeModal('modal-category')" class="btn-sport px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white text-xs">Batal</button>
+                    <button onclick="adminApp.saveCategory()" class="btn-sport cyan px-5 py-2 rounded-lg text-xs">Tambah</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. MODAL URUS STAF MASTER -->
+    <div id="modal-staff" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center hide opacity-0 transition-opacity duration-300 p-4">
+        <div class="glass-card bg-white dark:bg-[#151825] p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-[var(--glass-border)] pb-3 mb-4">
+                <h3 id="modal-staff-title" class="font-sport font-bold text-2xl uppercase">Tambah Staf Baru</h3>
+                <button onclick="adminApp.closeModal('modal-staff')" class="text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <input type="hidden" id="staff-edit-mode" value="add">
+            <div class="flex flex-col gap-3.5">
+                <div><label class="block text-xs uppercase font-bold mb-1">Staff ID</label><input type="text" id="staff-id-field" class="neo-input font-sport font-bold uppercase" placeholder="cth: CBP099"></div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Nama Penuh Staf</label><input type="text" id="staff-name-field" class="neo-input" placeholder="cth: Siti Aminah binti Razali"></div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Jantina</label><select id="staff-gender-field" class="neo-input text-xs"><option value="">— Tidak dinyatakan —</option><option value="M">Lelaki</option><option value="F">Wanita</option></select></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs uppercase font-bold mb-1">Jabatan</label><input type="text" id="staff-dept-field" class="neo-input text-xs" placeholder="cth: Kewangan"></div>
+                    <div><label class="block text-xs uppercase font-bold mb-1">Jawatan</label><input type="text" id="staff-pos-field" class="neo-input text-xs" placeholder="cth: Eksekutif"></div>
+                </div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Kontinjen</label><input type="text" id="staff-cont-field" class="neo-input" placeholder="cth: HQ Alpha, Branch Utara"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs uppercase font-bold mb-1">Email</label><input type="email" id="staff-email-field" class="neo-input text-xs" placeholder="user@cbp.com.my"></div>
+                    <div><label class="block text-xs uppercase font-bold mb-1">No. Telefon</label><input type="tel" id="staff-phone-field" class="neo-input text-xs" placeholder="012-3456789" oninput="adminApp.formatPhone(this)"></div>
+                </div>
+                <div class="flex gap-3 justify-end mt-4">
+                    <button onclick="adminApp.closeModal('modal-staff')" class="btn-sport px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white text-xs">Batal</button>
+                    <button id="btn-save-staff" onclick="adminApp.saveStaff()" class="btn-sport cyan px-6 py-2 rounded-lg text-xs">Simpan Staf</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. MODAL URUS HEBAHAN BERITA -->
+    <div id="modal-news" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center hide opacity-0 transition-opacity duration-300 p-4">
+        <div class="glass-card bg-white dark:bg-[#151825] p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-[var(--glass-border)] pb-3 mb-4">
+                <h3 id="modal-news-title" class="font-sport font-bold text-2xl uppercase">Cipta Berita Baru</h3>
+                <button onclick="adminApp.closeModal('modal-news')" class="text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <input type="hidden" id="news-id-field">
+            <div class="flex flex-col gap-4">
+                <div><label class="block text-xs uppercase font-bold mb-1">Tajuk Hebahan</label><input type="text" id="news-title-field" class="neo-input font-bold" placeholder="cth: PENTING: Taklimat Pengurus Pasukan"></div>
+                <div>
+                    <label class="block text-xs uppercase font-bold mb-1">Sasaran Peserta</label>
+                    <select id="news-target-field" class="neo-input text-xs">
+                        <option value="All Registered Athletes">Semua Peserta Berdaftar</option><option value="HQ Alpha">Kontinjen HQ Alpha</option>
+                        <option value="HQ Bravo">Kontinjen HQ Bravo</option><option value="Branch Utara">Branch Utara</option>
+                    </select>
+                </div>
+                <div><label class="block text-xs uppercase font-bold mb-1">Kandungan Terperinci</label><textarea id="news-msg-field" class="neo-input h-28 resize-none text-xs" placeholder="Tulis pengumuman penuh di sini..."></textarea></div>
+                <div>
+                    <label class="block text-xs uppercase font-bold mb-1">Muat Naik Poster / Gambar Rasmi</label>
+                    <input type="file" id="news-img-file" accept="image/*" class="neo-input text-xs" onchange="adminApp.handleNewsImage(event)">
+                    <div id="news-img-preview-box" class="mt-2 h-32 rounded-lg border border-[var(--glass-border)] overflow-hidden hide">
+                        <img id="news-img-preview" src="" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <div class="flex gap-3 justify-end mt-4">
+                    <button onclick="adminApp.closeModal('modal-news')" class="btn-sport px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white text-xs">Batal</button>
+                    <button id="btn-save-news" onclick="adminApp.saveNews()" class="btn-sport primary px-6 py-2 rounded-lg text-xs">Siarkan Berita</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. MODAL DETAIL PESERTA -->
+    <div id="modal-participant" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center hide opacity-0 transition-opacity duration-300 p-4">
+        <div class="glass-card bg-white dark:bg-[#151825] p-6 w-full max-w-md">
+            <div class="flex justify-between items-center border-b border-[var(--glass-border)] pb-3 mb-4">
+                <h3 class="font-sport font-bold text-2xl uppercase">Maklumat Peserta</h3>
+                <button onclick="adminApp.closeModal('modal-participant')" class="text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <div id="participant-detail-body" class="flex flex-col gap-3"></div>
+            <div class="flex justify-end gap-2 border-t border-[var(--glass-border)] pt-4 mt-4">
+                <button onclick="adminApp.closeModal('modal-participant')" class="btn-sport px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white text-xs">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+/* ==========================================================================
+   CSC2026 — ENJIN PORTAL ADMIN
+   --------------------------------------------------------------------------
+   Reka bentuk UI kekal seperti asal. Yang berubah ialah apa yang berlaku di
+   belakangnya:
+
+     - portal dikunci di belakang log masuk sebenar; tiada data dimuatkan
+       sebelum sesi disahkan oleh pelayan
+     - SEMUA panggilan (termasuk bacaan) melalui POST, jadi token sesi tidak
+       pernah berada dalam URL atau sejarah pelayar
+     - peranan dikuatkuasakan di pelayan; menyembunyikan butang di sini
+       hanyalah kemudahan
+     - muat naik data induk ialah dua langkah: sahkan dahulu, tulis kemudian
+     - setiap pindaan meninggalkan jejak audit
+   ========================================================================== */
+
+var SCRIPT_URL = 'GANTI_DENGAN_URL_WEB_APP_ANDA';
+
+/* ---------------- LAPISAN API ---------------- */
+var API = {
+  token: null,
+  _wait: function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); },
+
+  call: async function (body, retries) {
+    var tries = retries === undefined ? 2 : retries;
+    var lastErr = null;
+
+    for (var i = 0; i <= tries; i++) {
+      if (i > 0) await API._wait(Math.min(6000, 600 * Math.pow(2, i - 1)) + Math.random() * 300);
+      try {
+        var payload = Object.assign({}, body);
+        if (API.token) payload.token = API.token;
+
+        var res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+          redirect: 'follow'
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var data = await res.json();
+
+        if (data.status === 'error' && data.code === 'UNAUTHENTICATED') {
+          adminApp.forceLogout('Sesi tamat. Sila log masuk semula.');
+          throw new Error(data.message);
+        }
+        if (data.status === 'error' && (data.code === 'BUSY' || data.code === 'SERVER_ERROR') && i < tries) {
+          lastErr = new Error(data.message); continue;
+        }
+        return data;
+      } catch (e) { lastErr = e; }
+    }
+    throw lastErr || new Error('Sambungan gagal.');
+  }
+};
+
+/* ==========================================================================
+   APLIKASI
+   ========================================================================== */
+var adminApp = {
+  user: null,
+  data: { dashboard: null, participants: [], staff: [], facets: null },
+  page: { participants: 1, staff: 1, audit: 1 },
+  uploadToken: null,
+  uploadErrors: [],
+  scanner: { stream: null, raf: null, detector: null },
+  current: null,
+
+  /* ---------------- Kitaran hayat ---------------- */
+  init: function () {
+    adminApp.applyTheme(adminApp.savedTheme());
+    adminApp.bindStatic();
+    adminApp.hideLoader();
+
+    var t = null;
+    try { t = sessionStorage.getItem('csc26_admin_token'); } catch (e) { }
+    if (t) { API.token = t; adminApp.enter(true); }
+    else adminApp.showGate();
+  },
+
+  hideLoader: function () {
+    var l = document.getElementById('global-loader');
+    if (!l) return;
+    l.style.opacity = '0';
+    setTimeout(function () { l.classList.add('hide'); }, 400);
+  },
+
+  showGate: function () {
+    var g = document.getElementById('login-gate');
+    g.classList.remove('hide');
+    g.classList.add('flex');
+    adminApp.icons();
+    var u = document.getElementById('gate-user');
+    if (u) setTimeout(function () { u.focus(); }, 120);
+  },
+
+  hideGate: function () {
+    var g = document.getElementById('login-gate');
+    g.classList.add('hide');
+    g.classList.remove('flex');
+  },
+
+  /* ---------------- Log masuk ---------------- */
+  login: async function () {
+    var btn = document.getElementById('btn-gate-login');
+    var u = document.getElementById('gate-user').value.trim();
+    var p = document.getElementById('gate-pass').value;
+
+    if (!u || !p) { adminApp.gateMsg('Sila isi username dan kata laluan.', 'error'); return; }
+
+    adminApp.btnBusy(btn, true, 'Mengesahkan...');
+    adminApp.gateMsg('');
+    try {
+      var d = await API.call({ action: 'adminLogin', username: u, password: p }, 1);
+      if (d.status !== 'success') { adminApp.gateMsg(d.message || 'Log masuk gagal.', 'error'); return; }
+
+      API.token = d.token;
+      try { sessionStorage.setItem('csc26_admin_token', d.token); } catch (e) { }
+      adminApp.user = d.user;
+      document.getElementById('gate-pass').value = '';
+      adminApp.hideGate();
+      await adminApp.enter();
+    } catch (e) {
+      adminApp.gateMsg('Sambungan gagal. Semak URL Web App dan sambungan internet.', 'error');
+    } finally {
+      adminApp.btnBusy(btn, false, 'Log Masuk');
+    }
+  },
+
+  gateMsg: function (msg, kind) {
+    var el = document.getElementById('gate-msg');
+    if (!el) return;
+    if (!msg) { el.classList.add('hide'); el.innerHTML = ''; return; }
+    var cls = kind === 'error'
+      ? 'bg-red-100 dark:bg-red-500/10 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
+      : 'bg-yellow-100 dark:bg-yellow-500/10 border-yellow-300 dark:border-yellow-500/30 text-yellow-800 dark:text-yellow-300';
+    el.className = 'rounded-xl border px-4 py-3 text-xs font-medium ' + cls;
+    el.textContent = msg;
+    el.classList.remove('hide');
+  },
+
+  enter: async function (silent) {
+    adminApp.hideGate();
+    await adminApp.refreshData(silent);
+  },
+
+  logout: async function () {
+    if (!confirm('Log keluar dari portal admin?')) return;
+    try { await API.call({ action: 'adminLogout' }, 0); } catch (e) { }
+    adminApp.forceLogout();
+  },
+
+  forceLogout: function (msg) {
+    API.token = null; adminApp.user = null;
+    try { sessionStorage.removeItem('csc26_admin_token'); } catch (e) { }
+    adminApp.stopScan();
+    adminApp.data = { dashboard: null, participants: [], staff: [], facets: null };
+    document.querySelectorAll('.view-section').forEach(function (v, i) {
+      v.classList.toggle('hide', i !== 0);
+    });
+    adminApp.showGate();
+    if (msg) adminApp.gateMsg(msg, 'warn');
+  },
+
+  /* ---------------- Tema ---------------- */
+  savedTheme: function () {
+    try { var t = localStorage.getItem('mykelab_admin_theme'); if (t) return t; } catch (e) { }
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  },
+
+  applyTheme: function (theme) {
+    var dark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', dark);
+    var i = document.getElementById('theme-icon');
+    if (i) { i.setAttribute('data-lucide', dark ? 'sun' : 'moon'); adminApp.icons(); }
+  },
+
+  toggleTheme: function () {
+    var next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+    try { localStorage.setItem('mykelab_admin_theme', next); } catch (e) { }
+    adminApp.applyTheme(next);
+  },
+
+  icons: function () { try { if (window.lucide && lucide.createIcons) lucide.createIcons(); } catch (e) { } },
+
+  /* ---------------- Navigasi ---------------- */
+  navigate: function (target) {
+    if (!API.token) { adminApp.showGate(); return; }
+
+    document.querySelectorAll('.view-section').forEach(function (v) { v.classList.add('hide'); });
+    var el = document.getElementById('view-' + target);
+    if (el) el.classList.remove('hide');
+
+    document.querySelectorAll('.nav-btn').forEach(function (b) {
+      var on = b.getAttribute('data-target') === target;
+      b.className = 'nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ' +
+        (on ? 'bg-motorsport-accentCyan/10 text-motorsport-accentCyan'
+            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5');
+    });
+
+    var titles = {
+      dashboard: 'Overview', participants: 'Senarai Peserta', staff: 'Senarai Staf',
+      sports: 'Kawalan Sukan', upload: 'Upload Master', announcements: 'Hebahan Berita',
+      'reports-preview': 'Laporan & Arkib', checkin: 'QR / Check-In',
+      settings: 'Tetapan Sistem', audit: 'Log Audit',
+      scoring: 'Pengesahan Markah', events: 'Jadual Acara',
+      contingents: 'Kontinjen & Mata', judges: 'Akaun Juri'
+    };
+    var t = document.getElementById('page-title');
+    if (t) t.textContent = titles[target] || target;
+
+    if (target !== 'checkin') adminApp.stopScan();
+    if (target === 'audit') adminApp.loadAudit(1);
+    if (target === 'settings') adminApp.fillConfig();
+    if (target === 'scoring') adminApp.loadScoring();
+    if (target === 'events') adminApp.loadEventsAdmin();
+    if (target === 'contingents') adminApp.loadContingents();
+    if (target === 'judges') adminApp.loadJudges();
+
+    var sb = document.getElementById('sidebar'), ov = document.getElementById('sidebar-overlay');
+    if (sb) sb.classList.remove('sidebar-open');
+    if (ov) ov.classList.add('hidden');
+
+    adminApp.icons();
+    var scroll = document.getElementById('main-scroll-area');
+    if (scroll) scroll.scrollTop = 0;
+  },
+
+  /* ---------------- Muat data ---------------- */
+  refreshData: async function (silent) {
+    if (!API.token) { adminApp.showGate(); return; }
+    var icon = document.getElementById('refresh-icon');
+    if (icon) icon.classList.add('animate-spin');
+    adminApp.status('syncing');
+
+    try {
+      var d = await API.call({ action: 'dashboard' }, 2);
+      if (d.status !== 'success') { adminApp.status('error'); return; }
+
+      adminApp.data.dashboard = d;
+      adminApp.user = d.user;
+      adminApp.renderWho();
+      adminApp.applyRole();
+      adminApp.renderDashboard(d);
+      adminApp.renderSportsAdmin(d.sports || []);
+
+      var pr = await API.call({ action: 'searchParticipants', page: 1, pageSize: 1000 }, 2);
+      if (pr.status === 'success') {
+        adminApp.data.participants = pr.rows;
+        adminApp.data.facets = pr.facets;
+        adminApp.renderParticipants();
+        adminApp.buildContingentFilter(pr.facets);
+        adminApp.renderReports();
+      }
+
+      var st = await API.call({ action: 'listStaff', page: 1, pageSize: 2000 }, 2);
+      if (st.status === 'success') {
+        adminApp.data.staff = st.rows;
+        adminApp.renderStaff();
+      }
+
+      adminApp.loadNews();
+      adminApp.applyBranding((d.config && d.config.LOGO_URL) || '');
+      // Kiraan markah menunggu dipaparkan sebagai lencana pada menu sisi,
+      // supaya urus setia nampak ada kerja menunggu tanpa membuka panel.
+      adminApp.loadScoring();
+      adminApp.status('live');
+    } catch (e) {
+      adminApp.status('error');
+      if (silent) adminApp.forceLogout('Sesi tidak sah. Sila log masuk semula.');
+    } finally {
+      if (icon) icon.classList.remove('animate-spin');
+      adminApp.icons();
+    }
+  },
+
+  status: function (state) {
+    var dot = document.getElementById('status-dot'), txt = document.getElementById('status-text');
+    if (!dot || !txt) return;
+    if (state === 'live') { dot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse'; txt.textContent = 'Live Sync'; }
+    else if (state === 'syncing') { dot.className = 'w-2 h-2 rounded-full bg-yellow-500 animate-pulse'; txt.textContent = 'Menyegerak...'; }
+    else { dot.className = 'w-2 h-2 rounded-full bg-red-500'; txt.textContent = 'Luar Talian'; }
+  },
+
+  renderWho: function () {
+    var u = adminApp.user || {};
+    var name = u.fullName || u.username || '—';
+    var ini = String(name).trim().split(/\s+/).slice(0, 2)
+      .map(function (w) { return (w[0] || '').toUpperCase(); }).join('') || 'A';
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    set('who-name', name);
+    set('who-role', u.role === 'superadmin' ? 'Akses Penuh' : (u.role === 'admin' ? 'Pentadbir' : 'Lihat Sahaja'));
+    set('who-initials', ini);
+  },
+
+  /**
+   * Sembunyikan kawalan yang peranan ini tidak boleh gunakan.
+   * Ini KEMUDAHAN UI sahaja — pelayan menolak permintaan tanpa kebenaran
+   * walaupun butang dipaksa muncul semula.
+   */
+  applyRole: function () {
+    var role = (adminApp.user && adminApp.user.role) || 'viewer';
+    var canEdit = role === 'admin' || role === 'superadmin';
+    var isSuper = role === 'superadmin';
+    document.body.setAttribute('data-role', role);
+
+    var auditBtn = document.querySelector('[data-target="audit"]');
+    if (auditBtn) auditBtn.style.display = canEdit ? '' : 'none';
+    var setBtn = document.querySelector('[data-target="settings"]');
+    if (setBtn) setBtn.style.display = canEdit ? '' : 'none';
+    var judgeBtn = document.querySelector('[data-target="judges"]');
+    if (judgeBtn) judgeBtn.style.display = isSuper ? '' : 'none';
+
+    // Kawalan yang dijana secara dinamik ditanda dengan atribut, bukan id,
+    // supaya senarai ini tidak perlu dikemas kini setiap kali panel baharu
+    // ditambah. Ini paparan sahaja — pelayan tetap menolak tanpa kebenaran.
+    document.querySelectorAll('[data-requires-edit]').forEach(function (e) {
+      e.style.display = canEdit ? '' : 'none';
+    });
+    document.querySelectorAll('[data-requires-super]').forEach(function (e) {
+      e.style.display = isSuper ? '' : 'none';
+    });
+
+    ['btn-save-config'].forEach(function (id) {
+      var e = document.getElementById(id); if (e) e.disabled = !canEdit;
+    });
+    adminApp._canEdit = canEdit;
+    adminApp._isSuper = isSuper;
+  },
+
+  /* ---------------- Dashboard ---------------- */
+  renderDashboard: function (d) {
+    var s = d.stats;
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    set('stat-total-athletes', s.totalRegistered);
+    set('stat-male', s.male);
+    set('stat-female', s.female);
+    set('stat-sports-active', s.totalSports);
+    set('stat-total-staff', s.totalStaff);
+    set('stat-reg-count', s.totalRegistered);
+    set('stat-pend-count', s.totalPending);
+    set('stat-canc-count', s.totalCancelled);
+
+    var tot = s.male + s.female;
+    var mp = tot ? Math.round(s.male / tot * 100) : 50;
+    var mb = document.getElementById('bar-male'), fb = document.getElementById('bar-female');
+    if (mb) mb.style.width = mp + '%';
+    if (fb) fb.style.width = (100 - mp) + '%';
+
+    var cw = document.getElementById('contingent-stats');
+    if (cw) {
+      var cs = d.contingents || [];
+      var max = cs.length ? cs[0].count : 1;
+      cw.innerHTML = cs.length ? cs.map(function (c) {
+        return '<div class="flex flex-col gap-1">' +
+          '<div class="flex justify-between items-center text-[11px]">' +
+            '<span class="font-bold text-slate-700 dark:text-gray-200 uppercase tracking-wide">' + adminApp.esc(c.name) + '</span>' +
+            '<span class="font-mono text-slate-500">' + c.count + ' (' + c.percent + '%)</span></div>' +
+          '<div class="telemetry-bar-container"><div class="telemetry-bar bg-motorsport-accent" style="width:' +
+            Math.round(c.count / (max || 1) * 100) + '%"></div></div></div>';
+      }).join('') : '<p class="text-xs text-slate-500">Tiada data.</p>';
+    }
+
+    var cap = document.getElementById('sport-capacity-list');
+    if (cap) {
+      cap.innerHTML = (d.sports || []).map(function (sp) {
+        var color = sp.percent >= 100 ? 'bg-red-500' : (sp.percent >= 85 ? 'bg-yellow-500' : 'bg-motorsport-accentCyan');
+        return '<div class="flex flex-col gap-1.5">' +
+          '<div class="flex justify-between items-center text-[11px]">' +
+            '<span class="font-bold text-slate-700 dark:text-gray-200 uppercase tracking-wide">' + adminApp.esc(sp.name) +
+              (sp.active ? '' : ' <span class="text-slate-400 font-normal">(tidak aktif)</span>') + '</span>' +
+            '<span class="font-mono text-slate-500">' + sp.filled + (sp.capacity > 0 ? '/' + sp.capacity : '') + '</span></div>' +
+          '<div class="telemetry-bar-container"><div class="telemetry-bar ' + color + '" style="width:' +
+            Math.min(100, sp.percent) + '%"></div></div></div>';
+      }).join('') || '<p class="text-xs text-slate-500">Tiada sukan.</p>';
+    }
+  },
+
+  /* ---------------- Peserta ---------------- */
+  buildContingentFilter: function (facets) {
+    var sel = document.getElementById('filter-contingent');
+    if (!sel || !facets) return;
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">Semua Kontinjen</option>' +
+      (facets.contingents || []).map(function (c) {
+        return '<option value="' + adminApp.esc(c) + '">' + adminApp.esc(c) + '</option>';
+      }).join('');
+    sel.value = cur;
+  },
+
+  filteredParticipants: function () {
+    var q = (document.getElementById('search-participant') || {}).value || '';
+    var cont = (document.getElementById('filter-contingent') || {}).value || '';
+    q = q.trim().toLowerCase();
+    return adminApp.data.participants.filter(function (r) {
+      if (cont && r.contingent !== cont) return false;
+      if (!q) return true;
+      return (r.regNo + ' ' + r.staffId + ' ' + r.name + ' ' + r.contingent + ' ' +
+              r.department + ' ' + r.email).toLowerCase().indexOf(q) !== -1;
+    });
+  },
+
+  renderParticipants: function () {
+    var tb = document.getElementById('participant-table-body');
+    if (!tb) return;
+    var rows = adminApp.filteredParticipants();
+    var names = adminApp.nameMaps();
+
+    if (!rows.length) {
+      tb.innerHTML = '<tr><td colspan="9" class="text-center py-10 text-xs text-slate-500">Tiada rekod sepadan.</td></tr>';
+      return;
+    }
+
+    // Penapisan berlaku ke atas SEMUA rekod; hanya paparan dipendekkan supaya
+    // DOM kekal pantas. Nota di bawah jadual memberitahu pengguna dengan jelas.
+    var shown = rows.slice(0, 300);
+    var truncated = rows.length > shown.length;
+
+    tb.innerHTML = shown.map(function (r) {
+      var st = String(r.status || '').toLowerCase();
+      var badge = st === 'cancelled'
+        ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400'
+        : (st === 'pending' ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400'
+                            : 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400');
+      var events = [r.sport1, r.sport2].filter(Boolean)
+        .map(function (id) { return names.sport[id] || id; }).join(', ');
+      var ini = adminApp.initials(r.name);
+
+      return '<tr class="border-b border-[var(--glass-border)] hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">' +
+        '<td class="px-5 py-3">' + (r.photoUrl
+            ? '<img src="' + adminApp.esc(r.photoUrl) + '" alt="" loading="lazy" class="w-9 h-9 rounded-full object-cover bg-slate-200" onerror="this.outerHTML=\'<div class=&quot;w-9 h-9 rounded-full bg-gradient-to-tr from-motorsport-accent to-orange-500 flex items-center justify-center text-white text-[10px] font-bold&quot;>' + adminApp.esc(ini) + '</div>\'">'
+            : '<div class="w-9 h-9 rounded-full bg-gradient-to-tr from-motorsport-accent to-orange-500 flex items-center justify-center text-white text-[10px] font-bold">' + adminApp.esc(ini) + '</div>') + '</td>' +
+        '<td class="px-5 py-3 font-mono text-xs text-motorsport-accentCyan font-bold">' + adminApp.esc(r.regNo) + '</td>' +
+        '<td class="px-5 py-3 font-mono text-xs">' + adminApp.esc(r.staffId) + '</td>' +
+        '<td class="px-5 py-3"><span class="font-bold text-xs">' + adminApp.esc(r.name) + '</span><br>' +
+          '<span class="text-[10px] text-slate-500">' + adminApp.esc(r.department) + '</span></td>' +
+        '<td class="px-5 py-3 text-xs">' + adminApp.esc(r.contingent) + '</td>' +
+        '<td class="px-5 py-3 text-xs">' + adminApp.esc(events || '—') + '</td>' +
+        '<td class="px-5 py-3 text-[10px] font-mono">' + adminApp.esc(r.gender || '—') + '</td>' +
+        '<td class="px-5 py-3"><span class="px-2 py-1 rounded text-[10px] font-bold uppercase ' + badge + '">' + adminApp.esc(r.status) + '</span></td>' +
+        '<td class="px-5 py-3 text-right"><button onclick="adminApp.viewParticipant(\'' + adminApp.esc(r.regNo) + '\')" ' +
+          'class="btn-sport px-3 py-1.5 rounded-lg text-[10px]">Lihat</button></td>' +
+      '</tr>';
+    }).join('') + (truncated
+      ? '<tr><td colspan="9" class="text-center py-4 text-[10px] text-slate-500">Memaparkan 300 pertama daripada ' +
+        rows.length + ' rekod yang sepadan. Gunakan carian atau penapis untuk menyempitkan, atau eksport CSV untuk senarai penuh.</td></tr>'
+      : '');
+  },
+
+  nameMaps: function () {
+    var sport = {}, cat = {};
+    ((adminApp.data.dashboard && adminApp.data.dashboard.sports) || []).forEach(function (s) {
+      sport[s.id] = s.name;
+      (s.categories || []).forEach(function (c) { cat[c.id] = c.name; });
+    });
+    return { sport: sport, cat: cat };
+  },
+
+  viewParticipant: async function (regNo) {
+    adminApp.openModal('modal-participant');
+    var body = document.getElementById('participant-detail-body');
+    body.innerHTML = '<p class="text-xs text-slate-500">Memuatkan...</p>';
+    try {
+      var d = await API.call({ action: 'lookupQrAdmin', regNo: regNo }, 2);
+      if (d.status !== 'success') { body.innerHTML = '<p class="text-xs text-red-500">' + adminApp.esc(d.message) + '</p>'; return; }
+      adminApp.current = d.registration;
+      body.innerHTML = adminApp.participantDetailHtml(d);
+      adminApp.icons();
+    } catch (e) {
+      body.innerHTML = '<p class="text-xs text-red-500">Sambungan gagal.</p>';
+    }
+  },
+
+  participantDetailHtml: function (d) {
+    var r = d.registration;
+    var row = function (k, v) {
+      return '<div class="flex justify-between items-start gap-4 py-2 border-b border-[var(--glass-border)]">' +
+        '<span class="text-[10px] text-slate-500 uppercase tracking-wider flex-shrink-0">' + adminApp.esc(k) + '</span>' +
+        '<span class="text-xs font-medium text-right break-words">' + adminApp.esc(v || '—') + '</span></div>';
+    };
+    var st = String(r.status || '').toLowerCase();
+
+    return '<div class="flex items-center gap-4 pb-3">' +
+        (r.photoUrl ? '<img src="' + adminApp.esc(r.photoUrl) + '" alt="" class="w-16 h-16 rounded-xl object-cover border border-[var(--glass-border)]">' : '') +
+        '<div><h4 class="font-bold text-base leading-tight">' + adminApp.esc(r.name) + '</h4>' +
+        '<p class="font-mono text-xs text-motorsport-accentCyan font-bold mt-1">' + adminApp.esc(r.regNo) + '</p></div></div>' +
+      row('Staff ID', r.staffId) + row('Kontinjen', r.contingent) + row('Jabatan', r.department) +
+      row('Jawatan', r.position) + row('Jantina', r.gender) + row('Status', r.status) +
+      row('Didaftar', adminApp.fmtDate(r.timestamp)) +
+      row('Telefon', r.phone) + row('Emel', r.email) +
+      row('Waris', r.emergencyName) + row('Telefon Waris', r.emergencyPhone) +
+      '<p class="text-[10px] text-slate-500 uppercase tracking-wider mt-3 mb-1 font-bold">Acara</p>' +
+      (d.sportNames || []).map(function (x) { return row(x.sport, x.category); }).join('') +
+      '<p class="text-[10px] text-slate-500 uppercase tracking-wider mt-3 mb-1 font-bold">Perakuan</p>' +
+      row('Maklumat benar', r.declarations.accurate ? 'Ya' : 'Tidak') +
+      row('Sihat & berkeupayaan', r.declarations.fit ? 'Ya' : 'Tidak') +
+      row('Patuh peraturan', r.declarations.rules ? 'Ya' : 'Tidak') +
+      row('Ditandatangani', adminApp.fmtDate(r.declarations.at)) +
+      (d.checkins && d.checkins.length
+        ? '<p class="text-[10px] text-slate-500 uppercase tracking-wider mt-3 mb-1 font-bold">Check-In</p>' +
+          d.checkins.map(function (c) { return row(adminApp.fmtDate(c.at), (c.location || '—') + ' · ' + c.by); }).join('')
+        : '') +
+      (adminApp._canEdit
+        ? '<div class="flex flex-wrap gap-2 pt-4 mt-2 border-t border-[var(--glass-border)]">' +
+            '<button onclick="adminApp.editParticipant()" class="btn-sport cyan px-4 py-2 rounded-lg text-[10px]">Pinda Maklumat</button>' +
+            (st !== 'cancelled' ? '<button onclick="adminApp.updateStatus(\'' + adminApp.esc(r.regNo) + '\')" class="btn-sport px-4 py-2 rounded-lg text-[10px]">Batalkan</button>' : '') +
+            (adminApp._isSuper ? '<button onclick="adminApp.deleteParticipant(\'' + adminApp.esc(r.regNo) + '\')" class="btn-sport primary px-4 py-2 rounded-lg text-[10px]">Padam Kekal</button>' : '') +
+          '</div>'
+        : '');
+  },
+
+  editParticipant: function () {
+    var r = adminApp.current;
+    if (!r) return;
+    var body = document.getElementById('participant-detail-body');
+    var fld = function (id, label, val, type) {
+      return '<div><label class="block text-xs uppercase font-bold mb-1">' + label + '</label>' +
+        '<input type="' + (type || 'text') + '" id="' + id + '" class="neo-input text-xs" value="' + adminApp.esc(val || '') + '"></div>';
+    };
+    body.innerHTML =
+      '<div class="rounded-xl border border-yellow-300 dark:border-yellow-500/30 bg-yellow-50 dark:bg-yellow-500/10 text-yellow-800 dark:text-yellow-300 px-4 py-3 text-[11px] mb-2">' +
+        'Setiap pindaan direkodkan dalam log audit bersama nama anda.</div>' +
+      '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+        fld('ep-phone', 'Telefon', r.phone, 'tel') +
+        fld('ep-email', 'Emel', r.email, 'email') +
+        fld('ep-emgname', 'Nama Waris', r.emergencyName) +
+        fld('ep-emgphone', 'Telefon Waris', r.emergencyPhone, 'tel') +
+        fld('ep-contingent', 'Kontinjen', r.contingent) +
+        '<div><label class="block text-xs uppercase font-bold mb-1">Status</label>' +
+          '<select id="ep-status" class="neo-input text-xs">' +
+          ['Registered', 'Pending', 'Cancelled'].map(function (x) {
+            return '<option' + (x === r.status ? ' selected' : '') + '>' + x + '</option>'; }).join('') +
+          '</select></div>' +
+      '</div>' +
+      '<div class="mt-3"><label class="block text-xs uppercase font-bold mb-1">Sebab Pindaan (untuk audit)</label>' +
+        '<input type="text" id="ep-reason" class="neo-input text-xs" placeholder="cth. Permohonan atlet melalui emel 30/08"></div>' +
+      '<div class="flex gap-2 justify-end pt-4 mt-2 border-t border-[var(--glass-border)]">' +
+        '<button onclick="adminApp.viewParticipant(\'' + adminApp.esc(r.regNo) + '\')" class="btn-sport px-4 py-2 rounded-lg text-[10px]">Batal</button>' +
+        '<button onclick="adminApp.saveParticipant()" class="btn-sport primary px-5 py-2 rounded-lg text-[10px]">Simpan Pindaan</button>' +
+      '</div>';
+  },
+
+  saveParticipant: async function () {
+    var r = adminApp.current;
+    try {
+      var d = await API.call({
+        action: 'updateParticipant',
+        data: {
+          regNo: r.regNo,
+          reason: document.getElementById('ep-reason').value.trim(),
+          fields: {
+            Phone: document.getElementById('ep-phone').value.trim(),
+            Email: document.getElementById('ep-email').value.trim(),
+            EmergencyName: document.getElementById('ep-emgname').value.trim(),
+            EmergencyPhone: document.getElementById('ep-emgphone').value.trim(),
+            Contingent: document.getElementById('ep-contingent').value.trim(),
+            Status: document.getElementById('ep-status').value
+          }
+        }
+      }, 1);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') { adminApp.closeModal('modal-participant'); adminApp.refreshData(true); }
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  updateStatus: async function (regNo) {
+    var reason = prompt('Sebab pembatalan (direkodkan dalam audit):');
+    if (reason === null) return;
+    try {
+      var d = await API.call({ action: 'cancelRegistration', data: { regNo: regNo, reason: reason } }, 1);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') { adminApp.closeModal('modal-participant'); adminApp.refreshData(true); }
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  deleteParticipant: async function (regNo) {
+    if (!confirm('PADAM KEKAL pendaftaran ' + regNo + '?\n\nTindakan ini tidak boleh dibatalkan. Pertimbangkan "Batalkan" sebagai ganti.')) return;
+    var reason = prompt('Sebab pemadaman (wajib untuk audit):');
+    if (!reason) { alert('Pemadaman dibatalkan — sebab diperlukan.'); return; }
+    try {
+      var d = await API.call({ action: 'deleteParticipant', data: { regNo: regNo, reason: reason } }, 0);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') { adminApp.closeModal('modal-participant'); adminApp.refreshData(true); }
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  /* ---------------- Staf ---------------- */
+  renderStaff: function () {
+    var tb = document.getElementById('staff-table-body');
+    if (!tb) return;
+    var q = ((document.getElementById('search-staff') || {}).value || '').trim().toLowerCase();
+    var rows = adminApp.data.staff.filter(function (r) {
+      if (!q) return true;
+      return (r.staffId + ' ' + r.name + ' ' + r.department + ' ' + r.contingent).toLowerCase().indexOf(q) !== -1;
+    });
+
+    if (!rows.length) {
+      tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 text-xs text-slate-500">Tiada rekod staf.</td></tr>';
+      return;
+    }
+    tb.innerHTML = rows.slice(0, 400).map(function (r) {
+      return '<tr class="border-b border-[var(--glass-border)] hover:bg-slate-50 dark:hover:bg-white/5">' +
+        '<td class="px-5 py-3 font-mono text-xs font-bold">' + adminApp.esc(r.staffId) + '</td>' +
+        '<td class="px-5 py-3 text-xs font-bold">' + adminApp.esc(r.name) + '</td>' +
+        '<td class="px-5 py-3 text-xs">' + adminApp.esc(r.department) + '</td>' +
+        '<td class="px-5 py-3 text-xs">' + adminApp.esc(r.contingent) + '</td>' +
+        '<td class="px-5 py-3 text-[10px] font-mono">' + adminApp.esc(r.gender || '—') + '</td>' +
+        '<td class="px-5 py-3 text-[10px] font-mono text-slate-500">' + adminApp.esc(r.phone || '—') + '</td>' +
+        '<td class="px-5 py-3 text-right">' +
+          (adminApp._canEdit
+            ? '<button onclick="adminApp.openStaffModal(\'' + adminApp.esc(r.staffId) + '\')" class="btn-sport px-3 py-1.5 rounded-lg text-[10px]">Edit</button>'
+            : '') + '</td></tr>';
+    }).join('') + (rows.length > 400
+      ? '<tr><td colspan="7" class="text-center py-4 text-[10px] text-slate-500">Memaparkan 400 pertama daripada ' + rows.length + '. Gunakan carian untuk menapis.</td></tr>'
+      : '');
+  },
+
+  openStaffModal: function (staffId) {
+    var r = staffId ? adminApp.data.staff.filter(function (x) { return x.staffId === staffId; })[0] : null;
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.value = v; };
+    document.getElementById('modal-staff-title').textContent = r ? 'Kemas Kini Staf' : 'Tambah Staf Baru';
+    set('staff-edit-mode', r ? 'edit' : 'add');
+    set('staff-id-field', r ? r.staffId : '');
+    set('staff-name-field', r ? r.name : '');
+    set('staff-dept-field', r ? r.department : '');
+    set('staff-pos-field', r ? r.position : '');
+    set('staff-cont-field', r ? r.contingent : '');
+    set('staff-email-field', r ? r.email : '');
+    set('staff-phone-field', r ? r.phone : '');
+    set('staff-gender-field', r ? (r.gender || '') : '');
+    var idf = document.getElementById('staff-id-field');
+    if (idf) idf.readOnly = !!r;
+    adminApp.openModal('modal-staff');
+  },
+
+  saveStaff: async function () {
+    var v = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+    if (!v('staff-id-field') || !v('staff-name-field')) { alert('Staff ID dan nama diperlukan.'); return; }
+    try {
+      var d = await API.call({
+        action: 'saveStaff',
+        data: {
+          staffId: v('staff-id-field'), name: v('staff-name-field'),
+          department: v('staff-dept-field'), position: v('staff-pos-field'),
+          contingent: v('staff-cont-field'), gender: v('staff-gender-field'),
+          email: v('staff-email-field'), phone: v('staff-phone-field')
+        }
+      }, 1);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') { adminApp.closeModal('modal-staff'); adminApp.refreshData(true); }
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  deleteStaff: async function (staffId) {
+    var id = staffId || (document.getElementById('staff-id-field') || {}).value;
+    if (!id) return;
+    if (!confirm('Padam rekod staf ' + id + '?')) return;
+    try {
+      var d = await API.call({ action: 'deleteStaff', data: { staffId: id } }, 0);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') { adminApp.closeModal('modal-staff'); adminApp.refreshData(true); }
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  /* ---------------- Sukan & kategori ---------------- */
+  renderSportsAdmin: function (sports) {
+    var w = document.getElementById('manage-sports-list');
+    if (!w) return;
+    var canEdit = adminApp._canEdit, isSuper = adminApp._isSuper;
+
+    w.innerHTML = sports.map(function (s) {
+      return '<div class="glass-card p-5 flex flex-col gap-4">' +
+        '<div class="flex items-start justify-between gap-3 flex-wrap">' +
+          '<div class="min-w-0">' +
+            '<h4 class="font-sport font-bold text-lg uppercase text-slate-900 dark:text-white">' + adminApp.esc(s.name) + '</h4>' +
+            '<p class="text-[10px] font-mono text-slate-500 mt-0.5">' + adminApp.esc(s.id) + ' • ' + s.filled +
+              (s.capacity > 0 ? ' / ' + s.capacity : '') + ' peserta</p>' +
+          '</div>' +
+          '<div class="flex items-center gap-2">' +
+            '<span class="px-2 py-1 rounded text-[10px] font-bold uppercase ' +
+              (s.active ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
+                        : 'bg-slate-100 dark:bg-white/5 text-slate-500') + '">' + (s.active ? 'Aktif' : 'Tidak Aktif') + '</span>' +
+            (canEdit ? '<button onclick="adminApp.toggleSport(\'' + adminApp.esc(s.id) + '\')" class="btn-sport px-3 py-1.5 rounded-lg text-[10px]">' +
+              (s.active ? 'Nyahaktif' : 'Aktifkan') + '</button>' +
+              '<button onclick="adminApp.openSportModal(\'' + adminApp.esc(s.id) + '\')" class="btn-sport cyan px-3 py-1.5 rounded-lg text-[10px]">Edit</button>' +
+              '<button onclick="adminApp.openAddCategoryModal(\'' + adminApp.esc(s.id) + '\')" class="btn-sport px-3 py-1.5 rounded-lg text-[10px]">+ Kategori</button>' : '') +
+            (isSuper ? '<button onclick="adminApp.deleteSport(\'' + adminApp.esc(s.id) + '\')" class="btn-sport primary px-3 py-1.5 rounded-lg text-[10px]">Padam</button>' : '') +
+          '</div></div>' +
+        '<div class="overflow-x-auto"><table class="w-full text-xs min-w-[420px]">' +
+          '<thead><tr class="text-[10px] uppercase tracking-wider text-slate-500 border-b border-[var(--glass-border)]">' +
+            '<th class="text-left py-2">Kategori</th><th class="text-left py-2">Jantina</th>' +
+            '<th class="text-left py-2">Isi</th><th class="text-left py-2">Kapasiti</th>' +
+            '<th class="text-left py-2">Status</th>' + (canEdit ? '<th></th>' : '') + '</tr></thead><tbody>' +
+          ((s.categories || []).map(function (c) {
+            return '<tr class="border-b border-[var(--glass-border)]">' +
+              '<td class="py-2 font-bold">' + adminApp.esc(c.name) + '</td>' +
+              '<td class="py-2 font-mono text-[10px]">' + adminApp.esc(c.gender) + '</td>' +
+              '<td class="py-2 font-mono">' + c.filled + '</td>' +
+              '<td class="py-2 font-mono">' + (c.capacity || '∞') + '</td>' +
+              '<td class="py-2"><span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase ' +
+                (c.active ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400'
+                          : 'bg-slate-100 dark:bg-white/5 text-slate-500') + '">' + (c.active ? 'Aktif' : 'Tutup') + '</span></td>' +
+              (canEdit ? '<td class="py-2 text-right"><button onclick="adminApp.openAddCategoryModal(\'' + adminApp.esc(s.id) + '\',\'' + adminApp.esc(c.id) + '\')" class="btn-sport px-2.5 py-1 rounded text-[10px]">Edit</button>' +
+                (isSuper ? ' <button onclick="adminApp.deleteCategory(\'' + adminApp.esc(c.id) + '\')" class="btn-sport px-2.5 py-1 rounded text-[10px] text-red-500">×</button>' : '') +
+                '</td>' : '') +
+            '</tr>';
+          }).join('') || '<tr><td colspan="6" class="py-3 text-slate-500">Tiada kategori.</td></tr>') +
+        '</tbody></table></div></div>';
+    }).join('') || '<p class="text-xs text-slate-500">Tiada sukan dikonfigurasi.</p>';
+  },
+
+  slug: function (s) {
+    return String(s || '').toLowerCase().trim()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 20);
+  },
+
+  openSportModal: function (sportId) {
+    var s = sportId ? ((adminApp.data.dashboard.sports || []).filter(function (x) { return x.id === sportId; })[0]) : null;
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.value = v; };
+    document.getElementById('modal-sport-title').textContent = s ? 'Kemas Kini Sukan' : 'Tambah Sukan Baru';
+    set('sport-id-input', s ? s.id : '');
+    set('sport-name-input', s ? s.name : '');
+    set('sport-desc-input', s ? (s.description || '') : '');
+    set('sport-cap-input', s ? s.capacity : '');
+    set('sport-status-input', s ? String(!!s.active) : 'true');
+    var catsInput = document.getElementById('sport-cats-input');
+    if (catsInput) catsInput.value = '';
+    var wrap = document.getElementById('sport-categories-wrapper');
+    if (wrap) wrap.style.display = s ? 'none' : '';   // kategori diurus berasingan selepas sukan wujud
+    adminApp.openModal('modal-sport');
+  },
+
+  saveSport: async function () {
+    var v = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+    var name = v('sport-name-input');
+    if (!name) { alert('Nama sukan diperlukan.'); return; }
+    var id = v('sport-id-input') || adminApp.slug(name);
+
+    try {
+      var d = await API.call({
+        action: 'saveSport',
+        data: {
+          sportId: id, name: name, description: v('sport-desc-input'),
+          capacity: v('sport-cap-input') || 0,
+          active: v('sport-status-input') !== 'false'
+        }
+      }, 1);
+      if (d.status !== 'success') { alert(d.message); return; }
+
+      // Kategori pantas untuk sukan baharu (satu per baris: Nama | kapasiti | M/F/ANY)
+      var raw = (document.getElementById('sport-cats-input') || {}).value || '';
+      var lines = raw.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+      for (var i = 0; i < lines.length; i++) {
+        var parts = lines[i].split('|').map(function (x) { return x.trim(); });
+        await API.call({
+          action: 'saveCategory',
+          data: {
+            categoryId: id + '-' + adminApp.slug(parts[0]),
+            sportId: id, name: parts[0],
+            capacity: parts[1] || 30,
+            gender: (parts[2] || 'ANY').toUpperCase(),
+            eligibility: 'Terbuka', maxTeams: 0, active: true
+          }
+        }, 1);
+      }
+      alert(d.message || 'Selesai.');
+      adminApp.closeModal('modal-sport');
+      adminApp.refreshData(true);
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  toggleSport: async function (sportId) {
+    var s = (adminApp.data.dashboard.sports || []).filter(function (x) { return x.id === sportId; })[0];
+    if (!s) return;
+    try {
+      var d = await API.call({
+        action: 'saveSport',
+        data: { sportId: s.id, name: s.name, description: s.description, capacity: s.capacity, active: !s.active }
+      }, 1);
+      if (d.status !== 'success') alert(d.message);
+      adminApp.refreshData(true);
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  deleteSport: async function (sportId) {
+    if (!confirm('Padam sukan "' + sportId + '" dan semua kategorinya?')) return;
+    try {
+      var d = await API.call({ action: 'deleteSport', data: { sportId: sportId } }, 0);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') adminApp.refreshData(true);
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  openAddCategoryModal: function (sportId, catId) {
+    var cat = null;
+    if (catId) {
+      ((adminApp.data.dashboard.sports || []).filter(function (s) { return s.id === sportId; })[0] || { categories: [] })
+        .categories.forEach(function (c) { if (c.id === catId) cat = c; });
+    }
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.value = v; };
+    set('cat-sport-id', sportId);
+    set('cat-id-input', cat ? cat.id : '');
+    set('cat-name-input', cat ? cat.name : '');
+    set('cat-cap-input', cat ? cat.capacity : 30);
+    set('cat-gender-input', cat ? cat.gender : 'ANY');
+    adminApp.openModal('modal-category');
+  },
+
+  saveCategory: async function () {
+    var v = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+    var sportId = v('cat-sport-id'), name = v('cat-name-input');
+    if (!sportId || !name) { alert('Sukan dan nama kategori diperlukan.'); return; }
+    var id = v('cat-id-input') || (sportId + '-' + adminApp.slug(name));
+    try {
+      var d = await API.call({
+        action: 'saveCategory',
+        data: {
+          categoryId: id, sportId: sportId, name: name,
+          gender: v('cat-gender-input') || 'ANY', eligibility: 'Terbuka',
+          capacity: v('cat-cap-input') || 0, maxTeams: 0, active: true
+        }
+      }, 1);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') { adminApp.closeModal('modal-category'); adminApp.refreshData(true); }
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  deleteCategory: async function (catId) {
+    if (!confirm('Padam kategori ini?')) return;
+    try {
+      var d = await API.call({ action: 'deleteCategory', data: { categoryId: catId } }, 0);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') adminApp.refreshData(true);
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  /* ---------------- Muat naik data induk (dua langkah) ---------------- */
+  downloadCSVTemplate: function () {
+    adminApp.downloadCSV('CSC2026_Templat_Senarai_Induk',
+      [{ StaffID: 'CBP0001', Name: 'Ahmad Faizal bin Rahman', Department: 'Jabatan IT',
+         Position: 'Jurutera Kanan', Contingent: 'Kontinjen Alpha', Gender: 'M',
+         Email: 'faizal@cbp.com.my', Phone: '012-3456789' }],
+      ['StaffID', 'Name', 'Department', 'Position', 'Contingent', 'Gender', 'Email', 'Phone']);
+  },
+
+  handleCSVUpload: async function (ev) {
+    var file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    var panel = document.getElementById('upload-validation');
+    var report = document.getElementById('upload-report');
+    panel.classList.remove('hide');
+    panel.classList.add('flex');
+    report.innerHTML = '<p class="text-xs text-slate-500">Membaca fail...</p>';
+
+    try {
+      var rows = await adminApp.readUploadFile(file);
+      if (!rows.length) { report.innerHTML = '<p class="text-xs text-red-500">Tiada data dijumpai dalam fail.</p>'; return; }
+
+      report.innerHTML = '<p class="text-xs text-slate-500">Mengesahkan ' + rows.length + ' baris...</p>';
+      var d = await API.call({ action: 'validateStaffUpload', data: { rows: rows } }, 1);
+      if (d.status !== 'success') { report.innerHTML = '<p class="text-xs text-red-500">' + adminApp.esc(d.message) + '</p>'; return; }
+
+      adminApp.uploadToken = d.uploadToken;
+      adminApp.uploadErrors = d.errors || [];
+      var btn = document.getElementById('btn-commit-upload');
+      if (btn) btn.disabled = d.summary.validRows === 0;
+      report.innerHTML = adminApp.uploadReportHtml(d);
+      adminApp.icons();
+    } catch (e) {
+      report.innerHTML = '<p class="text-xs text-red-500">' + adminApp.esc(e.message || 'Gagal membaca fail.') + '</p>';
+    } finally {
+      ev.target.value = '';
+    }
+  },
+
+  uploadReportHtml: function (d) {
+    var s = d.summary;
+    var stat = function (label, val, color) {
+      return '<div class="glass-card p-4 text-center"><p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">' +
+        label + '</p><h3 class="font-sport text-2xl font-bold ' + (color || '') + '">' + val + '</h3></div>';
+    };
+    return '<div class="flex items-center justify-between border-b border-[var(--glass-border)] pb-3 mb-4">' +
+        '<h4 class="font-bold font-sport text-xl flex items-center gap-2 ' + (s.errorRows ? 'text-yellow-500' : 'text-green-500') + '">' +
+          '<i data-lucide="' + (s.errorRows ? 'alert-triangle' : 'check-circle') + '"></i> ' +
+          (s.errorRows ? 'Fail Ada Ralat' : 'Fail Disahkan') + '</h4>' +
+        '<span class="text-xs font-mono text-slate-500 font-bold">' + s.validRows + ' rekod sedia dimuat naik</span></div>' +
+      '<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">' +
+        stat('Jumlah Baris', s.totalRows) +
+        stat('Sah', s.validRows, 'text-green-500') +
+        stat('Ralat', s.errorRows, 'text-red-500') +
+        stat('Kemas Kini', s.updateRecords, 'text-yellow-500') +
+      '</div>' +
+      (d.errors && d.errors.length
+        ? '<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-2">Baris Bermasalah</p>' +
+          '<div class="max-h-56 overflow-y-auto border border-[var(--glass-border)] rounded-lg">' +
+          '<table class="w-full text-[11px]"><thead class="bg-slate-50 dark:bg-black/20 sticky top-0">' +
+          '<tr class="text-[9px] uppercase tracking-wider text-slate-500"><th class="text-left px-3 py-2">Baris</th>' +
+          '<th class="text-left px-3 py-2">Staff ID</th><th class="text-left px-3 py-2">Nama</th>' +
+          '<th class="text-left px-3 py-2">Masalah</th></tr></thead><tbody>' +
+          d.errors.map(function (e) {
+            return '<tr class="border-t border-[var(--glass-border)]"><td class="px-3 py-1.5 font-mono">' + e.line + '</td>' +
+              '<td class="px-3 py-1.5 font-mono">' + adminApp.esc(e.staffId || '—') + '</td>' +
+              '<td class="px-3 py-1.5">' + adminApp.esc(e.name || '—') + '</td>' +
+              '<td class="px-3 py-1.5 text-red-500">' + adminApp.esc(e.issues.join('; ')) + '</td></tr>';
+          }).join('') + '</tbody></table></div>' +
+          '<button onclick="adminApp.exportUploadErrors()" class="btn-sport px-4 py-2 rounded-lg text-[10px] mt-3">Muat Turun Laporan Ralat</button>'
+        : '<div class="rounded-xl border border-green-300 dark:border-green-500/30 bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 px-4 py-3 text-xs">Semua baris lulus pengesahan.</div>') +
+      (d.warnings && d.warnings.length
+        ? '<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold mt-4 mb-1">Akan Dikemas Kini (' + d.warnings.length + ')</p>' +
+          '<p class="text-[10px] font-mono text-slate-500 leading-relaxed">' +
+          d.warnings.slice(0, 40).map(function (w) { return adminApp.esc(w.staffId); }).join(', ') +
+          (d.warnings.length > 40 ? ' …' : '') + '</p>'
+        : '') +
+      '<div class="rounded-xl border border-yellow-300 dark:border-yellow-500/30 bg-yellow-50 dark:bg-yellow-500/10 text-yellow-800 dark:text-yellow-300 px-4 py-3 text-xs mt-4">' +
+        '<b>Tiada apa-apa disimpan lagi.</b> Tekan butang di bawah untuk menulis ke pangkalan data.</div>';
+  },
+
+  exportUploadErrors: function () {
+    adminApp.downloadCSV('CSC2026_Laporan_Ralat_Muat_Naik',
+      (adminApp.uploadErrors || []).map(function (e) {
+        return { Baris: e.line, StaffID: e.staffId, Nama: e.name, Masalah: e.issues.join('; ') };
+      }), ['Baris', 'StaffID', 'Nama', 'Masalah']);
+  },
+
+  confirmCSVUpload: async function () {
+    if (!adminApp.uploadToken) { alert('Sila pilih dan sahkan fail terlebih dahulu.'); return; }
+    var mode = (document.getElementById('upload-mode') || {}).value || 'upsert';
+    var extra = {};
+    if (mode === 'replace') {
+      if (!confirm('MOD GANTI SEMUA akan mengosongkan senarai induk sedia ada sebelum memuat naik.\n\nTeruskan?')) return;
+      extra.confirmReplace = 'GANTI SEMUA';
+    } else if (!confirm('Simpan data ke pangkalan data sekarang?')) return;
+
+    var btn = document.getElementById('btn-commit-upload');
+    adminApp.btnBusy(btn, true, 'Menyimpan...');
+    try {
+      var d = await API.call({
+        action: 'commitStaffUpload',
+        data: Object.assign({ uploadToken: adminApp.uploadToken, mode: mode }, extra)
+      }, 0);
+      if (d.status !== 'success') { alert(d.message); return; }
+      alert(d.message);
+      adminApp.uploadToken = null;
+      document.getElementById('upload-report').innerHTML =
+        '<div class="rounded-xl border border-green-300 dark:border-green-500/30 bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 px-4 py-3 text-xs">' +
+        adminApp.esc(d.message) + '</div>';
+      adminApp.refreshData(true);
+    } catch (e) { alert('Sambungan gagal.'); }
+    finally { adminApp.btnBusy(btn, false, 'Sahkan & Masukkan Ke Database'); }
+  },
+
+  readUploadFile: async function (file) {
+    var name = file.name.toLowerCase();
+    if (name.endsWith('.csv')) return adminApp.rowsToObjects(adminApp.parseCSV(await file.text()));
+
+    if (!window.XLSX) {
+      await new Promise(function (res, rej) {
+        var sc = document.createElement('script');
+        sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+        sc.onload = res;
+        sc.onerror = function () { rej(new Error('Gagal memuat pembaca XLSX. Sila guna format CSV.')); };
+        document.head.appendChild(sc);
+      });
+    }
+    var wb = XLSX.read(await file.arrayBuffer(), { type: 'array' });
+    var rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: '' });
+    return adminApp.rowsToObjects(rows);
+  },
+
+  parseCSV: function (text) {
+    var rows = [], row = [], field = '', inQ = false;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i], nx = text[i + 1];
+      if (inQ) {
+        if (ch === '"' && nx === '"') { field += '"'; i++; }
+        else if (ch === '"') inQ = false;
+        else field += ch;
+      } else {
+        if (ch === '"') inQ = true;
+        else if (ch === ',') { row.push(field); field = ''; }
+        else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+        else if (ch !== '\r') field += ch;
+      }
+    }
+    if (field !== '' || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(function (r) { return r.some(function (c) { return String(c).trim() !== ''; }); });
+  },
+
+  rowsToObjects: function (rows) {
+    if (!rows.length) return [];
+    var alias = {
+      staffid: 'staffId', id: 'staffId', nostaf: 'staffId', nopekerja: 'staffId',
+      name: 'name', nama: 'name', namapenuh: 'name',
+      department: 'department', jabatan: 'department', jabatancawangan: 'department',
+      position: 'position', jawatan: 'position',
+      contingent: 'contingent', kontinjen: 'contingent',
+      gender: 'gender', jantina: 'gender',
+      email: 'email', emel: 'email',
+      phone: 'phone', telefon: 'phone', notelefon: 'phone', notelefonbimbit: 'phone'
+    };
+    var header = rows[0].map(function (h) {
+      return String(h).trim().toLowerCase().replace(/[^a-z]/g, '');
+    });
+    return rows.slice(1).map(function (r) {
+      var o = {};
+      header.forEach(function (h, i) {
+        var k = alias[h];
+        if (k) o[k] = String(r[i] === undefined ? '' : r[i]).trim();
+      });
+      return o;
+    });
+  },
+
+  /* ---------------- Pengumuman ---------------- */
+  loadNews: async function () {
+    try {
+      var res = await fetch(SCRIPT_URL + '?action=initPortal');
+      var d = await res.json();
+      var w = document.getElementById('admin-news-list');
+      if (!w) return;
+      adminApp._news = d.news || [];
+      w.innerHTML = adminApp._news.length ? adminApp._news.map(function (n, i) {
+        return '<div class="glass-card p-4 flex items-start justify-between gap-4">' +
+          '<div class="min-w-0"><p class="text-[10px] font-bold uppercase tracking-wider text-motorsport-accent">' + adminApp.esc(n.date) + '</p>' +
+          '<h4 class="font-bold text-sm mt-0.5">' + adminApp.esc(n.title) + '</h4>' +
+          '<p class="text-[11px] text-slate-500 mt-1 line-clamp-2">' + adminApp.esc(n.shortDesc) + '</p></div>' +
+          (adminApp._canEdit
+            ? '<div class="flex gap-2 flex-shrink-0">' +
+              '<button onclick="adminApp.openNewsModal(' + i + ')" class="btn-sport px-3 py-1.5 rounded-lg text-[10px]">Edit</button>' +
+              '<button onclick="adminApp.deleteNews(\'' + adminApp.esc(n.id) + '\')" class="btn-sport primary px-3 py-1.5 rounded-lg text-[10px]">Padam</button></div>'
+            : '') + '</div>';
+      }).join('') : '<p class="text-xs text-slate-500">Tiada pengumuman.</p>';
+    } catch (e) { }
+  },
+
+  openNewsModal: function (i) {
+    var n = (typeof i === 'number' && adminApp._news) ? adminApp._news[i] : null;
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.value = v; };
+    document.getElementById('modal-news-title').textContent = n ? 'Kemas Kini Berita' : 'Cipta Berita Baru';
+    set('news-id-field', n ? n.id : '');
+    set('news-title-field', n ? n.title : '');
+    set('news-msg-field', n ? (n.longDesc || n.shortDesc) : '');
+    var t = document.getElementById('news-target-field');
+    if (t && n) t.value = n.audience || t.value;
+    var prev = document.getElementById('news-img-preview');
+    var box = document.getElementById('news-img-preview-box');
+    if (prev && n && n.img) { prev.src = n.img; if (box) box.classList.remove('hide'); }
+    else if (box) box.classList.add('hide');
+    adminApp.openModal('modal-news');
+  },
+
+  saveNews: async function () {
+    var v = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+    if (!v('news-title-field')) { alert('Tajuk diperlukan.'); return; }
+
+    var payload = {
+      id: v('news-id-field'), title: v('news-title-field'),
+      message: v('news-msg-field'), audience: v('news-target-field') || 'All'
+    };
+    var f = document.getElementById('news-img-file');
+    if (f && f.files && f.files[0]) {
+      try { payload.imageBase64 = await adminApp.compressImage(f.files[0]); }
+      catch (e) { alert(e.message); return; }
+    }
+    try {
+      var d = await API.call({ action: 'saveAnnouncement', data: payload }, 1);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') { adminApp.closeModal('modal-news'); adminApp.loadNews(); }
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  deleteNews: async function (id) {
+    if (!confirm('Padam pengumuman ini?')) return;
+    try {
+      var d = await API.call({ action: 'deleteAnnouncement', data: { id: id } }, 0);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') adminApp.loadNews();
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  compressImage: function (file) {
+    return new Promise(function (resolve, reject) {
+      if (!/^image\//.test(file.type)) return reject(new Error('Fail bukan imej.'));
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error('Gagal membaca fail.')); };
+      reader.onload = function () {
+        var img = new Image();
+        img.onerror = function () { reject(new Error('Imej rosak.')); };
+        img.onload = function () {
+          var scale = Math.min(1, 1000 / img.width);
+          var c = document.createElement('canvas');
+          c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          var q = 0.8, out = c.toDataURL('image/jpeg', q), g = 0;
+          while (out.length > 500 * 1024 && q > 0.4 && g < 6) { q -= 0.1; g++; out = c.toDataURL('image/jpeg', q); }
+          resolve(out);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  },
+
+  /* ---------------- Laporan ---------------- */
+  switchReportTab: function (tab) {
+    var pt = document.getElementById('report-tab-participants');
+    var st = document.getElementById('report-tab-staff');
+    var bp = document.getElementById('tab-btn-participants');
+    var bs = document.getElementById('tab-btn-staff');
+    var on = 'px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-motorsport-accentCyan text-motorsport-accentCyan';
+    var off = 'px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-500';
+    if (tab === 'staff') {
+      if (pt) pt.classList.add('hide'); if (st) st.classList.remove('hide');
+      if (bp) bp.className = off; if (bs) bs.className = on;
+    } else {
+      if (st) st.classList.add('hide'); if (pt) pt.classList.remove('hide');
+      if (bs) bs.className = off; if (bp) bp.className = on;
+    }
+  },
+
+  renderReports: function () {
+    var names = adminApp.nameMaps();
+    var pt = document.getElementById('report-p-table');
+    if (pt) {
+      pt.innerHTML = adminApp.data.participants.slice(0, 300).map(function (r) {
+        return '<tr class="border-b border-[var(--glass-border)]">' +
+          '<td class="px-4 py-2 font-mono text-[11px]">' + adminApp.esc(r.regNo) + '</td>' +
+          '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.name) + '</td>' +
+          '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.contingent) + '</td>' +
+          '<td class="px-4 py-2 text-xs">' + adminApp.esc([r.sport1, r.sport2].filter(Boolean)
+            .map(function (x) { return names.sport[x] || x; }).join(', ')) + '</td>' +
+          '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.status) + '</td></tr>';
+      }).join('');
+    }
+    var st = document.getElementById('report-s-table');
+    if (st) {
+      st.innerHTML = adminApp.data.staff.slice(0, 300).map(function (r) {
+        return '<tr class="border-b border-[var(--glass-border)]">' +
+          '<td class="px-4 py-2 font-mono text-[11px]">' + adminApp.esc(r.staffId) + '</td>' +
+          '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.name) + '</td>' +
+          '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.department) + '</td>' +
+          '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.contingent) + '</td></tr>';
+      }).join('');
+    }
+  },
+
+  exportParticipantsCSV: async function () {
+    try {
+      var d = await API.call({ action: 'exportParticipants' }, 2);
+      if (d.status !== 'success') { alert(d.message); return; }
+      var names = adminApp.nameMaps();
+      var rows = d.rows.map(function (r) {
+        return {
+          NoPendaftaran: r.regNo, StaffID: r.staffId, Nama: r.name, Kontinjen: r.contingent,
+          Jabatan: r.department, Jawatan: r.position, Jantina: r.gender,
+          Telefon: r.phone, Emel: r.email, NamaWaris: r.emergencyName, TelefonWaris: r.emergencyPhone,
+          Sukan1: names.sport[r.sport1] || r.sport1, Kategori1: names.cat[r.cat1] || r.cat1,
+          Sukan2: names.sport[r.sport2] || r.sport2, Kategori2: names.cat[r.cat2] || r.cat2,
+          Status: r.status, MasaDaftar: r.timestamp, URLGambar: r.photoUrl
+        };
+      });
+      adminApp.downloadCSV('CSC2026_Senarai_Atlet', rows, Object.keys(rows[0] || { Kosong: '' }));
+      alert(d.count + ' rekod dieksport.');
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  exportStaffCSV: function () {
+    var rows = adminApp.data.staff.map(function (r) {
+      return { StaffID: r.staffId, Nama: r.name, Jabatan: r.department, Jawatan: r.position,
+               Kontinjen: r.contingent, Jantina: r.gender, Emel: r.email, Telefon: r.phone };
+    });
+    adminApp.downloadCSV('CSC2026_Senarai_Staf', rows,
+      ['StaffID', 'Nama', 'Jabatan', 'Jawatan', 'Kontinjen', 'Jantina', 'Emel', 'Telefon']);
+  },
+
+  downloadCSV: function (name, rows, cols) {
+    var q = function (v) {
+      var s = String(v === null || v === undefined ? '' : v);
+      // Elak suntikan formula apabila fail dibuka dalam Excel.
+      if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+      return '"' + s.replace(/"/g, '""') + '"';
+    };
+    var csv = '﻿' + cols.map(q).join(',') + '\n' +
+      rows.map(function (r) { return cols.map(function (c) { return q(r[c]); }).join(','); }).join('\n');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    a.download = name + '_' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  },
+
+  /* ---------------- QR / Check-in ---------------- */
+  startScan: async function () {
+    if (!('BarcodeDetector' in window)) {
+      document.getElementById('scan-unsupported').classList.remove('hide');
+      return;
+    }
+    try {
+      adminApp.scanner.detector = new BarcodeDetector({ formats: ['qr_code'] });
+      var stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      adminApp.scanner.stream = stream;
+      var v = document.getElementById('scan-video');
+      v.srcObject = stream; v.classList.remove('hide');
+      await v.play();
+      document.getElementById('btn-scan-start').disabled = true;
+      document.getElementById('btn-scan-stop').disabled = false;
+
+      var tick = async function () {
+        if (!adminApp.scanner.stream) return;
+        try {
+          var codes = await adminApp.scanner.detector.detect(v);
+          if (codes && codes.length) {
+            var raw = codes[0].rawValue || '', token = raw;
+            try { token = new URL(raw).searchParams.get('qr') || raw; } catch (e) { }
+            adminApp.stopScan();
+            document.getElementById('ci-query').value = token;
+            adminApp.lookupCheckIn(token);
+            return;
+          }
+        } catch (e) { }
+        adminApp.scanner.raf = requestAnimationFrame(tick);
+      };
+      tick();
+    } catch (e) {
+      alert('Tidak dapat mengakses kamera: ' + e.message);
+      adminApp.stopScan();
+    }
+  },
+
+  stopScan: function () {
+    if (adminApp.scanner.raf) { cancelAnimationFrame(adminApp.scanner.raf); adminApp.scanner.raf = null; }
+    if (adminApp.scanner.stream) {
+      adminApp.scanner.stream.getTracks().forEach(function (t) { t.stop(); });
+      adminApp.scanner.stream = null;
+    }
+    var v = document.getElementById('scan-video');
+    if (v) { v.srcObject = null; v.classList.add('hide'); }
+    var a = document.getElementById('btn-scan-start'), b = document.getElementById('btn-scan-stop');
+    if (a) a.disabled = false;
+    if (b) b.disabled = true;
+  },
+
+  lookupCheckIn: async function (value) {
+    var q = String(value || (document.getElementById('ci-query') || {}).value || '').trim();
+    var out = document.getElementById('ci-result');
+    if (!q) { out.innerHTML = '<p class="text-xs text-slate-500">Masukkan Staff ID, No. Pendaftaran atau imbas kod QR.</p>'; return; }
+    out.innerHTML = '<p class="text-xs text-slate-500">Mencari...</p>';
+
+    try {
+      var body = { action: 'lookupQrAdmin' };
+      if (/^[A-Z]{2,6}\d*-/i.test(q)) body.regNo = q;
+      else if (q.length >= 20) body.qrToken = q;
+      else body.staffId = q;
+
+      var d = await API.call(body, 2);
+      if (d.status !== 'success') d = await API.call({ action: 'lookupQrAdmin', qrToken: q, regNo: q, staffId: q }, 1);
+      if (d.status !== 'success') {
+        out.innerHTML = '<div class="rounded-xl border border-red-300 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 px-4 py-3 text-xs">' +
+          adminApp.esc(d.message || 'Tidak dijumpai.') + '</div>';
+        return;
+      }
+
+      var r = d.registration;
+      var cancelled = String(r.status).toLowerCase() === 'cancelled';
+      out.innerHTML =
+        '<div class="flex flex-col sm:flex-row items-start gap-5">' +
+          (r.photoUrl ? '<img src="' + adminApp.esc(r.photoUrl) + '" alt="" class="w-20 h-20 rounded-xl object-cover border border-[var(--glass-border)] flex-shrink-0">' : '') +
+          '<div class="flex-1 min-w-0">' +
+            '<h3 class="font-sport font-bold text-2xl uppercase leading-tight">' + adminApp.esc(r.name) + '</h3>' +
+            '<p class="text-xs text-slate-500 mt-0.5">' + adminApp.esc(r.staffId) + ' • ' + adminApp.esc(r.contingent) + '</p>' +
+            '<p class="font-mono text-motorsport-accentCyan font-bold mt-1">' + adminApp.esc(r.regNo) + '</p>' +
+            '<span class="inline-block mt-2 px-2 py-1 rounded text-[10px] font-bold uppercase ' +
+              (cancelled ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400'
+                         : 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400') + '">' + adminApp.esc(r.status) + '</span>' +
+            '<div class="mt-3 flex flex-col gap-1">' +
+              (d.sportNames || []).map(function (x) {
+                return '<p class="text-xs"><span class="font-bold">' + adminApp.esc(x.sport) + '</span> — ' + adminApp.esc(x.category) + '</p>';
+              }).join('') + '</div>' +
+          '</div>' +
+          '<button ' + (cancelled ? 'disabled' : '') + ' onclick="adminApp.doCheckIn(\'' + adminApp.esc(r.regNo) + '\')" ' +
+            'class="btn-sport primary px-5 py-3 rounded-xl text-xs whitespace-nowrap shadow-lg shadow-red-500/20">Rekod Check-In</button>' +
+        '</div>' +
+        (d.checkins && d.checkins.length
+          ? '<div class="mt-5 pt-4 border-t border-[var(--glass-border)]">' +
+            '<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold mb-2">Sejarah Check-In</p>' +
+            d.checkins.map(function (c) {
+              return '<p class="text-[11px] font-mono text-slate-500">' + adminApp.esc(adminApp.fmtDate(c.at)) +
+                ' · ' + adminApp.esc(c.location || '—') + ' · oleh ' + adminApp.esc(c.by) + '</p>';
+            }).join('') + '</div>'
+          : '');
+    } catch (e) {
+      out.innerHTML = '<p class="text-xs text-red-500">Sambungan gagal.</p>';
+    }
+  },
+
+  doCheckIn: async function (regNo) {
+    try {
+      var d = await API.call({ action: 'checkIn',
+        data: { regNo: regNo, location: (document.getElementById('ci-location') || {}).value || '' } }, 1);
+      alert(d.message || 'Selesai.');
+      if (d.status === 'success') adminApp.lookupCheckIn((document.getElementById('ci-query') || {}).value);
+    } catch (e) { alert('Sambungan gagal.'); }
+  },
+
+  /* ---------------- Tetapan ---------------- */
+  fillConfig: function () {
+    var cfg = (adminApp.data.dashboard && adminApp.data.dashboard.config) || {};
+    Object.keys(cfg).forEach(function (k) {
+      var e = document.getElementById('cf-' + k);
+      if (e) e.value = cfg[k];
+    });
+    adminApp.renderLogo(cfg.LOGO_URL || '');
+  },
+
+  saveConfig: async function () {
+    var keys = ['EVENT_NAME', 'EVENT_SHORT', 'REG_OPEN', 'REG_CLOSE', 'MAX_SPORTS', 'PHOTO_MAX_KB',
+                'PORTAL_URL', 'DRIVE_FOLDER_ID', 'SUPPORT_CONTACT', 'REQUIRE_SECOND_FACTOR',
+                'PUBLIC_STATS', 'MAINTENANCE_MODE',
+                'SCOREBOARD_ENABLED', 'SCOREBOARD_PUBLIC', 'SCORE_REQUIRE_VERIFY',
+                'SCORE_POLL_SECONDS'];
+    var cfg = {};
+    keys.forEach(function (k) { var e = document.getElementById('cf-' + k); if (e) cfg[k] = e.value.trim(); });
+
+    var msg = document.getElementById('settings-msg');
+    try {
+      var d = await API.call({ action: 'updateConfig', data: { config: cfg } }, 1);
+      if (msg) {
+        msg.className = 'rounded-xl border px-4 py-3 text-xs font-medium ' + (d.status === 'success'
+          ? 'bg-green-100 dark:bg-green-500/10 border-green-300 dark:border-green-500/30 text-green-700 dark:text-green-400'
+          : 'bg-red-100 dark:bg-red-500/10 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400');
+        msg.textContent = d.message || 'Selesai.';
+        msg.classList.remove('hide');
+      }
+      if (d.status === 'success') adminApp.refreshData(true);
+    } catch (e) {
+      if (msg) { msg.className = 'rounded-xl border px-4 py-3 text-xs bg-red-100 border-red-300 text-red-700'; msg.textContent = 'Sambungan gagal.'; msg.classList.remove('hide'); }
+    }
+  },
+
+  /* ---------------- Log audit ---------------- */
+  loadAudit: async function (page) {
+    adminApp.page.audit = Math.max(1, page || 1);
+    var tb = document.getElementById('audit-table-body');
+    if (!tb) return;
+    tb.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-xs text-slate-500">Memuatkan...</td></tr>';
+    try {
+      var d = await API.call({
+        action: 'auditLog',
+        q: ((document.getElementById('audit-search') || {}).value || '').trim(),
+        page: adminApp.page.audit, pageSize: 50
+      }, 2);
+      if (d.status !== 'success') {
+        tb.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-xs text-slate-500">' + adminApp.esc(d.message || 'Tiada akses.') + '</td></tr>';
+        return;
+      }
+      var p = document.getElementById('audit-page');
+      if (p) p.textContent = 'Halaman ' + d.page + ' / ' + d.totalPages + ' · ' + d.total + ' rekod';
+      tb.innerHTML = d.rows.length ? d.rows.map(function (r) {
+        return '<tr class="border-b border-[var(--glass-border)] hover:bg-slate-50 dark:hover:bg-white/5">' +
+          '<td class="px-5 py-3 font-mono text-[10px] whitespace-nowrap">' + adminApp.esc(adminApp.fmtDate(r.timestamp)) + '</td>' +
+          '<td class="px-5 py-3 text-xs"><b>' + adminApp.esc(r.actor) + '</b><br><span class="text-[10px] text-slate-500">' + adminApp.esc(r.role) + '</span></td>' +
+          '<td class="px-5 py-3"><span class="px-2 py-1 rounded text-[10px] font-bold bg-slate-100 dark:bg-white/5">' + adminApp.esc(r.action) + '</span></td>' +
+          '<td class="px-5 py-3 font-mono text-[10px]">' + adminApp.esc(r.targetType) + '<br>' + adminApp.esc(r.targetId) + '</td>' +
+          '<td class="px-5 py-3 text-[11px] text-slate-500">' + adminApp.esc(r.notes) + '</td></tr>';
+      }).join('') : '<tr><td colspan="5" class="text-center py-10 text-xs text-slate-500">Tiada rekod.</td></tr>';
+    } catch (e) {
+      tb.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-xs text-red-500">Sambungan gagal.</td></tr>';
+    }
+  },
+
+  /* ======================================================================
+     PEMARKAHAN
+     ----------------------------------------------------------------------
+     Panel ini ialah sebab wujudnya langkah "DRAF -> SAH". Markah pertandingan
+     dipertikaikan; sebaik sahaja ia naik ke papan awam, menariknya balik
+     menjadi isu kredibiliti dan bukan sekadar isu data. Jadi juri menghantar,
+     urus setia mengesahkan, dan setiap dua-dua tindakan itu masuk log audit.
+     ====================================================================== */
+
+  scoring: { pending: null, board: null, events: [], contingents: [], rules: [], judges: [] },
+
+  loadScoring: async function () {
+    try {
+      var p = await API.call({ action: 'pendingResults' }, 2);
+      if (p.status === 'success') {
+        adminApp.scoring.pending = p;
+        adminApp.renderPending(p);
+      }
+      var b = await API.call({ action: 'scoreboard' }, 1);
+      if (b.status === 'success') {
+        adminApp.scoring.board = b;
+        adminApp.renderScoringStats(b, p);
+      }
+    } catch (e) { adminApp.status('error'); }
+    adminApp.icons();
+  },
+
+  renderScoringStats: function (b, p) {
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    set('sc-stat-pending', (p && p.pendingCount) || 0);
+    set('sc-stat-verified', (b.totals && b.totals.resultsVerified) || 0);
+    set('sc-stat-events', (b.totals && b.totals.eventsCompleted) || 0);
+    set('sc-stat-version', b.version);
+
+    var badge = document.getElementById('nav-pending-badge');
+    if (badge) {
+      var n = (p && p.pendingCount) || 0;
+      badge.textContent = n;
+      badge.classList.toggle('hide', n === 0);
+    }
+
+    var el = document.getElementById('sc-standings');
+    if (!el) return;
+    var st = b.standings || [];
+    if (!st.length) {
+      el.innerHTML = '<p class="text-xs text-slate-500">Belum ada markah disahkan.</p>';
+      return;
+    }
+    var max = Math.max.apply(null, st.map(function (s) { return s.points; }).concat([1]));
+    el.innerHTML = st.map(function (s) {
+      var pct = Math.max(3, Math.round(s.points / max * 100));
+      return '<div class="flex flex-col gap-1">' +
+        '<div class="flex justify-between text-xs">' +
+          '<span class="flex items-center gap-2"><span class="w-5 font-mono text-[10px] text-slate-400">#' + s.rank + '</span>' +
+          '<span class="w-2.5 h-2.5 rounded-full" style="background:' + adminApp.esc(s.color) + '"></span>' +
+          '<b>' + adminApp.esc(s.name) + '</b></span>' +
+          '<span class="font-mono font-bold">' + s.points + ' <span class="text-slate-400 font-normal">(' +
+            s.gold + '/' + s.silver + '/' + s.bronze + ')</span></span>' +
+        '</div>' +
+        '<div class="h-2 rounded overflow-hidden bg-slate-200 dark:bg-white/5">' +
+          '<div class="h-full" style="width:' + pct + '%;background:' + adminApp.esc(s.color) + '"></div></div>' +
+      '</div>';
+    }).join('');
+  },
+
+  renderPending: function (p) {
+    var el = document.getElementById('pending-groups');
+    if (!el) return;
+    var groups = p.groups || [];
+    if (!groups.length) {
+      el.innerHTML = '<div class="rounded-xl border border-[var(--glass-border)] bg-slate-50 dark:bg-black/20 px-4 py-6 text-center">' +
+        '<p class="text-sm font-bold text-slate-700 dark:text-slate-200">Tiada markah menunggu</p>' +
+        '<p class="text-xs text-slate-500 mt-1">Semua markah yang dihantar juri telah diproses.</p></div>';
+      return;
+    }
+    el.innerHTML = groups.map(function (g) {
+      var rows = g.rows.map(function (r) {
+        return '<tr class="border-t border-[var(--glass-border)]">' +
+          '<td class="p-2.5"><input type="checkbox" class="pending-chk" value="' + adminApp.esc(r.resultId) + '" checked></td>' +
+          '<td class="p-2.5 font-bold">' + (r.placing || '–') + '</td>' +
+          '<td class="p-2.5">' + adminApp.esc(r.participantName) + '</td>' +
+          '<td class="p-2.5">' + adminApp.esc(r.contingent) + '</td>' +
+          '<td class="p-2.5 font-mono">' + adminApp.esc(r.score) + '</td>' +
+          '<td class="p-2.5 font-mono">' + r.points + '</td>' +
+          '<td class="p-2.5 text-slate-500">' + adminApp.esc(r.submittedBy) + '</td>' +
+          '<td class="p-2.5 text-slate-400 text-[10px]">' + adminApp.fmtDate(r.submittedAt) + '</td>' +
+        '</tr>';
+      }).join('');
+
+      return '<div class="rounded-xl border border-[var(--glass-border)] overflow-hidden">' +
+        '<div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 bg-slate-100 dark:bg-white/5">' +
+          '<div><p class="text-sm font-bold">' + adminApp.esc(g.eventName) + '</p>' +
+            '<p class="text-[10px] text-slate-500">' + adminApp.esc(g.sportName) +
+              (g.round ? ' · ' + adminApp.esc(g.round) : '') + (g.venue ? ' · ' + adminApp.esc(g.venue) : '') +
+              ' · ' + g.rows.length + ' baris</p></div>' +
+          '<div class="flex gap-2">' +
+            '<button onclick="adminApp.verifyEvent(\'' + adminApp.esc(g.eventId) + '\')" ' +
+              'class="btn-sport cyan px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1" data-requires-edit>' +
+              '<i data-lucide="check" class="w-3.5 h-3.5"></i> Sahkan Semua</button>' +
+            '<button onclick="adminApp.rejectSelected(this)" ' +
+              'class="btn-sport px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1" data-requires-edit>' +
+              '<i data-lucide="x" class="w-3.5 h-3.5"></i> Tolak Ditanda</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="overflow-x-auto"><table class="w-full text-left text-xs whitespace-nowrap">' +
+          '<thead><tr class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">' +
+            '<th class="p-2.5"></th><th class="p-2.5">#</th><th class="p-2.5">Peserta</th><th class="p-2.5">Kontinjen</th>' +
+            '<th class="p-2.5">Markah</th><th class="p-2.5">Mata</th><th class="p-2.5">Juri</th><th class="p-2.5">Masa</th>' +
+          '</tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '</div>';
+    }).join('');
+    adminApp.applyRole();
+  },
+
+  verifyEvent: async function (eventId) {
+    if (!confirm('Sahkan SEMUA markah untuk acara ini?\n\nMarkah akan terus dipapar di papan markah awam.')) return;
+    var d = await API.call({ action: 'verifyResults', eventId: eventId }, 1);
+    alert(d.message || 'Selesai.');
+    adminApp.loadScoring();
+  },
+
+  rejectSelected: async function (btn) {
+    var box = btn.closest('.rounded-xl');
+    var ids = Array.prototype.slice.call(box.querySelectorAll('.pending-chk:checked'))
+      .map(function (c) { return c.value; });
+    if (!ids.length) { alert('Tiada baris ditanda.'); return; }
+    var reason = prompt('Sebab penolakan (akan direkod dalam log audit):', '');
+    if (reason === null) return;
+    var d = await API.call({ action: 'rejectResults', resultIds: ids, reason: reason }, 1);
+    alert(d.message || 'Selesai.');
+    adminApp.loadScoring();
+  },
+
+  /* ---------------- Acara ---------------- */
+  loadEventsAdmin: async function () {
+    var d = await API.call({ action: 'listEvents' }, 2);
+    if (d.status !== 'success') return;
+    adminApp.scoring.events = d.events || [];
+
+    var sel = document.getElementById('ev-filter-sport');
+    var sports = (adminApp.data.dashboard && adminApp.data.dashboard.sports) || [];
+    if (sel && sel.options.length <= 1) {
+      sel.innerHTML = '<option value="">Semua sukan</option>' + sports.map(function (s) {
+        return '<option value="' + adminApp.esc(s.id) + '">' + adminApp.esc(s.name) + '</option>';
+      }).join('');
+    }
+    adminApp.renderEvents();
+  },
+
+  renderEvents: function () {
+    var tb = document.getElementById('events-table');
+    if (!tb) return;
+    var fs = (document.getElementById('ev-filter-sport') || {}).value || '';
+    var fst = (document.getElementById('ev-filter-status') || {}).value || '';
+    var list = adminApp.scoring.events.filter(function (e) {
+      return (!fs || e.sportId === fs) && (!fst || e.status === fst);
+    });
+
+    if (!list.length) {
+      tb.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-500">Tiada acara. Tambah acara sebelum juri boleh memasukkan markah.</td></tr>';
+      return;
+    }
+    var tone = { SCHEDULED: 'text-slate-500', ONGOING: 'text-yellow-500', COMPLETED: 'text-green-500', CANCELLED: 'text-red-500' };
+    tb.innerHTML = list.map(function (e) {
+      return '<tr class="border-t border-[var(--glass-border)] hover:bg-slate-50 dark:hover:bg-white/5">' +
+        '<td class="p-2.5 font-bold">' + adminApp.esc(e.name) + '</td>' +
+        '<td class="p-2.5">' + adminApp.esc(e.sportName) + '</td>' +
+        '<td class="p-2.5">' + adminApp.esc(e.round) + '</td>' +
+        '<td class="p-2.5">' + adminApp.esc(e.venue) + '</td>' +
+        '<td class="p-2.5 font-mono text-[11px]">' + (e.at ? adminApp.fmtDate(e.at) : '—') + '</td>' +
+        '<td class="p-2.5 font-mono">' +
+          (e.counts.draft ? '<span class="text-yellow-500">' + e.counts.draft + ' draf</span> ' : '') +
+          '<span class="text-green-500">' + e.counts.verified + ' sah</span></td>' +
+        '<td class="p-2.5 font-bold ' + (tone[e.status] || '') + '">' + adminApp.esc(e.status) + '</td>' +
+        '<td class="p-2.5 text-right whitespace-nowrap">' +
+          '<button onclick="adminApp.openEventModal(\'' + adminApp.esc(e.id) + '\')" class="text-motorsport-accentCyan px-2" data-requires-edit>' +
+            '<i data-lucide="edit-2" class="w-4 h-4"></i></button>' +
+          '<button onclick="adminApp.deleteEvent(\'' + adminApp.esc(e.id) + '\')" class="text-red-500 px-2" data-requires-super>' +
+            '<i data-lucide="x" class="w-4 h-4"></i></button>' +
+        '</td></tr>';
+    }).join('');
+    adminApp.icons();
+    adminApp.applyRole();
+  },
+
+  openEventModal: function (id) {
+    var sports = (adminApp.data.dashboard && adminApp.data.dashboard.sports) || [];
+    var sel = document.getElementById('ev-sport');
+    sel.innerHTML = sports.map(function (s) {
+      return '<option value="' + adminApp.esc(s.id) + '">' + adminApp.esc(s.name) + '</option>';
+    }).join('');
+
+    var e = id ? adminApp.scoring.events.find(function (x) { return x.id === id; }) : null;
+    document.getElementById('modal-event-title').textContent = e ? 'Kemas Kini Acara' : 'Tambah Acara';
+    document.getElementById('ev-id').value = e ? e.id : '';
+    document.getElementById('ev-name').value = e ? e.name : '';
+    if (e) sel.value = e.sportId;
+    adminApp.fillEventCategories();
+    if (e) document.getElementById('ev-cat').value = e.categoryId || '';
+    document.getElementById('ev-round').value = e ? e.round : '';
+    document.getElementById('ev-venue').value = e ? e.venue : '';
+    document.getElementById('ev-status').value = e ? e.status : 'SCHEDULED';
+    document.getElementById('ev-notes').value = e ? (e.notes || '') : '';
+    document.getElementById('ev-at').value = e && e.at ? adminApp.toLocalInput(e.at) : '';
+    adminApp.openModal('modal-event');
+  },
+
+  fillEventCategories: function () {
+    var sid = document.getElementById('ev-sport').value;
+    var sports = (adminApp.data.dashboard && adminApp.data.dashboard.sports) || [];
+    var sp = sports.find(function (s) { return s.id === sid; });
+    var cats = (sp && sp.categories) || [];
+    document.getElementById('ev-cat').innerHTML = '<option value="">— Semua kategori —</option>' +
+      cats.map(function (c) {
+        return '<option value="' + adminApp.esc(c.id) + '">' + adminApp.esc(c.name) + '</option>';
+      }).join('');
+  },
+
+  saveEvent: async function () {
+    var at = document.getElementById('ev-at').value;
+    var payload = {
+      action: 'saveEvent',
+      eventId: document.getElementById('ev-id').value,
+      sportId: document.getElementById('ev-sport').value,
+      categoryId: document.getElementById('ev-cat').value,
+      name: document.getElementById('ev-name').value,
+      round: document.getElementById('ev-round').value,
+      venue: document.getElementById('ev-venue').value,
+      at: at ? at + ':00+08:00' : '',
+      status: document.getElementById('ev-status').value,
+      notes: document.getElementById('ev-notes').value
+    };
+    var d = await API.call(payload, 1);
+    if (d.status !== 'success') { alert(d.message || 'Gagal menyimpan.'); return; }
+    adminApp.closeModal('modal-event');
+    adminApp.loadEventsAdmin();
+  },
+
+  deleteEvent: async function (id) {
+    if (!confirm('Padam acara ini?')) return;
+    var d = await API.call({ action: 'deleteEvent', eventId: id }, 1);
+    if (d.code === 'HAS_RESULTS') {
+      if (!confirm('Acara ini sudah ada markah.\n\nPadam acara BERSAMA semua markahnya?')) return;
+      d = await API.call({ action: 'deleteEvent', eventId: id, confirm: 'PADAM MARKAH SEKALI' }, 1);
+    }
+    alert(d.message || 'Selesai.');
+    adminApp.loadEventsAdmin();
+  },
+
+  /* ---------------- Kontinjen ---------------- */
+  loadContingents: async function () {
+    var d = await API.call({ action: 'listContingents' }, 2);
+    if (d.status !== 'success') return;
+    adminApp.scoring.contingents = d.contingents || [];
+
+    var warn = document.getElementById('cont-unregistered');
+    if (warn) {
+      var miss = d.unregistered || [];
+      warn.classList.toggle('hide', miss.length === 0);
+      if (miss.length) {
+        warn.innerHTML = '<b>' + miss.length + ' nama kontinjen dalam data staf belum didaftarkan di sini:</b> ' +
+          miss.map(function (m) { return adminApp.esc(m.name) + ' (' + m.staff + ' staf)'; }).join(', ') +
+          '. Kontinjen yang tidak didaftarkan tetap dipapar di papan markah, tetapi tanpa warna dan nama ringkas yang anda tetapkan.';
+      }
+    }
+    adminApp.renderContingents();
+    adminApp.loadPointsRules();
+  },
+
+  renderContingents: function () {
+    var el = document.getElementById('contingents-list');
+    if (!el) return;
+    var list = adminApp.scoring.contingents;
+    if (!list.length) {
+      el.innerHTML = '<p class="text-xs text-slate-500">Belum ada kontinjen. Tambah kontinjen supaya papan markah boleh mengumpulkan mata.</p>';
+      return;
+    }
+    el.innerHTML = list.map(function (c) {
+      return '<div class="rounded-xl border border-[var(--glass-border)] p-4 flex items-center justify-between gap-3">' +
+        '<div class="flex items-center gap-3 min-w-0">' +
+          '<span class="w-8 h-8 rounded-lg flex-shrink-0" style="background:' + adminApp.esc(c.color || '#94a3b8') + '"></span>' +
+          '<div class="min-w-0"><p class="text-sm font-bold truncate">' + adminApp.esc(c.name) + '</p>' +
+          '<p class="text-[10px] text-slate-500 font-mono">' + adminApp.esc(c.code) + ' · ' + adminApp.esc(c.short) +
+            (c.leader ? ' · ' + adminApp.esc(c.leader) : '') + '</p></div>' +
+        '</div>' +
+        '<div class="flex gap-1 flex-shrink-0">' +
+          '<button onclick="adminApp.openContingentModal(\'' + adminApp.esc(c.code) + '\')" class="text-motorsport-accentCyan px-2" data-requires-edit>' +
+            '<i data-lucide="edit-2" class="w-4 h-4"></i></button>' +
+          '<button onclick="adminApp.deleteContingent(\'' + adminApp.esc(c.code) + '\')" class="text-red-500 px-2" data-requires-super>' +
+            '<i data-lucide="x" class="w-4 h-4"></i></button>' +
+        '</div></div>';
+    }).join('');
+    adminApp.icons();
+    adminApp.applyRole();
+  },
+
+  openContingentModal: function (code) {
+    var c = code ? adminApp.scoring.contingents.find(function (x) { return x.code === code; }) : null;
+    document.getElementById('modal-cont-title').textContent = c ? 'Kemas Kini Kontinjen' : 'Tambah Kontinjen';
+    document.getElementById('cont-code').value = c ? c.code : '';
+    document.getElementById('cont-code').readOnly = !!c;
+    document.getElementById('cont-name').value = c ? c.name : '';
+    document.getElementById('cont-short').value = c ? c.short : '';
+    document.getElementById('cont-color').value = (c && /^#[0-9a-f]{6}$/i.test(c.color)) ? c.color : '#0ea5e9';
+    document.getElementById('cont-leader').value = c ? c.leader : '';
+    document.getElementById('cont-order').value = c ? c.sortOrder : (adminApp.scoring.contingents.length + 1);
+    adminApp.openModal('modal-contingent');
+  },
+
+  saveContingent: async function () {
+    var d = await API.call({
+      action: 'saveContingent',
+      code: document.getElementById('cont-code').value,
+      name: document.getElementById('cont-name').value,
+      short: document.getElementById('cont-short').value,
+      color: document.getElementById('cont-color').value,
+      leader: document.getElementById('cont-leader').value,
+      sortOrder: document.getElementById('cont-order').value
+    }, 1);
+    if (d.status !== 'success') { alert(d.message || 'Gagal menyimpan.'); return; }
+    adminApp.closeModal('modal-contingent');
+    adminApp.loadContingents();
+  },
+
+  deleteContingent: async function (code) {
+    if (!confirm('Padam kontinjen "' + code + '"?\n\nMarkah sedia ada tidak dipadam, tetapi akan dipapar tanpa warna.')) return;
+    var d = await API.call({ action: 'deleteContingent', code: code }, 1);
+    alert(d.message || 'Selesai.');
+    adminApp.loadContingents();
+  },
+
+  /* ---------------- Jadual mata ---------------- */
+  loadPointsRules: async function () {
+    var d = await API.call({ action: 'listPointsRules' }, 2);
+    if (d.status !== 'success') return;
+    adminApp.scoring.rules = d.rules || [];
+
+    var sel = document.getElementById('pr-sport');
+    var sports = (adminApp.data.dashboard && adminApp.data.dashboard.sports) || [];
+    if (sel) {
+      sel.innerHTML = '<option value="*">* (semua sukan)</option>' + sports.map(function (s) {
+        return '<option value="' + adminApp.esc(s.id) + '">' + adminApp.esc(s.name) + '</option>';
+      }).join('');
+    }
+    adminApp.renderPointsRules();
+  },
+
+  renderPointsRules: function () {
+    var tb = document.getElementById('points-table');
+    if (!tb) return;
+    var names = {};
+    ((adminApp.data.dashboard && adminApp.data.dashboard.sports) || []).forEach(function (s) { names[s.id] = s.name; });
+    tb.innerHTML = adminApp.scoring.rules.map(function (r) {
+      return '<tr class="border-t border-[var(--glass-border)]">' +
+        '<td class="p-2.5 font-mono">' + (r.sportId === '*' ? '* (lalai)' : adminApp.esc(names[r.sportId] || r.sportId)) + '</td>' +
+        '<td class="p-2.5">' + r.placing + '</td>' +
+        '<td class="p-2.5 font-bold font-mono">' + r.points + '</td>' +
+        '<td class="p-2.5 text-right"><button onclick="adminApp.deletePointsRule(\'' + adminApp.esc(r.id) + '\')" ' +
+          'class="text-red-500 px-2" data-requires-super><i data-lucide="x" class="w-4 h-4"></i></button></td>' +
+      '</tr>';
+    }).join('') || '<tr><td colspan="4" class="p-6 text-center text-slate-500">Tiada peraturan. Lalai emas 5 / perak 3 / gangsa 1 digunakan.</td></tr>';
+    adminApp.icons();
+    adminApp.applyRole();
+  },
+
+  savePointsRule: async function () {
+    var d = await API.call({
+      action: 'savePointsRule',
+      sportId: document.getElementById('pr-sport').value,
+      placing: document.getElementById('pr-placing').value,
+      points: document.getElementById('pr-points').value
+    }, 1);
+    if (d.status !== 'success') { alert(d.message || 'Gagal.'); return; }
+    document.getElementById('pr-placing').value = '';
+    document.getElementById('pr-points').value = '';
+    adminApp.loadPointsRules();
+  },
+
+  deletePointsRule: async function (id) {
+    if (!confirm('Padam peraturan mata ini?')) return;
+    await API.call({ action: 'deletePointsRule', ruleId: id }, 1);
+    adminApp.loadPointsRules();
+  },
+
+  recalcPoints: async function () {
+    if (!confirm('Kira semula mata untuk SEMUA markah menggunakan jadual terkini?')) return;
+    var d = await API.call({ action: 'recalcPoints' }, 1);
+    alert(d.message || 'Selesai.');
+    adminApp.loadScoring();
+  },
+
+  /* ---------------- Akaun juri ---------------- */
+  loadJudges: async function () {
+    var d = await API.call({ action: 'listJudges' }, 2);
+    if (d.status !== 'success') {
+      var tb0 = document.getElementById('judges-table');
+      if (tb0) tb0.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-500">' +
+        adminApp.esc(d.message || 'Hanya superadmin boleh menguruskan akaun.') + '</td></tr>';
+      return;
+    }
+    adminApp.scoring.judges = d.users || [];
+    adminApp.renderJudges();
+
+    var link = document.getElementById('juri-link');
+    if (link) link.textContent = location.origin + location.pathname.replace(/admin\/.*$/, 'juri/');
+  },
+
+  renderJudges: function () {
+    var tb = document.getElementById('judges-table');
+    if (!tb) return;
+    var names = {};
+    ((adminApp.data.dashboard && adminApp.data.dashboard.sports) || []).forEach(function (s) { names[s.id] = s.name; });
+
+    tb.innerHTML = adminApp.scoring.judges.map(function (u) {
+      var scope = u.role === 'juri'
+        ? (u.scopeSports ? u.scopeSports.split(',').map(function (x) { return names[x] || x; }).join(', ')
+                         : '<span class="text-red-500">tiada sukan</span>')
+        : '<span class="text-slate-400">semua</span>';
+      return '<tr class="border-t border-[var(--glass-border)]">' +
+        '<td class="p-2.5 font-mono font-bold">' + adminApp.esc(u.username) + '</td>' +
+        '<td class="p-2.5">' + adminApp.esc(u.fullName) + '</td>' +
+        '<td class="p-2.5 uppercase font-bold text-[10px]">' + adminApp.esc(u.role) + '</td>' +
+        '<td class="p-2.5">' + scope + '</td>' +
+        '<td class="p-2.5 ' + (u.active ? 'text-green-500' : 'text-slate-400') + '">' + (u.active ? 'Aktif' : 'Tidak aktif') + '</td>' +
+        '<td class="p-2.5 font-mono text-[10px] text-slate-400">' + (u.lastLogin ? adminApp.fmtDate(u.lastLogin) : '—') + '</td>' +
+        '<td class="p-2.5 text-right whitespace-nowrap">' +
+          (u.role === 'superadmin' ? '<span class="text-[10px] text-slate-400 px-2">dilindungi</span>' :
+            '<button onclick="adminApp.openJudgeModal(\'' + adminApp.esc(u.username) + '\')" class="text-motorsport-accentCyan px-2">' +
+              '<i data-lucide="edit-2" class="w-4 h-4"></i></button>' +
+            '<button onclick="adminApp.deleteJudge(\'' + adminApp.esc(u.username) + '\')" class="text-red-500 px-2">' +
+              '<i data-lucide="x" class="w-4 h-4"></i></button>') +
+        '</td></tr>';
+    }).join('') || '<tr><td colspan="7" class="p-6 text-center text-slate-500">Tiada akaun.</td></tr>';
+    adminApp.icons();
+  },
+
+  openJudgeModal: function (username) {
+    var u = username ? adminApp.scoring.judges.find(function (x) { return x.username === username; }) : null;
+    document.getElementById('modal-judge-title').textContent = u ? 'Kemas Kini Akaun' : 'Tambah Akaun';
+    document.getElementById('ju-user').value = u ? u.username : '';
+    document.getElementById('ju-user').readOnly = !!u;
+    document.getElementById('ju-name').value = u ? u.fullName : '';
+    document.getElementById('ju-role').value = u ? u.role : 'juri';
+    document.getElementById('ju-pass').value = '';
+    document.getElementById('ju-active').value = u ? String(!!u.active) : 'true';
+
+    var scope = u && u.scopeSports ? u.scopeSports.split(',') : [];
+    var sports = (adminApp.data.dashboard && adminApp.data.dashboard.sports) || [];
+    document.getElementById('ju-scope-boxes').innerHTML = sports.map(function (s) {
+      var on = scope.indexOf(s.id) !== -1;
+      return '<label class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--glass-border)] text-xs cursor-pointer">' +
+        '<input type="checkbox" class="ju-scope" value="' + adminApp.esc(s.id) + '"' + (on ? ' checked' : '') + '> ' +
+        adminApp.esc(s.name) + '</label>';
+    }).join('');
+    adminApp.toggleJudgeScope();
+    adminApp.openModal('modal-judge');
+  },
+
+  toggleJudgeScope: function () {
+    var role = document.getElementById('ju-role').value;
+    document.getElementById('ju-scope-wrap').classList.toggle('hide', role !== 'juri');
+  },
+
+  saveJudge: async function () {
+    var scope = Array.prototype.slice.call(document.querySelectorAll('.ju-scope:checked'))
+      .map(function (c) { return c.value; }).join(',');
+    var d = await API.call({
+      action: 'saveJudge',
+      username: document.getElementById('ju-user').value,
+      fullName: document.getElementById('ju-name').value,
+      role: document.getElementById('ju-role').value,
+      scopeSports: scope,
+      password: document.getElementById('ju-pass').value,
+      active: document.getElementById('ju-active').value
+    }, 1);
+    if (d.status !== 'success') { alert(d.message || 'Gagal menyimpan.'); return; }
+    adminApp.closeModal('modal-judge');
+    adminApp.loadJudges();
+  },
+
+  deleteJudge: async function (username) {
+    if (!confirm('Padam akaun "' + username + '"?')) return;
+    var d = await API.call({ action: 'deleteJudge', username: username }, 1);
+    alert(d.message || 'Selesai.');
+    adminApp.loadJudges();
+  },
+
+  /* ---------------- Logo organisasi ----------------
+   *
+   * Logo pergi ke folder Drive yang SAMA seperti gambar peserta, dalam
+   * subfolder "Sistem". Ia diubah saiz di pelayar dahulu supaya kita tidak
+   * menghantar fail 8MB melalui Apps Script — muat naik besar ialah punca
+   * paling biasa masa tamat pada endpoint ini.
+   *
+   * PNG dikekalkan sebagai PNG supaya latar telus tidak menjadi kotak putih.
+   * Hanya JPEG yang dimampatkan secara berulang.
+   */
+  logoPending: null,
+
+  handleLogoPick: async function (ev) {
+    var f = ev.target.files && ev.target.files[0];
+    ev.target.value = '';
+    if (!f) return;
+
+    if (f.size > 4 * 1024 * 1024) {
+      adminApp.logoMsg('Fail terlalu besar (maksimum 4MB).', 'error');
+      return;
+    }
+    try {
+      var dataUrl = await adminApp.prepLogo(f);
+      adminApp.logoPending = dataUrl;
+      adminApp.renderLogo(dataUrl, true);
+      document.getElementById('btn-logo-upload').classList.remove('hide');
+      adminApp.logoMsg('Logo sedia untuk dimuat naik. Tekan "Muat Naik Logo" untuk menyimpan.', 'warn');
+    } catch (e) {
+      adminApp.logoMsg(e.message || 'Imej tidak dapat dibaca.', 'error');
+    }
+  },
+
+  prepLogo: function (file) {
+    return new Promise(function (resolve, reject) {
+      if (!/^image\/(png|jpeg|jpg|webp)$/.test(file.type)) {
+        return reject(new Error('Guna fail PNG, JPG atau WEBP.'));
+      }
+      var reader = new FileReader();
+      reader.onerror = function () { reject(new Error('Gagal membaca fail.')); };
+      reader.onload = function () {
+        var img = new Image();
+        img.onerror = function () { reject(new Error('Imej rosak atau format tidak disokong.')); };
+        img.onload = function () {
+          // Nisbah aspek dikekalkan — logo bukan gambar profil, jadi jangan
+          // dipotong segi empat sama seperti gambar atlet.
+          var max = 512;
+          var scale = Math.min(1, max / Math.max(img.width, img.height));
+          var c = document.createElement('canvas');
+          c.width = Math.max(1, Math.round(img.width * scale));
+          c.height = Math.max(1, Math.round(img.height * scale));
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+
+          var isPng = file.type === 'image/png';
+          var out;
+          if (isPng) {
+            out = c.toDataURL('image/png');
+            if (out.length > 700 * 1024) {
+              // PNG terlalu besar untuk saiz ini bermakna ia gambar foto,
+              // bukan logo — JPEG lebih sesuai dan latar telus tidak relevan.
+              out = c.toDataURL('image/jpeg', 0.85);
+            }
+          } else {
+            var q = 0.9; out = c.toDataURL('image/jpeg', q);
+            var guard = 0;
+            while (out.length > 500 * 1024 && q > 0.5 && guard < 6) {
+              q -= 0.1; guard++; out = c.toDataURL('image/jpeg', q);
+            }
+          }
+          resolve(out);
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  },
+
+  renderLogo: function (url, isPreview) {
+    var img = document.getElementById('logo-preview');
+    var empty = document.getElementById('logo-empty');
+    var rm = document.getElementById('btn-logo-remove');
+    if (!img || !empty) return;
+
+    if (url) {
+      img.src = url;
+      img.classList.remove('hide');
+      empty.classList.add('hide');
+    } else {
+      img.classList.add('hide');
+      empty.classList.remove('hide');
+    }
+    if (rm) rm.classList.toggle('hide', !url || isPreview);
+    if (!isPreview) {
+      var up = document.getElementById('btn-logo-upload');
+      if (up) up.classList.add('hide');
+      adminApp.logoPending = null;
+    }
+    adminApp.applyBranding(isPreview ? null : url);
+  },
+
+  /**
+   * Tunjukkan logo di sidebar admin serta-merta, tanpa muat semula halaman.
+   * Jika imej gagal dimuatkan — fail dipadam dari Drive, kebenaran berubah,
+   * rangkaian venue menyekat googleusercontent — kita kembali kepada ikon
+   * lalai. Ikon imej pecah dalam sidebar nampak seperti sistem rosak.
+   */
+  applyBranding: function (url) {
+    if (url === null) return;
+    var slot = document.getElementById('brand-logo-slot');
+    if (!slot) return;
+
+    var fallback = function () {
+      slot.innerHTML = '<i data-lucide="shield-alert" class="text-motorsport-accentCyan w-6 h-6"></i>';
+      adminApp.icons();
+    };
+    if (!url) { fallback(); return; }
+
+    var img = document.createElement('img');
+    img.alt = 'Logo';
+    img.className = 'w-6 h-6 object-contain';
+    img.onerror = fallback;
+    img.onload = function () { adminApp.applyFavicon(url); };
+    img.src = url;
+    slot.innerHTML = '';
+    slot.appendChild(img);
+  },
+
+  /**
+   * Tukar favicon tab kepada logo yang dimuat naik.
+   * Fail favicon statik dalam <head> kekal sebagai lalai; ini hanya
+   * menggantikannya selepas logo disahkan boleh dimuatkan.
+   */
+  applyFavicon: function (url) {
+    if (!url) return;
+    var head = document.head;
+    head.querySelectorAll('link[rel~="icon"], link[rel="apple-touch-icon"]')
+      .forEach(function (l) { l.parentNode.removeChild(l); });
+    ['icon', 'apple-touch-icon'].forEach(function (rel) {
+      var l = document.createElement('link');
+      l.rel = rel; l.href = url;
+      head.appendChild(l);
+    });
+  },
+
+  uploadLogo: async function () {
+    if (!adminApp.logoPending) return;
+    var btn = document.getElementById('btn-logo-upload');
+    adminApp.btnBusy(btn, true, 'Memuat naik...');
+    try {
+      var d = await API.call({ action: 'uploadLogo', imageBase64: adminApp.logoPending }, 1);
+      if (d.status !== 'success') { adminApp.logoMsg(d.message || 'Muat naik gagal.', 'error'); return; }
+      adminApp.logoMsg(d.message, 'ok');
+      adminApp.renderLogo(d.logoUrl, false);
+      adminApp.refreshData(true);
+    } catch (e) {
+      adminApp.logoMsg('Sambungan gagal semasa memuat naik.', 'error');
+    } finally {
+      adminApp.btnBusy(btn, false, 'Muat Naik Logo');
+    }
+  },
+
+  removeLogo: async function () {
+    if (!confirm('Buang logo semasa?\n\nIkon lalai akan digunakan semula di semua portal.')) return;
+    var d = await API.call({ action: 'removeLogo' }, 1);
+    if (d.status !== 'success') { adminApp.logoMsg(d.message || 'Gagal.', 'error'); return; }
+    adminApp.logoMsg(d.message, 'ok');
+    adminApp.renderLogo('', false);
+    adminApp.refreshData(true);
+  },
+
+  logoMsg: function (msg, kind) {
+    var el = document.getElementById('logo-msg');
+    if (!el) return;
+    if (!msg) { el.classList.add('hide'); return; }
+    var tone = kind === 'ok'
+      ? 'bg-green-100 dark:bg-green-500/10 border-green-300 dark:border-green-500/30 text-green-700 dark:text-green-400'
+      : kind === 'error'
+        ? 'bg-red-100 dark:bg-red-500/10 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
+        : 'bg-yellow-100 dark:bg-yellow-500/10 border-yellow-300 dark:border-yellow-500/30 text-yellow-800 dark:text-yellow-300';
+    el.className = 'rounded-xl border px-4 py-3 text-xs font-medium ' + tone;
+    el.textContent = msg;
+    el.classList.remove('hide');
+  },
+
+  /** datetime-local memerlukan "YYYY-MM-DDTHH:mm" waktu tempatan. */
+  toLocalInput: function (iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    var p = function (x) { return x < 10 ? '0' + x : '' + x; };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) +
+           'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+  },
+
+  /* ----------------------------------------------------------------------
+     Pengendali yang dipanggil terus oleh markup asal (oninput / onchange).
+     Markup tidak diubah, jadi nama-nama ini mesti wujud.
+     ---------------------------------------------------------------------- */
+  filterParticipants: function () { adminApp.renderParticipants(); },
+
+  filterStaff: function () { adminApp.renderStaff(); },
+
+  formatPhone: function (el) {
+    if (!el) return;
+    el.value = String(el.value || '').replace(/[^\d+\-\s]/g, '').slice(0, 20);
+  },
+
+  handleNewsImage: function (ev) {
+    var f = ev && ev.target && ev.target.files && ev.target.files[0];
+    if (!f) return;
+    var prev = document.getElementById('news-img-preview');
+    var box = document.getElementById('news-img-preview-box');
+    var rd = new FileReader();
+    rd.onload = function () {
+      if (prev) prev.src = rd.result;
+      if (box) box.classList.remove('hide');
+    };
+    rd.readAsDataURL(f);
+  },
+
+  previewReportData: function () { adminApp.renderReports(); },
+
+  /* ---------------- Modal & pembantu ---------------- */
+  openModal: function (id) {
+    var m = document.getElementById(id);
+    if (!m) return;
+    m.classList.remove('hide');
+    requestAnimationFrame(function () { m.classList.remove('opacity-0'); });
+    adminApp.icons();
+  },
+
+  closeModal: function (id) {
+    var m = document.getElementById(id);
+    if (!m) return;
+    m.classList.add('opacity-0');
+    setTimeout(function () { m.classList.add('hide'); }, 300);
+  },
+
+  btnBusy: function (btn, busy, label) {
+    if (!btn) return;
+    btn.disabled = !!busy;
+    btn.style.opacity = busy ? '0.6' : '';
+    var span = btn.querySelector('span');
+    if (span) span.textContent = label; else btn.textContent = label;
+  },
+
+  initials: function (name) {
+    return String(name || '?').trim().split(/\s+/)
+      .filter(function (w) { return /[A-Za-z]/.test(w[0] || ''); })
+      .slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join('') || '?';
+  },
+
+  fmtDate: function (iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso || '—');
+    var p = function (x) { return x < 10 ? '0' + x : '' + x; };
+    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' +
+           p(d.getHours()) + ':' + p(d.getMinutes());
+  },
+
+  esc: function (s) {
+    return String(s === null || s === undefined ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  },
+
+  bindStatic: function () {
+    var os = document.getElementById('open-sidebar');
+    var cs = document.getElementById('close-sidebar');
+    var ov = document.getElementById('sidebar-overlay');
+    var sb = document.getElementById('sidebar');
+    if (os) os.onclick = function () { sb.classList.add('sidebar-open'); ov.classList.remove('hidden'); };
+    var close = function () { sb.classList.remove('sidebar-open'); ov.classList.add('hidden'); };
+    if (cs) cs.onclick = close;
+    if (ov) ov.onclick = close;
+
+    var sp = document.getElementById('search-participant');
+    if (sp) sp.addEventListener('input', function () { adminApp.renderParticipants(); });
+    var fc = document.getElementById('filter-contingent');
+    if (fc) fc.addEventListener('change', function () { adminApp.renderParticipants(); });
+    var ss = document.getElementById('search-staff');
+    if (ss) ss.addEventListener('input', function () { adminApp.renderStaff(); });
+
+    var gu = document.getElementById('gate-user'), gp = document.getElementById('gate-pass');
+    if (gu) gu.addEventListener('keydown', function (e) { if (e.key === 'Enter') gp.focus(); });
+    if (gp) gp.addEventListener('keydown', function (e) { if (e.key === 'Enter') adminApp.login(); });
+
+    var ci = document.getElementById('ci-query');
+    if (ci) ci.addEventListener('keydown', function (e) { if (e.key === 'Enter') adminApp.lookupCheckIn(); });
+    var au = document.getElementById('audit-search');
+    if (au) au.addEventListener('keydown', function (e) { if (e.key === 'Enter') adminApp.loadAudit(1); });
+
+    var nf = document.getElementById('news-img-file');
+    if (nf) nf.addEventListener('change', function (e) {
+      var f = e.target.files && e.target.files[0];
+      if (!f) return;
+      var p = document.getElementById('news-img-preview'), b = document.getElementById('news-img-preview-box');
+      var rd = new FileReader();
+      rd.onload = function () { if (p) p.src = rd.result; if (b) b.classList.remove('hide'); };
+      rd.readAsDataURL(f);
+    });
+
+    window.addEventListener('beforeunload', adminApp.stopScan);
+  }
+};
+
+document.addEventListener('DOMContentLoaded', adminApp.init);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,2756 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MyKelabCBP | CSC 2026</title>
+    <meta name="theme-color" content="#f1f5f9">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="description" content="Portal Pendaftaran Sukan CBP Sports Carnival 2026">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        if (window.tailwind) tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        sport: ['Rajdhani', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        motorsport: {
+                            accent: '#ef4444', 
+                            accentCyan: '#06b6d4',
+                            border: '#334155'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        :root {
+            --bg-color: #f1f5f9;
+            --text-color: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --input-bg: #ffffff;
+            --input-border: #cbd5e1;
+            --btn-bg-1: #ffffff;
+            --btn-bg-2: #e2e8f0;
+            --btn-border: #cbd5e1;
+            --chk-bg: #ffffff;
+            --chk-border: #cbd5e1;
+            --qr-bg-1: #e2e8f0;
+            --qr-bg-2: #f8fafc;
+        }
+
+        .dark {
+            --bg-color: #15151e;
+            --text-color: #f8fafc;
+            --glass-bg: rgba(30, 30, 44, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --input-bg: #111118;
+            --input-border: #2a2a35;
+            --btn-bg-1: #1e1e2c;
+            --btn-bg-2: #15151e;
+            --btn-border: #334155;
+            --chk-bg: #111118;
+            --chk-border: #334155;
+            --qr-bg-1: #1e1e2c;
+            --qr-bg-2: #15151e;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        .dark .glass-card {
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .neo-input {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            border-radius: 0.75rem;
+            padding: 0.875rem 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        .neo-input:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+        }
+
+        .btn-sport {
+            background: linear-gradient(135deg, var(--btn-bg-1) 0%, var(--btn-bg-2) 100%);
+            border: 1px solid var(--btn-border);
+            color: var(--text-color);
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-sport:hover:not(:disabled) {
+            border-color: #06b6d4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.2);
+        }
+        .btn-sport.primary {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+            color: white;
+        }
+        .btn-sport.primary:hover:not(:disabled) {
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .telemetry-bar-container {
+            width: 100%;
+            height: 6px;
+            background: var(--input-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .telemetry-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease-out;
+        }
+
+        .chk-box {
+            background: var(--chk-bg);
+            border-color: var(--chk-border);
+            transition: all 0.2s ease;
+        }
+        .chk-input:checked + .chk-box {
+            background-color: #06b6d4;
+            border-color: #06b6d4;
+        }
+        .chk-input:checked + .chk-box svg {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+        }
+        .chk-box svg {
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .hide { display: none !important; }
+        .view-section { animation: fadeIn 0.4s ease-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qr-placeholder {
+            background: repeating-linear-gradient(45deg, var(--qr-bg-1), var(--qr-bg-1) 10px, var(--qr-bg-2) 10px, var(--qr-bg-2) 20px);
+            position: relative;
+        }
+        .qr-placeholder::after {
+            content: '';
+            position: absolute;
+            top: 20%; left: 20%; right: 20%; bottom: 20%;
+            background: #fff;
+            border-radius: 8px;
+            border: 2px solid #000;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 22s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative transition-colors duration-300">
+    
+    <!-- FULLSCREEN LOADER -->
+    <div id="global-loader" class="fixed inset-0 z-[999] bg-[var(--bg-color)] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative w-24 h-24">
+            <div class="absolute inset-0 border-4 border-slate-200 dark:border-slate-800 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-motorsport-accentCyan rounded-full border-t-transparent animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i data-lucide="trophy" class="w-8 h-8 text-motorsport-accent animate-pulse"></i>
+            </div>
+        </div>
+        <h2 class="mt-6 font-sport font-bold text-2xl tracking-widest uppercase text-slate-800 dark:text-white animate-pulse">Memuatkan Sistem</h2>
+        <p class="text-xs text-slate-500 mt-2 font-mono">MyKelabCBP • Sila tunggu sebentar...</p>
+    </div>
+
+    <!-- Background Deco -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-red-500/20 dark:bg-red-600/10 blur-[100px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-500/20 dark:bg-cyan-600/10 blur-[120px]"></div>
+    </div>
+
+    <!-- API Status Warning Banner -->
+    <div id="api-warning" class="bg-yellow-500/10 border-b border-yellow-500/20 text-yellow-800 dark:text-yellow-300 text-xs px-4 py-2 flex items-center justify-between hide">
+        <span class="flex items-center gap-1.5"><i data-lucide="info" class="w-4 h-4"></i> Mod Demo: Sila masukkan Apps Script Web App URL.</span>
+        <button onclick="document.getElementById('api-warning').remove()" class="text-xs font-bold underline">Tutup</button>
+    </div>
+
+    <!-- Top Nav -->
+    <nav class="glass-card m-4 px-6 py-4 flex justify-between items-center sticky top-4 z-50">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="app.navigate('portal')">
+            <span id="brand-logo-slot" class="w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="trophy" class="text-motorsport-accent w-6 h-6"></i>
+            </span>
+            <span id="brand-name" class="font-sport font-bold text-xl tracking-wider">MyKelabCBP</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="app.toggleTheme()" class="p-2 rounded-full bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-white transition-colors shadow-sm">
+                <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+            </button>
+            <div id="nav-actions"></div>
+        </div>
+    </nav>
+
+    <!-- Announcement Ticker -->
+    <div class="w-full max-w-lg mx-auto px-4 -mt-2 mb-2 z-40 relative">
+        <div class="bg-gradient-to-r from-motorsport-accent to-red-700 text-white rounded-full flex items-center px-3 py-1.5 shadow-lg overflow-hidden border border-red-400/30">
+            <div class="flex items-center gap-1.5 pr-3 border-r border-white/20 z-10 bg-gradient-to-r from-motorsport-accent to-motorsport-accent">
+                <i data-lucide="megaphone" class="w-4 h-4 animate-pulse"></i>
+                <span class="text-[10px] font-bold uppercase tracking-wider hidden sm:block">Info</span>
+            </div>
+            <div class="flex-1 overflow-hidden ml-3 relative h-4 flex items-center">
+                <div id="ticker-text" class="absolute animate-marquee text-xs font-medium tracking-wide">
+                    Sila Login menggunakan Staff ID anda untuk memulakan pendaftaran sukan.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main id="app-container" class="flex-grow w-full max-w-lg mx-auto flex flex-col relative pb-6">
+        
+        <!-- 1. PORTAL VIEW -->
+        <section id="view-portal" class="view-section flex flex-col w-full pb-10">
+            <div class="relative w-full rounded-b-[2.5rem] overflow-hidden shadow-2xl pt-[80px] pb-24 px-6 mt-[-80px]" style="background-image: url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1000&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-[#ea580c]/90 dark:to-slate-900/95 z-0"></div>
+                <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent z-0"></div>
+                
+                <div class="relative z-10 flex flex-col gap-3 mt-4 text-white">
+                    <div class="inline-flex items-center self-start gap-2 px-3 py-1.5 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-[10px] font-bold tracking-wider uppercase shadow-sm">
+                        <i data-lucide="zap" class="w-3 h-3 text-yellow-400"></i> Sistem Rasmi CSC 2026
+                    </div>
+                    <h1 class="text-4xl font-bold leading-tight font-sport mt-1 tracking-wide">
+                        Selamat Datang,<br>
+                        <span class="text-lg font-normal font-sans text-white/80">Sistem Pendaftaran Sukan CBP</span>
+                    </h1>
+                </div>
+            </div>
+
+            <div class="relative z-20 px-5 -mt-16 w-full">
+                <div class="glass-card bg-white/95 dark:bg-[#1e1e2c]/95 p-6 flex flex-col sm:flex-row justify-between items-center sm:items-end gap-5 shadow-2xl border border-white/40 dark:border-slate-700/50 rounded-3xl backdrop-blur-xl">
+                    <div class="text-left w-full sm:w-auto">
+                        <p class="text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1 font-semibold">
+                            <i data-lucide="trophy" class="w-3 h-3"></i> <span id="portal-score-label">Papan Markah</span>
+                        </p>
+                        <div class="flex items-baseline gap-2">
+                            <span id="portal-score-leader" class="text-2xl sm:text-3xl font-sport font-bold text-slate-900 dark:text-white truncate max-w-[170px]">—</span>
+                            <span id="portal-score-points" class="text-sm font-medium text-slate-500 dark:text-gray-400">belum bermula</span>
+                        </div>
+                    </div>
+                    <button onclick="app.navigate('scoreboard')" class="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-600 dark:from-motorsport-accentCyan dark:to-blue-600 text-white py-3.5 px-6 rounded-2xl flex items-center justify-center gap-2 text-sm font-bold shadow-lg hover:scale-[1.02] transition-transform">
+                        Lihat Markah
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="px-5 mt-10 flex flex-col gap-4">
+                <h3 class="font-bold text-lg text-slate-800 dark:text-white flex items-center justify-between">
+                    Menu Utama
+                </h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="glass-card p-5 flex flex-col gap-3 cursor-pointer border border-transparent hover:border-orange-500 dark:hover:border-motorsport-accentCyan transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('catalog')">
+                        <div class="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400">
+                            <i data-lucide="medal" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-sm">Senarai Sukan</h4>
+                            <p class="text-[10px] text-slate-500 mt-1 leading-tight">Lihat baki kekosongan</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card p-5 flex flex-col gap-3 cursor-pointer border border-transparent hover:border-orange-500 dark:hover:border-motorsport-accentCyan transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('login')">
+                         <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-500/10 flex items-center justify-center text-orange-600 dark:text-orange-400">
+                            <i data-lucide="user-check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-sm">Login Staff</h4>
+                            <p class="text-[10px] text-slate-500 mt-1 leading-tight">Mula daftar / semak</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 mt-2 flex items-center justify-between cursor-pointer border border-transparent hover:border-motorsport-accent transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('news')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                            <i data-lucide="newspaper" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase font-sport tracking-wide">Berita &amp; Hebahan</h4>
+                            <p class="text-xs text-slate-500 mt-1 leading-tight"><span id="news-count">0</span> kemas kini rasmi urus setia.</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                </div>
+
+                <!-- NEW: PUBLIC DASHBOARD BUTTON -->
+                <div class="glass-card p-5 mt-2 flex items-center justify-between cursor-pointer border border-transparent hover:border-motorsport-accentCyan transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('public-dashboard')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-cyan-100 dark:bg-cyan-500/10 flex items-center justify-center text-motorsport-accentCyan">
+                            <i data-lucide="pie-chart" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase font-sport tracking-wide">Dashboard Statistik</h4>
+                            <p class="text-xs text-slate-500 mt-1 leading-tight">Pantau status pengisian kuota semasa.</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PAPAN MARKAH (LIVE) -->
+        <section id="view-scoreboard" class="view-section hide flex flex-col gap-5 pb-10 px-4">
+            <div class="flex justify-between items-center mb-1 mt-6 px-2 border-b border-slate-300 dark:border-gray-800 pb-4">
+                <div>
+                    <h2 class="font-sport text-3xl font-bold uppercase italic text-slate-900 dark:text-white">Papan Markah</h2>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mt-1">Keputusan rasmi pertandingan CSC 2026</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-motorsport-accent/10 flex items-center justify-center text-motorsport-accent">
+                    <i data-lucide="trophy" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <!-- Status langsung -->
+            <div class="flex items-center justify-between glass-card px-4 py-3">
+                <div class="flex items-center gap-2">
+                    <span id="score-live-dot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span id="score-live-text" class="text-[11px] font-mono text-slate-500 dark:text-gray-400">Menyambung…</span>
+                </div>
+                <button onclick="app.score.refresh(true)" class="text-[11px] font-bold text-motorsport-accentCyan flex items-center gap-1">
+                    <i data-lucide="refresh-cw" class="w-3 h-3"></i> Segarkan
+                </button>
+            </div>
+
+            <!-- Podium 3 teratas -->
+            <div id="score-podium" class="grid grid-cols-3 gap-2"></div>
+
+            <!-- Ringkasan pingat -->
+            <div class="grid grid-cols-4 gap-2">
+                <div class="glass-card p-3 text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Emas</p>
+                    <h3 id="score-gold" class="font-sport text-2xl font-bold text-yellow-500">0</h3>
+                </div>
+                <div class="glass-card p-3 text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Perak</p>
+                    <h3 id="score-silver" class="font-sport text-2xl font-bold text-slate-400">0</h3>
+                </div>
+                <div class="glass-card p-3 text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Gangsa</p>
+                    <h3 id="score-bronze" class="font-sport text-2xl font-bold text-amber-700 dark:text-amber-600">0</h3>
+                </div>
+                <div class="glass-card p-3 text-center">
+                    <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Acara</p>
+                    <h3 id="score-events" class="font-sport text-2xl font-bold text-slate-900 dark:text-white">0</h3>
+                </div>
+            </div>
+
+            <!-- Kedudukan penuh -->
+            <div class="glass-card p-5">
+                <h3 class="font-bold text-xs uppercase tracking-wider mb-4 flex items-center justify-between text-slate-800 dark:text-white">
+                    Kedudukan Kontinjen <i data-lucide="list-ordered" class="w-3 h-3 text-slate-400"></i>
+                </h3>
+                <div id="score-standings" class="flex flex-col gap-3"></div>
+            </div>
+
+            <!-- Carta pingat -->
+            <div class="glass-card p-5" id="score-medal-wrapper">
+                <h3 class="font-bold text-xs uppercase tracking-wider mb-4 flex items-center justify-between text-slate-800 dark:text-white">
+                    Pecahan Pingat <i data-lucide="medal" class="w-3 h-3 text-slate-400"></i>
+                </h3>
+                <div id="score-medal-chart"></div>
+                <div class="flex items-center gap-4 mt-3 text-[10px] text-slate-500 font-bold uppercase tracking-wide">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-yellow-400 inline-block"></span> Emas</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-slate-400 inline-block"></span> Perak</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-700 inline-block"></span> Gangsa</span>
+                </div>
+            </div>
+
+            <!-- Trend mata harian -->
+            <div class="glass-card p-5 hide" id="score-trend-wrapper">
+                <h3 class="font-bold text-xs uppercase tracking-wider mb-4 flex items-center justify-between text-slate-800 dark:text-white">
+                    Trend Mata Harian <i data-lucide="trending-up" class="w-3 h-3 text-slate-400"></i>
+                </h3>
+                <div id="score-trend-chart"></div>
+                <div id="score-trend-legend" class="flex flex-wrap gap-x-3 gap-y-1 mt-3 text-[10px] font-bold uppercase tracking-wide"></div>
+            </div>
+
+            <!-- Keputusan terkini -->
+            <div class="flex flex-col gap-3">
+                <h3 class="font-sport font-bold text-lg text-slate-800 dark:text-white px-1 flex items-center gap-2">
+                    <i data-lucide="flag" class="w-4 h-4 text-motorsport-accent"></i> Keputusan Terkini
+                </h3>
+                <div id="score-latest" class="flex flex-col gap-3"></div>
+            </div>
+
+            <!-- Jadual akan datang -->
+            <div class="flex flex-col gap-3">
+                <h3 class="font-sport font-bold text-lg text-slate-800 dark:text-white px-1 flex items-center gap-2">
+                    <i data-lucide="calendar" class="w-4 h-4 text-motorsport-accentCyan"></i> Jadual Akan Datang
+                </h3>
+                <div id="score-upcoming" class="flex flex-col gap-2"></div>
+            </div>
+
+            <!-- Hebahan ringkas -->
+            <div class="glass-card p-5 flex flex-col gap-3" id="score-news-wrapper">
+                <h3 class="font-bold text-xs uppercase tracking-wider flex items-center justify-between text-slate-800 dark:text-white">
+                    Hebahan Terkini <i data-lucide="megaphone" class="w-3 h-3 text-slate-400"></i>
+                </h3>
+                <div id="score-news" class="flex flex-col gap-2"></div>
+                <button onclick="app.navigate('news')" class="text-xs font-bold text-motorsport-accentCyan flex items-center gap-1 mt-1">
+                    Semua berita <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 2b. NEWS VIEW -->
+        <section id="view-news" class="view-section hide flex flex-col gap-4 pb-10 px-4">
+            <div class="flex justify-between items-center mb-4 mt-6 px-2 border-b border-slate-300 dark:border-gray-800 pb-4">
+                <div>
+                    <h2 class="font-sport text-3xl font-bold uppercase italic text-slate-900 dark:text-white">Berita Semasa</h2>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mt-1">Kemaskini rasmi penganjuran CSC 2026</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-motorsport-accent/10 flex items-center justify-center text-motorsport-accent">
+                    <i data-lucide="newspaper" class="w-5 h-5"></i>
+                </div>
+            </div>
+            <div id="news-container" class="flex flex-col gap-5"></div>
+        </section>
+
+        <!-- 3. SPORTS CATALOG VIEW (DIKEMASKINI DENGAN BAKI SEAT) -->
+        <section id="view-catalog" class="view-section hide flex flex-col gap-4 pb-10 px-4">
+            <div class="flex justify-between items-center mb-4 mt-6 px-2 border-b border-slate-300 dark:border-gray-800 pb-4">
+                <div>
+                    <h2 class="font-sport text-3xl font-bold uppercase italic text-slate-900 dark:text-white">Senarai Sukan</h2>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mt-1">Kapasiti & Baki Kekosongan Terkini</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-motorsport-accentCyan/10 flex items-center justify-center text-motorsport-accentCyan">
+                    <i data-lucide="medal" class="w-5 h-5"></i>
+                </div>
+            </div>
+            <div id="catalog-container" class="flex flex-col gap-4"></div>
+        </section>
+
+        <!-- NEW: PUBLIC DASHBOARD VIEW -->
+        <section id="view-public-dashboard" class="view-section hide flex flex-col gap-5 pb-10 px-4">
+            <div class="flex flex-col gap-1 mb-2 mt-6 px-2">
+                <h2 class="font-sport text-3xl font-bold uppercase italic text-slate-900 dark:text-white leading-tight">Dashboard Awam</h2>
+                <p class="text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mt-1">Statistik Penyertaan Keseluruhan</p>
+            </div>
+
+            <!-- Tapisan (Filter) Sukan -->
+            <div class="glass-card p-4 border-l-4 border-l-motorsport-accentCyan">
+                <label class="block text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold flex items-center gap-2">
+                    <i data-lucide="filter" class="w-3 h-3"></i> Filter Data Ikut Sukan
+                </label>
+                <select id="public-dash-filter" class="neo-input text-sm bg-slate-50 dark:bg-black/30 font-bold" onchange="app.renderPublicDashboard(this.value)">
+                    <option value="">-- Semua Sukan / Keseluruhan --</option>
+                    <!-- Options populated via JS -->
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="glass-card p-4 border-t-2 border-t-motorsport-accentCyan">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Jumlah Peserta</p>
+                    <h3 id="pub-stat-total" class="font-sport text-3xl font-bold text-slate-900 dark:text-white">0</h3>
+                    <p id="pub-stat-staff" class="text-[9px] text-slate-500 font-mono mt-1 leading-tight">Daripada 0 staf berdaftar</p>
+                </div>
+                
+                <div class="glass-card p-4">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Sukan Aktif</p>
+                    <h3 id="pub-stat-sports" class="font-sport text-3xl font-bold text-slate-900 dark:text-white">0</h3>
+                    <p class="text-[9px] text-slate-500 font-mono mt-1 leading-tight">Dalam penganjuran CSC</p>
+                </div>
+                
+                <div class="glass-card p-4 col-span-2">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Pecahan Jantina</p>
+                    <div class="flex justify-between items-end mb-1">
+                        <div>
+                            <p id="pub-stat-male" class="font-mono text-lg font-bold text-slate-900 dark:text-white leading-none">0</p>
+                            <p class="text-[9px] text-slate-400 uppercase">Lelaki</p>
+                        </div>
+                        <div class="text-right">
+                            <p id="pub-stat-female" class="font-mono text-lg font-bold text-slate-900 dark:text-white leading-none">0</p>
+                            <p class="text-[9px] text-slate-400 uppercase">Wanita</p>
+                        </div>
+                    </div>
+                    <div class="telemetry-bar-container flex h-2 rounded overflow-hidden mt-2">
+                        <div id="pub-bar-male" class="h-full bg-slate-300 dark:bg-slate-600 transition-all duration-500" style="width: 50%"></div>
+                        <div id="pub-bar-female" class="h-full bg-pink-500 transition-all duration-500" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 col-span-2">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-2">Status Pendaftaran</p>
+                    <div class="flex flex-col gap-2 font-mono text-[11px] font-bold mt-1">
+                        <div class="flex justify-between items-center"><span class="text-green-500 flex items-center gap-1"><i data-lucide="check-circle" class="w-3 h-3"></i> Registered</span> <span id="pub-stat-reg">0</span></div>
+                        <div class="flex justify-between items-center"><span class="text-yellow-500 flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Pending</span> <span id="pub-stat-pend">0</span></div>
+                        <div class="flex justify-between items-center"><span class="text-red-500 flex items-center gap-1"><i data-lucide="x-circle" class="w-3 h-3"></i> Cancelled</span> <span id="pub-stat-canc">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kontinjen Chart -->
+            <div class="glass-card p-5">
+                <h3 class="font-bold text-xs uppercase tracking-wider mb-4 flex items-center justify-between text-slate-800 dark:text-white">
+                    Pecahan Kontinjen <i data-lucide="flag" class="w-3 h-3 text-slate-400"></i>
+                </h3>
+                <div class="flex flex-col gap-3.5" id="pub-contingent-stats">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <!-- Kapasiti Chart -->
+            <div class="glass-card p-5" id="pub-capacity-wrapper">
+                <h3 class="font-bold text-xs uppercase tracking-wider mb-5 text-slate-800 dark:text-white">Kapasiti & Pengisian Sukan</h3>
+                <div class="flex flex-col gap-4" id="pub-sport-capacity-list">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. LOGIN VIEW -->
+        <section id="view-login" class="view-section hide flex flex-col gap-6 px-4">
+            <div class="glass-card p-8 flex flex-col gap-6 mt-10">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-motorsport-accent/10 dark:bg-motorsport-accent/20 flex items-center justify-center">
+                        <i data-lucide="user" class="text-motorsport-accent w-5 h-5"></i>
+                    </div>
+                    <h2 class="font-sport text-2xl font-bold uppercase">Staff Login</h2>
+                </div>
+                
+                <div>
+                    <label class="block text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">Staff ID</label>
+                    <input type="text" id="login-staff-id" class="neo-input font-sport text-xl uppercase placeholder-slate-400 dark:placeholder-gray-700" placeholder="e.g., CBP001" autocomplete="off">
+                    <p class="text-xs text-slate-500 mt-2">* Masukkan ID staf sahaja — tiada kata laluan diperlukan</p>
+                </div>
+
+                <!--
+                  Medan pengesahan 4 digit. TERSEMBUNYI secara lalai dan tidak
+                  akan muncul melainkan urus setia menghidupkan
+                  REQUIRE_SECOND_FACTOR dalam Tetapan Sistem. Aliran biasa
+                  ialah Staff ID sahaja, satu medan, terus masuk.
+
+                  Ia dikekalkan sebagai suis kecemasan: kalau senarai Staff ID
+                  tersebar di luar semasa carnival, urus setia boleh
+                  menghidupkannya serta-merta tanpa deploy semula.
+                -->
+                <div id="verify-2fa-wrap" class="hide">
+                    <label class="block text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">4 Digit Akhir No. Telefon</label>
+                    <input type="tel" id="login-verify" inputmode="numeric" maxlength="4" class="neo-input font-sport text-xl tracking-[0.4em] placeholder-slate-400 dark:placeholder-gray-700" placeholder="0000" autocomplete="off">
+                    <p class="text-xs text-slate-500 mt-2">* Pengesahan tambahan diaktifkan oleh urus setia</p>
+                </div>
+
+                <div id="login-msg" class="hide"></div>
+
+                <button id="btn-login-submit" onclick="app.login()" class="btn-sport primary w-full py-4 rounded-xl mt-4 flex items-center justify-center gap-2">
+                    <span>Log Masuk</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 5. REGISTRATION FORM VIEW -->
+        <section id="view-form" class="view-section hide flex flex-col gap-4 pb-20 px-4">
+            <div class="flex justify-between items-center mb-2 px-2">
+                <h2 class="font-sport text-2xl font-bold uppercase italic">Registration</h2>
+                <span class="text-xs bg-motorsport-accent/10 dark:bg-motorsport-accent/20 text-motorsport-accent px-2 py-1 rounded font-bold">STEP 1 OF 3</span>
+            </div>
+
+            <div class="glass-card p-5 relative overflow-hidden">
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="relative group">
+                        <img id="form-img" src="https://placehold.co/100x100/1e1e2c/f8fafc?text=IMG" alt="Profile" class="w-16 h-16 rounded-full border-2 border-slate-300 dark:border-gray-700 object-cover bg-slate-200">
+                        <label for="photo-file-input" class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 cursor-pointer transition">
+                            <i data-lucide="camera" class="w-5 h-5"></i>
+                        </label>
+                        <input type="file" id="photo-file-input" accept="image/*" class="hidden" onchange="app.handlePhotoSelect(event)">
+                    </div>
+                    <div>
+                        <h3 id="form-name" class="font-bold text-lg leading-tight">Nama Peserta</h3>
+                        <p id="form-id" class="text-motorsport-accentCyan font-sport font-bold text-sm uppercase">STAFF ID</p>
+                        <p id="photo-hint" class="text-[10px] text-slate-500 mt-1 leading-tight">Ketik gambar untuk muat naik <span class="text-red-500">*</span></p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-5 relative z-10 border-t border-slate-300 dark:border-gray-800 pt-4">
+                    <div>
+                        <p class="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wider">Jabatan</p>
+                        <p id="form-dept" class="text-sm font-medium">Department</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wider">Kontinjen</p>
+                        <p id="form-contingent" class="text-sm font-medium">Contingent</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-5 flex flex-col gap-4">
+                <h3 class="font-sport font-bold uppercase text-slate-500 dark:text-gray-400 text-sm border-b border-slate-300 dark:border-gray-800 pb-2">Maklumat Hubungan</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">No. Telefon <span class="text-red-500">*</span></label>
+                        <input type="tel" id="input-phone" class="neo-input text-sm" placeholder="012-3456789" oninput="app.formatPhone(this)">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="input-email" class="neo-input text-sm" placeholder="email@cbp.com.my">
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-5 flex flex-col gap-4">
+                <h3 class="font-sport font-bold uppercase text-motorsport-accent text-sm border-b border-slate-300 dark:border-gray-800 pb-2">Waris / Kecemasan</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">Nama Waris <span class="text-red-500">*</span></label>
+                        <input type="text" id="input-emerg-name" class="neo-input text-sm" placeholder="Nama waris">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">No. Telefon Waris <span class="text-red-500">*</span></label>
+                        <input type="tel" id="input-emerg-phone" class="neo-input text-sm" placeholder="012-3456789" oninput="app.formatPhone(this)">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="app.validateStep1()" class="btn-sport primary w-full py-4 rounded-xl mt-2 sticky bottom-4 z-20 shadow-lg shadow-red-500/20">
+                Teruskan Ke Pemilihan Sukan
+            </button>
+        </section>
+
+        <!-- 6. SPORTS SELECTION VIEW -->
+        <section id="view-sports" class="view-section hide flex flex-col gap-4 pb-20 px-4">
+            <div class="flex justify-between items-center mb-2 px-2">
+                <h2 class="font-sport text-2xl font-bold uppercase italic">Select Sports</h2>
+                <span class="text-xs bg-motorsport-accent/10 dark:bg-motorsport-accent/20 text-motorsport-accent px-2 py-1 rounded font-bold">STEP 2 OF 3</span>
+            </div>
+            <p class="text-sm text-slate-500 dark:text-gray-400 px-2">Maksimum pendaftaran adalah 2 sukan.</p>
+            <div id="sports-container" class="flex flex-col gap-4"></div>
+
+            <div class="flex gap-3 sticky bottom-4 z-20 mt-4">
+                <button onclick="app.navigate('form')" class="btn-sport flex-1 py-4 rounded-xl shadow-lg shadow-black/5 dark:shadow-black/20">Kembali</button>
+                <button onclick="app.validateStep2()" class="btn-sport primary flex-1 py-4 rounded-xl shadow-lg shadow-red-500/20">Seterusnya</button>
+            </div>
+        </section>
+
+        <!-- 7. DECLARATION VIEW -->
+        <section id="view-declaration" class="view-section hide flex flex-col gap-4 pb-20 px-4">
+            <div class="flex justify-between items-center mb-2 px-2">
+                <h2 class="font-sport text-2xl font-bold uppercase italic">Pengesahan</h2>
+                <span class="text-xs bg-motorsport-accent/10 dark:bg-motorsport-accent/20 text-motorsport-accent px-2 py-1 rounded font-bold">STEP 3 OF 3</span>
+            </div>
+
+            <div class="glass-card p-6 flex flex-col gap-6">
+                <p class="text-sm text-slate-600 dark:text-gray-300">Sila tandakan semua pengesahan sebelum menghantar pendaftaran:</p>
+
+                <label class="flex items-start gap-4 cursor-pointer group">
+                    <div class="relative flex items-center justify-center w-6 h-6 mt-0.5 flex-shrink-0">
+                        <input type="checkbox" id="chk-true" class="sr-only chk-input">
+                        <div class="chk-box w-6 h-6 border-2 border-slate-300 dark:border-slate-600 rounded flex items-center justify-center bg-white dark:bg-[#111118]">
+                            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+                        </div>
+                    </div>
+                    <span class="text-sm text-slate-700 dark:text-gray-300">Saya mengesahkan bahawa semua maklumat yang diberikan adalah benar dan tepat.</span>
+                </label>
+
+                <label class="flex items-start gap-4 cursor-pointer group">
+                    <div class="relative flex items-center justify-center w-6 h-6 mt-0.5 flex-shrink-0">
+                        <input type="checkbox" id="chk-fit" class="sr-only chk-input">
+                        <div class="chk-box w-6 h-6 border-2 border-slate-300 dark:border-slate-600 rounded flex items-center justify-center bg-white dark:bg-[#111118]">
+                            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+                        </div>
+                    </div>
+                    <span class="text-sm text-slate-700 dark:text-gray-300">Saya mengesahkan bahawa saya sihat tubuh badan dan sesuai (fit) untuk menyertai aktiviti sukan ini.</span>
+                </label>
+
+                <label class="flex items-start gap-4 cursor-pointer group">
+                    <div class="relative flex items-center justify-center w-6 h-6 mt-0.5 flex-shrink-0">
+                        <input type="checkbox" id="chk-rules" class="sr-only chk-input">
+                        <div class="chk-box w-6 h-6 border-2 border-slate-300 dark:border-slate-600 rounded flex items-center justify-center bg-white dark:bg-[#111118]">
+                            <i data-lucide="check" class="w-4 h-4 text-white"></i>
+                        </div>
+                    </div>
+                    <span class="text-sm text-slate-700 dark:text-gray-300">Saya bersetuju untuk mematuhi semua peraturan penganjuran CSC 2026.</span>
+                </label>
+            </div>
+
+            <div class="flex gap-3 sticky bottom-4 z-20 mt-4">
+                <button onclick="app.navigate('sports')" class="btn-sport flex-1 py-4 rounded-xl shadow-lg shadow-black/5 dark:shadow-black/20">Kembali</button>
+                <button onclick="app.validateStep3()" class="btn-sport primary flex-1 py-4 rounded-xl shadow-lg shadow-red-500/20">Semak Semula</button>
+            </div>
+        </section>
+
+        <!-- 8. REVIEW VIEW -->
+        <section id="view-review" class="view-section hide flex flex-col gap-4 pb-20 px-4">
+             <div class="flex justify-between items-center mb-2 px-2">
+                <h2 class="font-sport text-2xl font-bold uppercase italic">Semakan Akhir</h2>
+                <button onclick="app.navigate('form')" class="text-motorsport-accentCyan text-sm font-medium flex items-center gap-1"><i data-lucide="edit-2" class="w-3 h-3"></i> Edit</button>
+            </div>
+
+            <div class="glass-card p-0 overflow-hidden border border-slate-300 dark:border-gray-800">
+                <div class="bg-slate-100 dark:bg-[#111118] p-5 flex items-center justify-between border-b border-slate-300 dark:border-gray-800">
+                     <div class="flex items-center gap-3">
+                        <img id="review-img" src="" alt="Profile" class="w-12 h-12 rounded-full object-cover border border-slate-300 dark:border-gray-700 bg-white">
+                        <div>
+                            <h3 id="review-name" class="font-bold text-sm">Nama</h3>
+                            <p id="review-id" class="text-slate-500 dark:text-gray-400 text-xs font-sport uppercase">ID</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-wider">Kontinjen</p>
+                        <p id="review-contingent" class="font-sport font-bold text-motorsport-accentCyan text-lg uppercase">CONT</p>
+                    </div>
+                </div>
+
+                <div class="p-5 flex flex-col gap-6">
+                    <div class="grid grid-cols-2 gap-y-4">
+                        <div>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider">Jabatan</p>
+                            <p id="review-dept" class="text-sm font-medium">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider">Jawatan</p>
+                            <p id="review-pos" class="text-sm font-medium">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider">Telefon</p>
+                            <p id="review-phone" class="text-sm font-medium font-mono">-</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider">Waris / Tel</p>
+                            <p id="review-emerg" class="text-sm font-medium">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-slate-300 dark:border-gray-800 pt-4">
+                         <p class="text-xs text-slate-500 uppercase tracking-wider mb-3">Sukan Yang Dipilih</p>
+                         <div id="review-sports-list" class="flex flex-col gap-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-submit-reg" onclick="app.submitRegistration()" class="btn-sport primary w-full py-4 rounded-xl mt-4 sticky bottom-4 z-20 flex items-center justify-center gap-2 shadow-lg shadow-red-500/20">
+                <span>Hantar Pendaftaran</span>
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+            </button>
+        </section>
+
+        <!-- 9. DASHBOARD / PAS SUKAN -->
+        <section id="view-dashboard" class="view-section hide flex flex-col gap-4 pb-10 px-4">
+            <div id="success-message" class="bg-green-100 dark:bg-green-500/10 border border-green-500/30 rounded-xl p-4 flex items-center gap-3 mb-2 hide">
+                <i data-lucide="check-circle-2" class="text-green-600 dark:text-green-400 w-8 h-8 flex-shrink-0"></i>
+                <div>
+                    <h4 class="text-green-700 dark:text-green-400 font-bold">Pendaftaran Berjaya!</h4>
+                    <p class="text-xs text-green-600 dark:text-gray-300">Rekod anda telah disimpan ke dalam pangkalan data.</p>
+                </div>
+            </div>
+
+            <div class="glass-card overflow-hidden relative border-t-4 border-t-motorsport-accentCyan shadow-[0_0_30px_rgba(6,182,212,0.15)] bg-white dark:bg-[rgba(30,30,44,0.6)]">
+                <div class="p-6 flex flex-col gap-6 relative z-10">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] text-slate-500 dark:text-gray-400 uppercase tracking-wider">No. Pendaftaran</p>
+                            <h2 id="dash-reg-no" class="font-sport text-3xl font-bold tracking-wider mt-1 text-slate-900 dark:text-white">CSC26-XXXX</h2>
+                        </div>
+                        <div id="dash-status-badge" class="bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold uppercase border border-green-300">
+                            Approved
+                        </div>
+                    </div>
+
+                    <div class="flex gap-5 items-center border-y border-slate-300 dark:border-gray-800 py-5">
+                        <img id="dash-img" src="" alt="Profile" class="w-20 h-20 rounded-xl object-cover border-2 border-slate-300 dark:border-gray-700 shadow-md bg-slate-100">
+                        <div>
+                            <h3 id="dash-name" class="font-bold text-xl uppercase leading-tight text-slate-900 dark:text-white">Nama</h3>
+                            <p id="dash-id" class="text-motorsport-accentCyan font-sport font-bold tracking-wider mt-1">ID</p>
+                            <div class="inline-block mt-2 bg-slate-100 dark:bg-[#111118] px-3 py-1 rounded border border-slate-300 dark:border-gray-800">
+                                <p id="dash-contingent" class="text-xs font-sport uppercase tracking-widest text-slate-600 dark:text-gray-400">CONT</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-3">Acara Didaftar</p>
+                        <div id="dash-sports-list" class="flex flex-col gap-2"></div>
+                    </div>
+
+                    <div class="flex justify-center pt-4 border-t border-slate-300 dark:border-gray-800">
+                        <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm text-center">
+                             <div id="dash-qr" class="w-32 h-32 rounded mx-auto flex items-center justify-center"></div>
+                             <p class="text-[8px] text-black font-bold mt-1">PAS AKSES RASMI CSC 2026</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="app.logout()" class="btn-sport w-full py-4 rounded-xl mt-4 text-slate-600 dark:text-gray-400">
+                Log Keluar
+            </button>
+        </section>
+    </main>
+
+    <!-- Footer Rasmi -->
+    <footer class="w-full mt-auto relative z-20">
+        <div class="w-full h-[3px] bg-gradient-to-r from-motorsport-accent via-red-600 to-motorsport-accent shadow-[0_0_12px_rgba(239,68,68,0.5)] border-t border-red-400/30"></div>
+        <div class="bg-white/80 dark:bg-[#111118]/80 backdrop-blur-md border-t border-slate-200/50 dark:border-slate-800/50 py-5 px-4 transition-colors">
+            <div class="max-w-lg mx-auto flex flex-col items-center justify-center gap-1.5 text-center">
+                <div class="flex items-center gap-2 font-sport font-bold tracking-wider text-xs uppercase text-slate-800 dark:text-slate-200">
+                    <i data-lucide="trophy" class="w-4 h-4 text-motorsport-accent"></i>
+                    <span>MyKelabCBP • CSC 2026</span>
+                </div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 tracking-wide font-medium">
+                    Copyright &copy; MyKelab. Hak Cipta Terpelihara.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Alert (Ganti Window Alert) -->
+    <div id="custom-alert" class="fixed inset-0 bg-black/40 dark:bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center hide opacity-0 transition-opacity duration-300">
+        <div class="glass-card p-6 w-11/12 max-w-sm transform scale-95 transition-transform duration-300" id="alert-box">
+            <div class="flex items-center gap-3 mb-4">
+                <i id="alert-icon" data-lucide="alert-triangle" class="text-yellow-500 w-6 h-6"></i>
+                <h3 id="alert-title" class="font-bold text-lg text-slate-900 dark:text-white">Alert</h3>
+            </div>
+            <p id="alert-message" class="text-sm text-slate-600 dark:text-gray-300 mb-6">Mesej...</p>
+            <button onclick="app.closeAlert()" class="btn-sport primary w-full py-2 rounded-lg">OK</button>
+        </div>
+    </div>
+
+    <!-- Modal Berita (Popup Penuh) -->
+    <div id="news-modal" class="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md z-[110] flex items-end justify-center hide opacity-0 transition-opacity duration-300 sm:items-center">
+        <div class="bg-white dark:bg-[#15151e] w-full max-w-lg h-[85vh] sm:h-auto sm:max-h-[85vh] rounded-t-3xl sm:rounded-3xl flex flex-col shadow-2xl transform translate-y-full sm:translate-y-10 transition-transform duration-300 overflow-hidden" id="news-modal-box">
+            <div class="relative w-full h-48 flex-shrink-0">
+                <img id="news-modal-img" src="" alt="News Image" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                <button onclick="app.closeNewsModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center text-white hover:bg-black transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+                <div class="absolute bottom-4 left-5 right-5 text-white">
+                    <span id="news-modal-date" class="text-[10px] font-bold uppercase tracking-wider bg-motorsport-accent px-2 py-1 rounded mb-2 inline-block">Date</span>
+                    <h3 id="news-modal-title" class="font-sport font-bold text-2xl leading-tight mt-1">Title</h3>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-grow text-slate-700 dark:text-gray-300 text-sm leading-relaxed whitespace-pre-line" id="news-modal-desc"></div>
+            <div class="p-4 border-t border-slate-200 dark:border-gray-800 bg-slate-50 dark:bg-[#111118]">
+                <button onclick="app.closeNewsModal()" class="btn-sport w-full py-3 rounded-xl bg-white dark:bg-[#1e1e2c]">Tutup Berita</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+/* ==========================================================================
+   Penjana QR Code terbenam (mod bait, versi 1-10, aras pembetulan M).
+   Tiada pergantungan luar — kod QR mesti berfungsi walaupun rangkaian
+   di venue acara menyekat CDN.
+   ========================================================================== */
+var QR = (function () {
+  // --- Jadual versi (aras M) -------------------------------------------
+  // [ecPerBlock, blokKumpulan1, dataKumpulan1, blokKumpulan2, dataKumpulan2]
+  var RS_M = [
+    null,
+    [10, 1, 16, 0, 0], [16, 1, 28, 0, 0], [26, 1, 44, 0, 0], [18, 2, 32, 0, 0],
+    [24, 2, 43, 0, 0], [16, 4, 27, 0, 0], [18, 4, 31, 0, 0], [22, 2, 38, 2, 39],
+    [22, 3, 36, 2, 37], [26, 4, 43, 1, 44]
+  ];
+  var ALIGN = [null, [], [6,18], [6,22], [6,26], [6,30], [6,34],
+               [6,22,38], [6,24,42], [6,26,46], [6,28,50]];
+  var VERSION_INFO = { 7:0x07C94, 8:0x085BC, 9:0x09A99, 10:0x0A4D3 };
+
+  // --- Aritmetik GF(256) ------------------------------------------------
+  var EXP = new Array(512), LOG = new Array(256);
+  (function () {
+    var x = 1;
+    for (var i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x <<= 1; if (x & 0x100) x ^= 0x11D; }
+    for (var j = 255; j < 512; j++) EXP[j] = EXP[j - 255];
+  })();
+  function gmul(a, b) { return (a === 0 || b === 0) ? 0 : EXP[LOG[a] + LOG[b]]; }
+
+  function rsGenerator(n) {
+    var g = [1];
+    for (var i = 0; i < n; i++) {
+      var ng = new Array(g.length + 1).fill(0);
+      for (var j = 0; j < g.length; j++) {
+        ng[j] ^= g[j];
+        ng[j + 1] ^= gmul(g[j], EXP[i]);
+      }
+      g = ng;
+    }
+    return g;
+  }
+
+  function rsEncode(data, ecLen) {
+    var gen = rsGenerator(ecLen);
+    var res = new Array(ecLen).fill(0);
+    for (var i = 0; i < data.length; i++) {
+      var factor = data[i] ^ res[0];
+      res.shift(); res.push(0);
+      for (var j = 0; j < ecLen; j++) res[j] ^= gmul(gen[j + 1], factor);
+    }
+    return res;
+  }
+
+  // --- Encoding ---------------------------------------------------------
+  function toBytes(str) {
+    var out = [];
+    for (var i = 0; i < str.length; i++) {
+      var c = str.charCodeAt(i);
+      if (c < 0x80) out.push(c);
+      else if (c < 0x800) { out.push(0xC0 | (c >> 6), 0x80 | (c & 63)); }
+      else if (c < 0xD800 || c >= 0xE000) { out.push(0xE0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63)); }
+      else {
+        i++;
+        var cp = 0x10000 + (((c & 0x3FF) << 10) | (str.charCodeAt(i) & 0x3FF));
+        out.push(0xF0 | (cp >> 18), 0x80 | ((cp >> 12) & 63), 0x80 | ((cp >> 6) & 63), 0x80 | (cp & 63));
+      }
+    }
+    return out;
+  }
+
+  function dataCapacity(v) {
+    var r = RS_M[v];
+    return r[1] * r[2] + r[3] * r[4];
+  }
+
+  function pickVersion(byteLen) {
+    for (var v = 1; v <= 10; v++) {
+      var cc = v < 10 ? 8 : 16;
+      // 4 bit mod + cc bit kiraan + data
+      if (dataCapacity(v) * 8 >= 4 + cc + byteLen * 8) return v;
+    }
+    throw new Error('Teks terlalu panjang untuk QR versi 10.');
+  }
+
+  function buildCodewords(bytes, v) {
+    var cap = dataCapacity(v);
+    var cc = v < 10 ? 8 : 16;
+    var bits = [];
+    var push = function (val, len) { for (var i = len - 1; i >= 0; i--) bits.push((val >> i) & 1); };
+
+    push(4, 4);                 // mod bait
+    push(bytes.length, cc);
+    for (var i = 0; i < bytes.length; i++) push(bytes[i], 8);
+
+    var maxBits = cap * 8;
+    for (var t = 0; t < 4 && bits.length < maxBits; t++) bits.push(0);   // terminator
+    while (bits.length % 8 !== 0) bits.push(0);
+
+    var cw = [];
+    for (var b = 0; b < bits.length; b += 8) {
+      var byte = 0;
+      for (var k = 0; k < 8; k++) byte = (byte << 1) | bits[b + k];
+      cw.push(byte);
+    }
+    var pads = [0xEC, 0x11], pi = 0;
+    while (cw.length < cap) cw.push(pads[pi++ % 2]);
+    return cw;
+  }
+
+  function interleave(cw, v) {
+    var r = RS_M[v];
+    var ecLen = r[0];
+    var blocks = [], ecBlocks = [], pos = 0;
+
+    for (var g = 0; g < 2; g++) {
+      var nb = g === 0 ? r[1] : r[3];
+      var nd = g === 0 ? r[2] : r[4];
+      for (var i = 0; i < nb; i++) {
+        var blk = cw.slice(pos, pos + nd);
+        pos += nd;
+        blocks.push(blk);
+        ecBlocks.push(rsEncode(blk, ecLen));
+      }
+    }
+
+    var out = [];
+    var maxData = Math.max.apply(null, blocks.map(function (b) { return b.length; }));
+    for (var c = 0; c < maxData; c++)
+      for (var b2 = 0; b2 < blocks.length; b2++)
+        if (c < blocks[b2].length) out.push(blocks[b2][c]);
+    for (var e = 0; e < ecLen; e++)
+      for (var b3 = 0; b3 < ecBlocks.length; b3++) out.push(ecBlocks[b3][e]);
+    return out;
+  }
+
+  // --- Pembinaan matriks -------------------------------------------------
+  function newMatrix(size) {
+    var m = [], r = [];
+    for (var i = 0; i < size; i++) {
+      m.push(new Array(size).fill(null));
+      r.push(new Array(size).fill(false));
+    }
+    return { m: m, reserved: r, size: size };
+  }
+
+  function placeFinder(M, row, col) {
+    for (var r = -1; r <= 7; r++) for (var c = -1; c <= 7; c++) {
+      var rr = row + r, cc = col + c;
+      if (rr < 0 || rr >= M.size || cc < 0 || cc >= M.size) continue;
+      var on = (r >= 0 && r <= 6 && (c === 0 || c === 6)) ||
+               (c >= 0 && c <= 6 && (r === 0 || r === 6)) ||
+               (r >= 2 && r <= 4 && c >= 2 && c <= 4);
+      M.m[rr][cc] = on; M.reserved[rr][cc] = true;
+    }
+  }
+
+  function buildMatrix(v, codewords, mask) {
+    var size = 17 + v * 4;
+    var M = newMatrix(size);
+
+    placeFinder(M, 0, 0); placeFinder(M, 0, size - 7); placeFinder(M, size - 7, 0);
+
+    // corak masa
+    for (var i = 8; i < size - 8; i++) {
+      var on = i % 2 === 0;
+      if (!M.reserved[6][i]) { M.m[6][i] = on; M.reserved[6][i] = true; }
+      if (!M.reserved[i][6]) { M.m[i][6] = on; M.reserved[i][6] = true; }
+    }
+
+    // Corak penjajaran.
+    // Hanya TIGA pusat dilangkau — yang bertindih dengan corak pengesan.
+    // Pusat lain mesti dilukis walaupun ia menindih corak masa; corak
+    // penjajaran mengatasi corak masa mengikut ISO/IEC 18004.
+    var ac = ALIGN[v];
+    if (ac.length) {
+      var first = ac[0], last = ac[ac.length - 1];
+      for (var a = 0; a < ac.length; a++) for (var b = 0; b < ac.length; b++) {
+        var cr = ac[a], cc2 = ac[b];
+        if ((cr === first && cc2 === first) ||
+            (cr === first && cc2 === last) ||
+            (cr === last && cc2 === first)) continue;
+        for (var dr = -2; dr <= 2; dr++) for (var dc = -2; dc <= 2; dc++) {
+          M.m[cr + dr][cc2 + dc] = (Math.abs(dr) === 2 || Math.abs(dc) === 2 || (dr === 0 && dc === 0));
+          M.reserved[cr + dr][cc2 + dc] = true;
+        }
+      }
+    }
+
+    // modul gelap + rizab maklumat format
+    M.m[size - 8][8] = true; M.reserved[size - 8][8] = true;
+    for (var k = 0; k <= 8; k++) {
+      if (!M.reserved[8][k]) { M.reserved[8][k] = true; M.m[8][k] = false; }
+      if (!M.reserved[k][8]) { M.reserved[k][8] = true; M.m[k][8] = false; }
+    }
+    for (var k2 = 0; k2 < 8; k2++) {
+      if (!M.reserved[8][size - 1 - k2]) { M.reserved[8][size - 1 - k2] = true; M.m[8][size - 1 - k2] = false; }
+      if (!M.reserved[size - 1 - k2][8]) { M.reserved[size - 1 - k2][8] = true; M.m[size - 1 - k2][8] = false; }
+    }
+
+    // maklumat versi (v>=7)
+    if (v >= 7) {
+      var vi = VERSION_INFO[v];
+      for (var p = 0; p < 18; p++) {
+        var bit = ((vi >> p) & 1) === 1;
+        var r1 = Math.floor(p / 3), c1 = size - 11 + (p % 3);
+        M.m[r1][c1] = bit; M.reserved[r1][c1] = true;
+        M.m[c1][r1] = bit; M.reserved[c1][r1] = true;
+      }
+    }
+
+    // penempatan data (zigzag)
+    var bitIdx = 0, dirUp = true;
+    for (var col = size - 1; col > 0; col -= 2) {
+      if (col === 6) col--;                       // langkau lajur masa
+      for (var n = 0; n < size; n++) {
+        var row = dirUp ? size - 1 - n : n;
+        for (var s = 0; s < 2; s++) {
+          var cX = col - s;
+          if (M.reserved[row][cX]) continue;
+          var bit2 = false;
+          if (bitIdx < codewords.length * 8) {
+            bit2 = ((codewords[bitIdx >> 3] >> (7 - (bitIdx & 7))) & 1) === 1;
+          }
+          bitIdx++;
+          if (applyMask(mask, row, cX)) bit2 = !bit2;
+          M.m[row][cX] = bit2;
+        }
+      }
+      dirUp = !dirUp;
+    }
+
+    // maklumat format (aras M = 00)
+    var fmt = (0 << 3) | mask;
+    var rem = fmt;
+    for (var q = 0; q < 10; q++) rem = (rem << 1) ^ (((rem >> 9) & 1) * 0x537);
+    var fmtBits = ((fmt << 10) | rem) ^ 0x5412;
+
+    // Pemetaan piawai ISO/IEC 18004: salinan menegak di lajur 8,
+    // salinan mendatar di baris 8.
+    for (var f = 0; f < 15; f++) {
+      var fb = ((fmtBits >> f) & 1) === 1;
+
+      // salinan 1 — menegak, bersebelahan pengesan kiri-atas / kiri-bawah
+      if (f < 6)       M.m[f][8] = fb;
+      else if (f < 8)  M.m[f + 1][8] = fb;
+      else             M.m[size - 15 + f][8] = fb;
+
+      // salinan 2 — mendatar, bersebelahan pengesan kanan-atas / kiri-atas
+      if (f < 8)       M.m[8][size - 1 - f] = fb;
+      else if (f === 8) M.m[8][15 - f - 1 + 1] = fb;
+      else             M.m[8][15 - f - 1] = fb;
+    }
+    return M;
+  }
+
+  function applyMask(mask, i, j) {
+    switch (mask) {
+      case 0: return (i + j) % 2 === 0;
+      case 1: return i % 2 === 0;
+      case 2: return j % 3 === 0;
+      case 3: return (i + j) % 3 === 0;
+      case 4: return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0;
+      case 5: return ((i * j) % 2) + ((i * j) % 3) === 0;
+      case 6: return (((i * j) % 2) + ((i * j) % 3)) % 2 === 0;
+      case 7: return (((i + j) % 2) + ((i * j) % 3)) % 2 === 0;
+    }
+    return false;
+  }
+
+  function penalty(M) {
+    var n = M.size, p = 0, i, j, k;
+    // Rule 1: lima atau lebih modul sewarna berturutan
+    for (i = 0; i < n; i++) {
+      for (var dir = 0; dir < 2; dir++) {
+        var run = 1;
+        for (j = 1; j < n; j++) {
+          var cur = dir ? M.m[j][i] : M.m[i][j];
+          var prv = dir ? M.m[j - 1][i] : M.m[i][j - 1];
+          if (cur === prv) run++;
+          else { if (run >= 5) p += 3 + (run - 5); run = 1; }
+        }
+        if (run >= 5) p += 3 + (run - 5);
+      }
+    }
+    // Rule 2: blok 2x2
+    for (i = 0; i < n - 1; i++) for (j = 0; j < n - 1; j++) {
+      var a = M.m[i][j];
+      if (a === M.m[i][j + 1] && a === M.m[i + 1][j] && a === M.m[i + 1][j + 1]) p += 3;
+    }
+    // Rule 3: corak 1:1:3:1:1
+    var pat1 = [true,false,true,true,true,false,true,false,false,false,false];
+    var pat2 = [false,false,false,false,true,false,true,true,true,false,true];
+    var match = function (arr, pat) {
+      for (var z = 0; z < 11; z++) if (arr[z] !== pat[z]) return false;
+      return true;
+    };
+    for (i = 0; i < n; i++) for (j = 0; j <= n - 11; j++) {
+      var rowArr = [], colArr = [];
+      for (k = 0; k < 11; k++) { rowArr.push(M.m[i][j + k]); colArr.push(M.m[j + k][i]); }
+      if (match(rowArr, pat1) || match(rowArr, pat2)) p += 40;
+      if (match(colArr, pat1) || match(colArr, pat2)) p += 40;
+    }
+    // Rule 4: keseimbangan gelap/cerah
+    var dark = 0;
+    for (i = 0; i < n; i++) for (j = 0; j < n; j++) if (M.m[i][j]) dark++;
+    var pct = dark * 100 / (n * n);
+    p += Math.floor(Math.abs(pct - 50) / 5) * 10;
+    return p;
+  }
+
+  /** Mengembalikan matriks boolean [baris][lajur]; true = modul gelap. */
+  function encode(text) {
+    var bytes = toBytes(String(text));
+    var v = pickVersion(bytes.length);
+    var cw = interleave(buildCodewords(bytes, v), v);
+
+    var best = null, bestScore = Infinity;
+    for (var mask = 0; mask < 8; mask++) {
+      var M = buildMatrix(v, cw, mask);
+      var s = penalty(M);
+      if (s < bestScore) { bestScore = s; best = M; }
+    }
+    return best.m;
+  }
+
+  return { encode: encode };
+})();
+
+/* ==========================================================================
+   CSC2026 — ENJIN PORTAL ATLET
+   --------------------------------------------------------------------------
+   UI/UX kekal sepenuhnya seperti reka bentuk asal. Fail ini hanya menggantikan
+   logik di belakangnya:
+
+     - semua tindakan admin/atlet melalui API v2 yang disahkan di pelayan
+     - had 2 sukan, kapasiti, kelayakan jantina dan perakuan dikuatkuasakan
+       oleh pelayan, bukan hanya oleh UI ini
+     - gambar dimampatkan dalam pelayar sebelum dihantar
+     - permintaan dicuba semula dengan backoff eksponen
+     - kod QR sebenar dijana di dalam pelayar, tiada CDN
+
+   Semua nama fungsi yang dipanggil oleh markup (app.navigate, app.login,
+   app.validateStep1 …) dikekalkan supaya HTML asal tidak perlu diubah.
+   ========================================================================== */
+
+/* ---------- KONFIGURASI ---------- */
+var SCRIPT_URL = 'GANTI_DENGAN_URL_WEB_APP_ANDA';
+
+/* ---------- LAPISAN API ---------- */
+var API = {
+  _wait: function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); },
+
+  request: async function (opts) {
+    var tries = opts.retries === undefined ? 3 : opts.retries;
+    var lastErr = null;
+
+    for (var i = 0; i <= tries; i++) {
+      if (i > 0) await API._wait(Math.min(8000, 700 * Math.pow(2, i - 1)) + Math.random() * 400);
+      try {
+        var res;
+        if (opts.method === 'POST') {
+          res = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            // text/plain mengelakkan preflight OPTIONS yang Apps Script
+            // tidak kendalikan dengan betul.
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(opts.body),
+            redirect: 'follow'
+          });
+        } else {
+          res = await fetch(SCRIPT_URL + '?' + new URLSearchParams(opts.params).toString(),
+            { method: 'GET', redirect: 'follow' });
+        }
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var data = await res.json();
+        if (data.status === 'error' && (data.code === 'BUSY' || data.code === 'SERVER_ERROR') && i < tries) {
+          lastErr = new Error(data.message); continue;
+        }
+        return data;
+      } catch (e) { lastErr = e; }
+    }
+    throw lastErr || new Error('Sambungan gagal.');
+  },
+
+  get: function (params, r) { return API.request({ method: 'GET', params: params, retries: r }); },
+  post: function (body, r) { return API.request({ method: 'POST', body: body, retries: r }); }
+};
+
+/* ---------- MAMPATAN IMEJ SISI KLIEN ---------- */
+function compressImage(file, maxDim, quality) {
+  return new Promise(function (resolve, reject) {
+    if (!/^image\//.test(file.type)) return reject(new Error('Fail yang dipilih bukan imej.'));
+    if (file.size > 12 * 1024 * 1024) return reject(new Error('Fail terlalu besar (maksimum 12MB).'));
+
+    var reader = new FileReader();
+    reader.onerror = function () { reject(new Error('Gagal membaca fail.')); };
+    reader.onload = function () {
+      var img = new Image();
+      img.onerror = function () { reject(new Error('Imej rosak atau format tidak disokong.')); };
+      img.onload = function () {
+        var side = Math.min(img.width, img.height);
+        var sx = (img.width - side) / 2, sy = (img.height - side) / 2;
+        var out = Math.min(maxDim || 600, side);
+
+        var c = document.createElement('canvas');
+        c.width = out; c.height = out;
+        var ctx = c.getContext('2d');
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, sx, sy, side, side, 0, 0, out, out);
+
+        var q = quality || 0.82;
+        var url = c.toDataURL('image/jpeg', q), guard = 0;
+        while (url.length > 500 * 1024 && q > 0.4 && guard < 6) {
+          q -= 0.1; guard++; url = c.toDataURL('image/jpeg', q);
+        }
+        resolve({ dataUrl: url, kb: Math.round(url.length * 0.75 / 1024) });
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ==========================================================================
+   APLIKASI
+   ========================================================================== */
+var app = {
+  state: {
+    clientId: null,
+    init: null,             // muatan initPortal
+    user: null,             // rekod staf yang disahkan
+    registration: null,     // pendaftaran sedia ada / baharu
+    selections: [],         // [{sportId, categoryId}]
+    photo: null,            // dataUrl termampat
+    news: [],
+    view: 'portal',
+    busy: false
+  },
+
+  /* ---------------- Kitaran hayat ---------------- */
+  init: async function () {
+    app.state.clientId = app.clientId();
+    app.applyTheme(app.savedTheme());
+    app.bindStatic();
+
+    if (SCRIPT_URL === 'GANTI_DENGAN_URL_WEB_APP_ANDA') {
+      document.getElementById('api-warning').classList.remove('hide');
+    }
+
+    var qr = new URLSearchParams(location.search).get('qr');
+    if (qr) history.replaceState(null, '', location.pathname);
+
+    await app.loadPortal();
+    app.hideLoader();
+
+    if (qr) {
+      app.navigate('login');
+      app.alert('Kod QR Dikesan', 'Sila masukkan Staff ID anda untuk membuka pas sukan.', 'qr-code');
+    }
+  },
+
+  hideLoader: function () {
+    var l = document.getElementById('global-loader');
+    if (!l) return;
+    l.style.opacity = '0';
+    setTimeout(function () { l.classList.add('hide'); }, 500);
+  },
+
+  loadPortal: async function () {
+    try {
+      var d = await API.get({ action: 'initPortal' }, 2);
+      if (d.status !== 'success') throw new Error(d.message || 'Gagal memuatkan portal.');
+      app.state.init = d;
+      app.state.news = d.news || [];
+      app.applyBranding(d.branding);
+      app.renderPortal();
+      app.renderNews();
+      app.renderCatalog();
+      app.buildPublicFilter();
+      app.renderPublicDashboard('');
+      app.refreshIcons();
+      // Satu bacaan papan markah supaya kad portal ada isi sebelum pengguna
+      // membukanya. Polling sebenar hanya bermula selepas skrin dibuka.
+      app.score.refresh(true).catch(function () { });
+    } catch (e) {
+      app.setTicker('Tidak dapat menyambung ke pelayan. Sila semak sambungan internet anda.');
+      var cat = document.getElementById('catalog-container');
+      if (cat) cat.innerHTML = app.emptyCard('wifi-off', 'Tiada Sambungan',
+        'Sistem tidak dapat dihubungi buat masa ini. Sila muat semula halaman.');
+    }
+  },
+
+  clientId: function () {
+    var v = null;
+    try { v = localStorage.getItem('csc26_client'); } catch (e) { }
+    if (!v) {
+      v = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+      try { localStorage.setItem('csc26_client', v); } catch (e) { }
+    }
+    return v;
+  },
+
+  /* ---------------- Tema ---------------- */
+  savedTheme: function () {
+    try {
+      var t = localStorage.getItem('mykelab_theme');
+      if (t) return t;
+    } catch (e) { }
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  },
+
+  applyTheme: function (theme) {
+    var dark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', dark);
+    var icon = document.getElementById('theme-icon');
+    if (icon) { icon.setAttribute('data-lucide', dark ? 'sun' : 'moon'); app.refreshIcons(); }
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', dark ? '#15151e' : '#f1f5f9');
+  },
+
+  toggleTheme: function () {
+    var next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+    try { localStorage.setItem('mykelab_theme', next); } catch (e) { }
+    app.applyTheme(next);
+  },
+
+  refreshIcons: function () {
+    try { if (window.lucide && lucide.createIcons) lucide.createIcons(); } catch (e) { }
+  },
+
+  /* ---------------- Navigasi ---------------- */
+  navigate: function (view) {
+    var target = document.getElementById('view-' + view);
+    if (!target) return;
+
+    // Skrin yang memerlukan sesi atlet yang sah.
+    var guarded = ['form', 'sports', 'declaration', 'review', 'dashboard'];
+    if (guarded.indexOf(view) !== -1 && !app.state.user) { view = 'login'; target = document.getElementById('view-login'); }
+
+    document.querySelectorAll('.view-section').forEach(function (s) { s.classList.add('hide'); });
+    target.classList.remove('hide');
+    app.state.view = view;
+
+    // Polling papan markah hanya berjalan semasa skrin itu dibuka.
+    // Meninggalkannya berjalan di latar belakang ialah cara paling mudah
+    // untuk membazirkan kuota Apps Script tanpa sesiapa pun melihat hasilnya.
+    if (view === 'scoreboard') app.score.start(); else app.score.stop();
+
+    app.renderNavActions();
+    app.refreshIcons();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  /**
+   * Butang di sebelah kanan nav. Sama seperti reka bentuk asal:
+   *   - skrin penuh (login / berita / katalog / dashboard awam) -> "× Kembali"
+   *   - langkah pendaftaran -> cip pengguna yang sedang log masuk
+   * Ditambah: jalan keluar semasa di tengah pendaftaran (skrin borang tiada
+   * butang Kembali di bawah), dan butang Utama pada pas sukan.
+   */
+  renderNavActions: function () {
+    var el = document.getElementById('nav-actions');
+    if (!el) return;
+    var v = app.state.view;
+    el.innerHTML = '';
+
+    if (['login', 'news', 'catalog', 'public-dashboard', 'scoreboard'].indexOf(v) !== -1) {
+      el.innerHTML = '<button onclick="app.navigate(\'portal\')" ' +
+        'class="text-sm text-slate-500 dark:text-gray-400 flex items-center gap-1 bg-white/50 dark:bg-black/20 px-3 py-1.5 rounded-full">' +
+        '<i data-lucide="x" class="w-4 h-4"></i> Kembali</button>';
+
+    } else if (['form', 'sports', 'declaration', 'review'].indexOf(v) !== -1) {
+      var u = app.state.user || {};
+      var ini = String(u.name || '?').trim().split(/\s+/).slice(0, 2)
+        .map(function (w) { return (w[0] || '').toUpperCase(); }).join('') || '?';
+      el.innerHTML = '<div class="flex items-center gap-2">' +
+          (app.state.photo
+            ? '<img src="' + app.esc(app.state.photo) + '" class="w-6 h-6 rounded-full border object-cover">'
+            : '<span class="w-6 h-6 rounded-full border bg-gradient-to-tr from-motorsport-accent to-orange-500 text-white text-[9px] font-bold flex items-center justify-center">' + app.esc(ini) + '</span>') +
+          '<span class="text-xs font-sport font-bold">' + app.esc(u.staffId || '') + '</span>' +
+          '<button onclick="app.confirmExit()" title="Keluar" class="ml-1 text-slate-400 hover:text-motorsport-accent transition">' +
+            '<i data-lucide="log-out" class="w-4 h-4"></i></button>' +
+        '</div>';
+
+    } else if (v === 'dashboard') {
+      el.innerHTML = '<button onclick="app.navigate(\'portal\')" ' +
+        'class="text-sm text-slate-500 dark:text-gray-400 flex items-center gap-1 bg-white/50 dark:bg-black/20 px-3 py-1.5 rounded-full">' +
+        '<i data-lucide="home" class="w-4 h-4"></i> Utama</button>';
+    }
+    app.refreshIcons();
+  },
+
+  /** Keluar di tengah pendaftaran — sahkan dahulu supaya kerja tidak hilang tanpa sengaja. */
+  confirmExit: function () {
+    if (confirm('Keluar dari pendaftaran?\n\nMaklumat yang belum dihantar akan hilang.')) app.logout();
+  },
+
+  setTicker: function (text) {
+    var t = document.getElementById('ticker-text');
+    if (t) t.textContent = text;
+  },
+
+  /* ---------------- Skrin portal ---------------- */
+  renderPortal: function () {
+    var d = app.state.init;
+    var n = document.getElementById('news-count');
+    if (n) n.textContent = (d.news || []).length;
+
+    var w = d.window || {};
+    if (!w.open) {
+      app.setTicker(w.reason || 'Pendaftaran tidak dibuka pada masa ini.');
+    } else if (w.closesAt) {
+      app.setTicker('Pendaftaran dibuka sehingga ' + app.fmtDate(w.closesAt) +
+                    '. Sila login menggunakan Staff ID anda.');
+    } else {
+      app.setTicker('Sila login menggunakan Staff ID anda untuk memulakan pendaftaran sukan.');
+    }
+    app.renderNavActions();
+  },
+
+  /**
+   * Logo yang dimuat naik urus setia menggantikan ikon trofi lalai.
+   * Jika muat turun imej gagal (fail dipadam dari Drive, atau kebenaran
+   * berubah), kita kembali kepada ikon lalai dan bukan kotak pecah.
+   */
+  applyBranding: function (b) {
+    if (!b) return;
+    var name = document.getElementById('brand-name');
+    if (name && b.name) name.textContent = b.name;
+
+    var slot = document.getElementById('brand-logo-slot');
+    var fallback = function () {
+      if (!slot) return;
+      slot.innerHTML = '<i data-lucide="trophy" class="text-motorsport-accent w-6 h-6"></i>';
+      app.refreshIcons();
+    };
+
+    if (!b.logoUrl) { fallback(); return; }
+
+    // Muatkan sekali dahulu. Kalau imej gagal, kita tidak menyentuh nav,
+    // favicon atau manifest langsung — lebih baik kekal dengan aset lalai
+    // yang berfungsi daripada menukarnya kepada pautan yang rosak.
+    var probe = new Image();
+    probe.onerror = fallback;
+    probe.onload = function () {
+      if (slot) {
+        var img = document.createElement('img');
+        img.alt = b.name || 'Logo';
+        img.className = 'w-6 h-6 object-contain';
+        img.src = b.logoUrl;
+        slot.innerHTML = '';
+        slot.appendChild(img);
+      }
+      app.applyFavicon(b.logoUrl);
+      app.applyManifest(b);
+    };
+    probe.src = b.logoUrl;
+  },
+
+  /**
+   * Tukar favicon kepada logo yang dimuat naik.
+   *
+   * Fail favicon-*.png statik kekal sebagai lalai dalam <head>, jadi tab
+   * sudah ada ikon yang betul sebelum JavaScript berjalan. Ini hanya
+   * menggantikannya selepas logo disahkan boleh dimuatkan.
+   */
+  applyFavicon: function (url) {
+    if (!url) return;
+    var head = document.head;
+    // Buang semua pautan ikon sedia ada supaya pelayar tidak memilih yang lama.
+    head.querySelectorAll('link[rel~="icon"], link[rel="apple-touch-icon"]')
+      .forEach(function (l) { l.parentNode.removeChild(l); });
+
+    [['icon', ''], ['apple-touch-icon', '']].forEach(function (pair) {
+      var l = document.createElement('link');
+      l.rel = pair[0];
+      l.href = url;
+      head.appendChild(l);
+    });
+  },
+
+  /**
+   * Bina semula manifest PWA dengan logo yang dimuat naik.
+   *
+   * PENTING — apa yang ini BOLEH dan TIDAK BOLEH buat:
+   *
+   *   Boleh: menukar ikon dan nama yang dipapar dalam gesaan "Add to Home
+   *          Screen" untuk pengguna yang BELUM memasang aplikasi.
+   *
+   *   Tidak boleh: menukar ikon pada telefon yang SUDAH memasang aplikasi.
+   *          Sistem pengendalian menyalin ikon sekali semasa pemasangan dan
+   *          tidak membacanya semula. Pengguna itu perlu buang dan pasang
+   *          semula.
+   *
+   * Sebab itu ikon sebenar dalam web/assets/ tetap dijana daripada logo
+   * rasmi (tools/build-icons-pwa.js) dan bukan bergantung pada kod ini.
+   * Ikon statik itu disenaraikan DAHULU sebagai sandaran, supaya manifest
+   * kekal sah walaupun fail logo dipadam dari Drive kemudian.
+   */
+  applyManifest: function (b) {
+    try {
+      var link = document.querySelector('link[rel="manifest"]');
+      if (!link || !b.logoUrl) return;
+
+      var m = {
+        name: (b.eventName || b.name || 'CSC2026') + ' — Portal Atlet',
+        short_name: b.eventShort || b.name || 'CSC2026',
+        description: 'Portal pendaftaran atlet dan papan markah ' + (b.eventName || 'CSC2026'),
+        start_url: './index.html',
+        scope: './',
+        display: 'standalone',
+        orientation: 'portrait',
+        background_color: '#0f1117',
+        theme_color: '#0f172a',
+        lang: 'ms',
+        icons: [
+          { src: new URL('assets/icon-192.png', location.href).href, sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: new URL('assets/icon-512.png', location.href).href, sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: new URL('assets/icon-maskable-512.png', location.href).href, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: b.logoUrl, sizes: '512x512', type: 'image/png', purpose: 'any' }
+        ]
+      };
+
+      var blob = new Blob([JSON.stringify(m)], { type: 'application/manifest+json' });
+      var next = URL.createObjectURL(blob);
+      if (app._manifestUrl) URL.revokeObjectURL(app._manifestUrl);
+      app._manifestUrl = next;
+      link.href = next;
+    } catch (e) {
+      // Manifest yang rosak lebih teruk daripada manifest lalai — biarkan
+      // yang statik jika apa-apa di sini gagal.
+    }
+  },
+
+  _manifestUrl: null,
+
+  fmtDate: function (iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso || '');
+    var p = function (x) { return x < 10 ? '0' + x : '' + x; };
+    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' +
+           p(d.getHours()) + ':' + p(d.getMinutes());
+  },
+
+  /* ---------------- Berita ---------------- */
+  renderNews: function () {
+    var c = document.getElementById('news-container');
+    if (!c) return;
+    var news = app.state.news;
+    if (!news.length) {
+      c.innerHTML = app.emptyCard('newspaper', 'Tiada Berita', 'Belum ada pengumuman rasmi buat masa ini.');
+      return;
+    }
+    c.innerHTML = news.map(function (n, i) {
+      return '<div class="glass-card overflow-hidden cursor-pointer hover:scale-[1.01] transition-transform" onclick="app.openNewsModal(' + i + ')">' +
+        (n.img ? '<div class="w-full h-40 overflow-hidden"><img src="' + app.esc(n.img) + '" alt="" loading="lazy" class="w-full h-full object-cover" onerror="this.parentNode.remove()"></div>' : '') +
+        '<div class="p-5 flex flex-col gap-2">' +
+          '<span class="text-[10px] font-bold uppercase tracking-wider text-motorsport-accent">' + app.esc(n.date) + '</span>' +
+          '<h3 class="font-sport font-bold text-lg leading-tight text-slate-900 dark:text-white">' + app.esc(n.title) + '</h3>' +
+          '<p class="text-xs text-slate-500 dark:text-gray-400 leading-relaxed">' + app.esc(n.shortDesc) + '</p>' +
+          '<span class="text-xs text-motorsport-accentCyan font-bold flex items-center gap-1 mt-1">Baca Lanjut <i data-lucide="arrow-right" class="w-3 h-3"></i></span>' +
+        '</div></div>';
+    }).join('');
+    app.refreshIcons();
+  },
+
+  openNewsModal: function (i) {
+    var n = app.state.news[i];
+    if (!n) return;
+    document.getElementById('news-modal-img').src = n.img || '';
+    document.getElementById('news-modal-date').textContent = n.date || '';
+    document.getElementById('news-modal-title').textContent = n.title || '';
+    document.getElementById('news-modal-desc').textContent = n.longDesc || n.shortDesc || '';
+    var m = document.getElementById('news-modal'), b = document.getElementById('news-modal-box');
+    m.classList.remove('hide');
+    requestAnimationFrame(function () {
+      m.classList.remove('opacity-0');
+      b.classList.remove('translate-y-full', 'sm:translate-y-10');
+    });
+    app.refreshIcons();
+  },
+
+  closeNewsModal: function () {
+    var m = document.getElementById('news-modal'), b = document.getElementById('news-modal-box');
+    m.classList.add('opacity-0');
+    b.classList.add('translate-y-full', 'sm:translate-y-10');
+    setTimeout(function () { m.classList.add('hide'); }, 300);
+  },
+
+  /* ---------------- Katalog sukan ---------------- */
+  renderCatalog: function () {
+    var c = document.getElementById('catalog-container');
+    if (!c) return;
+    var list = (app.state.init && app.state.init.sportsCatalog) || [];
+    if (!list.length) {
+      c.innerHTML = app.emptyCard('medal', 'Tiada Sukan', 'Senarai sukan belum dibuka oleh urus setia.');
+      return;
+    }
+    c.innerHTML = list.map(function (s) {
+      var pct = s.capacity > 0 ? Math.min(100, Math.round(s.filled / s.capacity * 100)) : 0;
+      var left = s.capacity > 0 ? Math.max(0, s.capacity - s.filled) : null;
+      var barColor = s.full ? 'bg-red-500' : (pct >= 85 ? 'bg-yellow-500' : 'bg-motorsport-accentCyan');
+      return '<div class="glass-card p-5 flex flex-col gap-3">' +
+        '<div class="flex justify-between items-start gap-3">' +
+          '<div class="flex-1">' +
+            '<h3 class="font-sport font-bold text-lg uppercase text-slate-900 dark:text-white leading-tight">' + app.esc(s.name) + '</h3>' +
+            (s.description ? '<p class="text-[11px] text-slate-500 mt-0.5">' + app.esc(s.description) + '</p>' : '') +
+          '</div>' +
+          (s.full
+            ? '<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-300 dark:border-red-500/30">Penuh</span>'
+            : '<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500/30">Buka</span>') +
+        '</div>' +
+        '<div class="telemetry-bar-container"><div class="telemetry-bar ' + barColor + '" style="width:' + pct + '%"></div></div>' +
+        '<div class="flex justify-between items-center text-[10px] font-mono text-slate-500">' +
+          '<span>' + s.filled + (s.capacity > 0 ? ' / ' + s.capacity + ' PESERTA' : ' PESERTA') + '</span>' +
+          (left !== null ? '<span class="font-bold ' + (s.full ? 'text-red-500' : 'text-motorsport-accentCyan') + '">BAKI ' + left + '</span>' : '') +
+        '</div>' +
+        (s.categories && s.categories.length
+          ? '<div class="border-t border-slate-200 dark:border-gray-800 pt-3 flex flex-wrap gap-1.5">' +
+            s.categories.map(function (ct) {
+              return '<span class="text-[9px] font-bold uppercase tracking-wide px-2 py-1 rounded ' +
+                (ct.full ? 'bg-slate-100 dark:bg-white/5 text-slate-400 line-through' : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-300') +
+                '">' + app.esc(ct.name) + ' ' + ct.filled + (ct.capacity > 0 ? '/' + ct.capacity : '') + '</span>';
+            }).join('') + '</div>'
+          : '') +
+      '</div>';
+    }).join('');
+  },
+
+  /* ---------------- Dashboard awam ---------------- */
+  buildPublicFilter: function () {
+    var sel = document.getElementById('public-dash-filter');
+    if (!sel) return;
+    var list = (app.state.init && app.state.init.sportsCatalog) || [];
+    sel.innerHTML = '<option value="">-- Semua Sukan / Keseluruhan --</option>' +
+      list.map(function (s) { return '<option value="' + app.esc(s.id) + '">' + app.esc(s.name) + '</option>'; }).join('');
+  },
+
+  renderPublicDashboard: function (sportId) {
+    var d = app.state.init;
+    if (!d) return;
+    var stats = d.stats;
+    if (!stats) return;                       // statistik awam dimatikan oleh admin
+
+    var list = d.sportsCatalog || [];
+    var scoped, contingents, totalLabel;
+
+    if (sportId) {
+      var sp = list.filter(function (s) { return s.id === sportId; })[0];
+      var st = (sp && sp.stats) || { total: 0, male: 0, female: 0, byContingent: {} };
+      scoped = { total: st.total, male: st.male, female: st.female };
+      contingents = st.byContingent || {};
+      totalLabel = 'Peserta dalam ' + ((sp && sp.name) || sportId);
+    } else {
+      scoped = { total: stats.totalRegistered, male: stats.male, female: stats.female };
+      contingents = stats.byContingent || {};
+      totalLabel = 'Daripada ' + stats.totalStaff + ' staf berdaftar';
+    }
+
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    set('pub-stat-total', scoped.total);
+    set('pub-stat-staff', totalLabel);
+    set('pub-stat-sports', stats.totalSports);
+    set('pub-stat-male', scoped.male);
+    set('pub-stat-female', scoped.female);
+    set('pub-stat-reg', stats.totalRegistered);
+    set('pub-stat-pend', stats.totalPending);
+    set('pub-stat-canc', stats.totalCancelled);
+
+    var tot = scoped.male + scoped.female;
+    var mPct = tot ? Math.round(scoped.male / tot * 100) : 50;
+    var mb = document.getElementById('pub-bar-male'), fb = document.getElementById('pub-bar-female');
+    if (mb) mb.style.width = mPct + '%';
+    if (fb) fb.style.width = (100 - mPct) + '%';
+
+    // Pecahan kontinjen
+    var cWrap = document.getElementById('pub-contingent-stats');
+    if (cWrap) {
+      var keys = Object.keys(contingents).sort(function (a, b) { return contingents[b] - contingents[a]; });
+      var max = keys.length ? contingents[keys[0]] : 1;
+      cWrap.innerHTML = keys.length ? keys.map(function (k) {
+        var pct = Math.round(contingents[k] / (max || 1) * 100);
+        return '<div class="flex flex-col gap-1">' +
+          '<div class="flex justify-between items-center text-[11px]">' +
+            '<span class="font-bold text-slate-700 dark:text-gray-200 uppercase tracking-wide">' + app.esc(k) + '</span>' +
+            '<span class="font-mono text-slate-500">' + contingents[k] + '</span>' +
+          '</div>' +
+          '<div class="telemetry-bar-container"><div class="telemetry-bar bg-motorsport-accent" style="width:' + pct + '%"></div></div>' +
+        '</div>';
+      }).join('') : '<p class="text-xs text-slate-500">Tiada data pendaftaran lagi.</p>';
+    }
+
+    // Kapasiti sukan
+    var capWrap = document.getElementById('pub-sport-capacity-list');
+    if (capWrap) {
+      var shown = sportId ? list.filter(function (s) { return s.id === sportId; }) : list;
+      capWrap.innerHTML = shown.length ? shown.map(function (s) {
+        var pct = s.capacity > 0 ? Math.min(100, Math.round(s.filled / s.capacity * 100)) : 0;
+        var color = s.full ? 'bg-red-500' : (pct >= 85 ? 'bg-yellow-500' : 'bg-motorsport-accentCyan');
+        return '<div class="flex flex-col gap-1.5">' +
+          '<div class="flex justify-between items-center text-[11px]">' +
+            '<span class="font-bold text-slate-700 dark:text-gray-200 uppercase tracking-wide">' + app.esc(s.name) + '</span>' +
+            '<span class="font-mono text-slate-500">' + s.filled + (s.capacity > 0 ? '/' + s.capacity : '') + '</span>' +
+          '</div>' +
+          '<div class="telemetry-bar-container"><div class="telemetry-bar ' + color + '" style="width:' + pct + '%"></div></div>' +
+        '</div>';
+      }).join('') : '<p class="text-xs text-slate-500">Tiada sukan.</p>';
+    }
+  },
+
+  /* ---------------- Log masuk atlet ---------------- */
+  login: async function () {
+    var btn = document.getElementById('btn-login-submit');
+    var input = document.getElementById('login-staff-id');
+    var id = (input.value || '').trim().toUpperCase();
+
+    if (!id) { app.alert('Staff ID Diperlukan', 'Sila masukkan Staff ID anda untuk meneruskan.', 'alert-triangle'); return; }
+
+    var params = { action: 'validateStaffId', staffId: id, clientId: app.state.clientId };
+    var v2wrap = document.getElementById('verify-2fa-wrap');
+    var v2 = document.getElementById('login-verify');
+    if (v2wrap && !v2wrap.classList.contains('hide') && v2 && v2.value.trim()) {
+      params.verify = v2.value.trim();
+    }
+
+    app.setBtnBusy(btn, true, 'Menyemak...');
+    try {
+      var d = await API.get(params, 2);
+
+      if (d.status === 'need_verify') {
+        v2wrap.classList.remove('hide');
+        v2.focus();
+        app.loginMsg(d.message, 'warn');
+        return;
+      }
+
+      if (d.status === 'closed') {
+        app.alert('Pendaftaran Ditutup', d.message, 'clock');
+        return;
+      }
+
+      if (d.status !== 'success') {
+        app.loginMsg(d.message || 'Pengesahan gagal.', 'error');
+        app.alert('ID Tidak Sah', d.message || 'Staff ID tidak dijumpai dalam pangkalan data.', 'x-circle');
+        return;
+      }
+
+      app.state.user = d.user;
+      app.loginMsg('');
+
+      // BR-004: sudah berdaftar -> terus ke pas sukan (baca sahaja)
+      if (d.hasRegistered) {
+        app.state.registration = d.registration;
+        app.state.selections = d.registration.selections || [];
+        app.renderDashboard(false);
+        app.navigate('dashboard');
+        return;
+      }
+
+      if (d.window && !d.window.open) {
+        app.alert('Pendaftaran Ditutup', d.window.reason, 'clock');
+        return;
+      }
+
+      app.fillForm(d.user);
+      app.navigate('form');
+
+    } catch (e) {
+      app.alert('Sambungan Gagal', 'Tidak dapat menghubungi pelayan. Sila cuba semula.', 'wifi-off');
+    } finally {
+      app.setBtnBusy(btn, false, 'Log Masuk');
+    }
+  },
+
+  /* ==================== PAPAN MARKAH (LIVE) ====================
+   *
+   * Apps Script tiada push, jadi "live" bermakna polling. Bahagian yang
+   * penting ialah polling MURAH:
+   *
+   *   1. Kita menyemak endpoint scoreVersion — kira-kira 40 bait — dan hanya
+   *      menarik muatan penuh apabila nombor versi berubah. Semasa tiada
+   *      markah baharu, setiap semakan hampir kosong.
+   *   2. Selang datang dari pelayan (SCORE_POLL_SECONDS) dengan jitter rawak,
+   *      supaya 500 pelayar tidak mengetuk pada saat yang sama.
+   *   3. Polling BERHENTI apabila tab tidak kelihatan atau pengguna beralih
+   *      ke skrin lain. Sekadar ini sudah memotong hampir separuh beban
+   *      sebenar — ramai orang biarkan tab terbuka di dalam poket.
+   *   4. Kegagalan berturut-turut memanjangkan selang (backoff). Kalau pelayan
+   *      sesak, kita tidak menambah masalah.
+   */
+  score: {
+    data: null,
+    version: -1,
+    timer: null,
+    fails: 0,
+    running: false,
+    lastAt: 0,
+
+    start: function () {
+      if (app.score.running) return;
+      app.score.running = true;
+      app.score.refresh(false);
+    },
+
+    stop: function () {
+      app.score.running = false;
+      if (app.score.timer) { clearTimeout(app.score.timer); app.score.timer = null; }
+    },
+
+    /** Selang seterusnya: asas pelayan + jitter, dipanjangkan bila gagal. */
+    nextDelay: function () {
+      var d = app.score.data;
+      var base = (d && d.pollSeconds) ? d.pollSeconds : 20;
+      base = Math.max(10, base) * 1000;
+      var backoff = Math.min(4, app.score.fails);
+      var jitter = Math.random() * 5000;
+      return base * (1 + backoff) + jitter;
+    },
+
+    schedule: function () {
+      if (!app.score.running) return;
+      if (app.score.timer) clearTimeout(app.score.timer);
+      app.score.timer = setTimeout(app.score.tick, app.score.nextDelay());
+    },
+
+    /** Semakan murah. Hanya tarik data penuh apabila versi berubah. */
+    tick: async function () {
+      if (!app.score.running || document.hidden) { app.score.schedule(); return; }
+      try {
+        var v = await API.get({ action: 'scoreVersion' }, 0);
+        app.score.fails = 0;
+        if (v && v.status === 'success' && v.version !== app.score.version) {
+          await app.score.refresh(true);
+          return;
+        }
+        app.score.setLive('ok');
+      } catch (e) {
+        app.score.fails++;
+        app.score.setLive('offline');
+      }
+      app.score.schedule();
+    },
+
+    refresh: async function (silent) {
+      if (!silent) app.score.setLive('loading');
+      try {
+        var params = { action: 'scoreboard' };
+        if (app.state.user && app.state.user.staffId) params.staffId = app.state.user.staffId;
+        var d = await API.get(params, 1);
+        if (d.status !== 'success') {
+          app.score.renderError(d.message || 'Papan markah belum tersedia.');
+          app.score.fails++;
+          app.score.setLive('offline');
+        } else {
+          app.score.fails = 0;
+          app.score.data = d;
+          app.score.version = d.version;
+          app.score.lastAt = Date.now();
+          app.score.render(d);
+          app.score.setLive('ok');
+        }
+      } catch (e) {
+        app.score.fails++;
+        app.score.setLive('offline');
+        if (!app.score.data) app.score.renderError('Tidak dapat menyambung ke pelayan.');
+      }
+      app.score.schedule();
+    },
+
+    setLive: function (mode) {
+      var dot = document.getElementById('score-live-dot');
+      var txt = document.getElementById('score-live-text');
+      if (!dot || !txt) return;
+      if (mode === 'loading') {
+        dot.className = 'w-2 h-2 rounded-full bg-yellow-500 animate-pulse';
+        txt.textContent = 'Memuatkan…';
+      } else if (mode === 'offline') {
+        dot.className = 'w-2 h-2 rounded-full bg-red-500';
+        txt.textContent = 'Luar talian — cuba semula sebentar lagi';
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse';
+        var d = app.score.data;
+        var poll = (d && d.pollSeconds) ? d.pollSeconds : 20;
+        txt.textContent = 'Langsung · kemas kini ' +
+          (app.score.lastAt ? app.timeAgo(app.score.lastAt) : 'baru') +
+          ' · semak setiap ' + poll + 's';
+      }
+    },
+
+    renderError: function (msg) {
+      var el = document.getElementById('score-standings');
+      if (el) el.innerHTML = app.emptyCard('trophy', 'Belum Ada Markah', msg);
+      app.refreshIcons();
+    },
+
+    render: function (d) {
+      var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+      var st = d.standings || [];
+      var mt = d.medalTotals || { gold: 0, silver: 0, bronze: 0 };
+
+      set('score-gold', mt.gold);
+      set('score-silver', mt.silver);
+      set('score-bronze', mt.bronze);
+      set('score-events', (d.totals && d.totals.eventsCompleted) || 0);
+
+      app.score.renderPodium(st);
+      app.score.renderStandings(st);
+      app.score.renderMedalChart(st);
+      app.score.renderTrend(d.trend);
+      app.score.renderLatest(d.latest || []);
+      app.score.renderUpcoming(d.upcoming || []);
+      app.score.renderNews(d.news || []);
+      app.score.renderPortalTeaser(st);
+      app.refreshIcons();
+    },
+
+    /** Tiga teratas, susunan visual perak–emas–gangsa seperti podium sebenar. */
+    renderPodium: function (st) {
+      var el = document.getElementById('score-podium');
+      if (!el) return;
+      if (!st.length) { el.innerHTML = ''; return; }
+
+      var top = st.slice(0, 3);
+      var order = [top[1], top[0], top[2]];
+      var heights = ['h-16', 'h-24', 'h-12'];
+      var medals = ['2', '1', '3'];
+
+      el.innerHTML = order.map(function (s, i) {
+        if (!s) return '<div></div>';
+        return '<div class="flex flex-col items-center justify-end gap-2">' +
+            '<span class="text-[10px] font-bold uppercase tracking-wide text-slate-600 dark:text-gray-300 text-center leading-tight truncate w-full">' +
+              app.esc(s.short || s.name) + '</span>' +
+            '<span class="font-sport font-bold text-lg text-slate-900 dark:text-white">' + s.points + '</span>' +
+            '<div class="w-full ' + heights[i] + ' rounded-t-xl flex items-start justify-center pt-1.5 shadow-inner" ' +
+              'style="background:' + app.esc(s.color) + '">' +
+              '<span class="text-white font-sport font-bold text-sm drop-shadow">' + medals[i] + '</span>' +
+            '</div>' +
+          '</div>';
+      }).join('');
+    },
+
+    /**
+     * Bar mendatar dibina daripada div, bukan SVG. Ia responsif secara
+     * semula jadi pada telefon, mewarisi gaya kad sedia ada, dan tidak
+     * memerlukan pengiraan lebar teks.
+     */
+    renderStandings: function (st) {
+      var el = document.getElementById('score-standings');
+      if (!el) return;
+      if (!st.length) {
+        el.innerHTML = app.emptyCard('trophy', 'Belum Ada Markah',
+          'Keputusan akan dipapar sebaik sahaja urus setia mengesahkan markah pertama.');
+        app.refreshIcons();
+        return;
+      }
+      var max = Math.max.apply(null, st.map(function (s) { return s.points; }).concat([1]));
+      el.innerHTML = st.map(function (s) {
+        var pct = Math.max(3, Math.round(s.points / max * 100));
+        return '<div class="flex flex-col gap-1.5">' +
+          '<div class="flex justify-between items-center text-xs">' +
+            '<span class="flex items-center gap-2 min-w-0">' +
+              '<span class="w-5 text-[10px] font-mono font-bold text-slate-400 flex-shrink-0">#' + s.rank + '</span>' +
+              '<span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background:' + app.esc(s.color) + '"></span>' +
+              '<span class="font-bold text-slate-700 dark:text-gray-200 truncate">' + app.esc(s.name) + '</span>' +
+            '</span>' +
+            '<span class="font-mono font-bold text-slate-900 dark:text-white flex-shrink-0 ml-2">' + s.points + '</span>' +
+          '</div>' +
+          '<div class="telemetry-bar-container h-2 rounded overflow-hidden bg-slate-200 dark:bg-white/5">' +
+            '<div class="h-full rounded transition-all duration-700" style="width:' + pct + '%;background:' + app.esc(s.color) + '"></div>' +
+          '</div>' +
+          '<div class="flex gap-3 text-[10px] font-mono text-slate-500">' +
+            '<span>🥇 ' + s.gold + '</span><span>🥈 ' + s.silver + '</span><span>🥉 ' + s.bronze + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    },
+
+    renderMedalChart: function (st) {
+      var el = document.getElementById('score-medal-chart');
+      var wrap = document.getElementById('score-medal-wrapper');
+      if (!el || !wrap) return;
+      var withMedals = st.filter(function (s) { return s.gold + s.silver + s.bronze > 0; });
+      wrap.classList.toggle('hide', withMedals.length === 0);
+      if (!withMedals.length) { el.innerHTML = ''; return; }
+
+      var max = Math.max.apply(null, withMedals.map(function (s) {
+        return s.gold + s.silver + s.bronze;
+      }).concat([1]));
+
+      el.innerHTML = '<div class="flex flex-col gap-3">' + withMedals.map(function (s) {
+        var total = s.gold + s.silver + s.bronze;
+        var w = Math.max(4, Math.round(total / max * 100));
+        var seg = function (n, cls) {
+          if (!n) return '';
+          return '<div class="' + cls + ' h-full" style="width:' + (n / total * 100) + '%"></div>';
+        };
+        return '<div class="flex items-center gap-3">' +
+            '<span class="w-16 text-[10px] font-bold uppercase text-slate-500 truncate flex-shrink-0">' +
+              app.esc(s.short || s.name) + '</span>' +
+            '<div class="flex-1 h-3 rounded overflow-hidden bg-slate-200 dark:bg-white/5">' +
+              '<div class="flex h-full" style="width:' + w + '%">' +
+                seg(s.gold, 'bg-yellow-400') + seg(s.silver, 'bg-slate-400') + seg(s.bronze, 'bg-amber-700') +
+              '</div>' +
+            '</div>' +
+            '<span class="w-6 text-right text-[11px] font-mono font-bold text-slate-700 dark:text-gray-200 flex-shrink-0">' + total + '</span>' +
+          '</div>';
+      }).join('') + '</div>';
+    },
+
+    /**
+     * Carta garis SVG ditulis sendiri (kira-kira 40 baris) dan bukan pustaka
+     * carta. Sebabnya mudah: pustaka carta yang paling ringan pun sekitar
+     * 70KB, memerlukan satu lagi fail vendor untuk mod luar talian, dan
+     * warnanya perlu ditala semula untuk mod gelap. Untuk tiga bentuk carta
+     * yang carnival ini perlukan, ia tidak berbaloi.
+     */
+    renderTrend: function (trend) {
+      var wrap = document.getElementById('score-trend-wrapper');
+      var el = document.getElementById('score-trend-chart');
+      var legend = document.getElementById('score-trend-legend');
+      if (!wrap || !el) return;
+
+      var days = (trend && trend.days) || [];
+      var series = (trend && trend.series) || [];
+      if (days.length < 2 || !series.length) { wrap.classList.add('hide'); return; }
+      wrap.classList.remove('hide');
+
+      var W = 320, H = 140, PL = 30, PR = 8, PT = 10, PB = 22;
+      var iw = W - PL - PR, ih = H - PT - PB;
+      var max = 1;
+      series.forEach(function (s) {
+        s.values.forEach(function (v) { if (v > max) max = v; });
+      });
+      var x = function (i) { return PL + (days.length === 1 ? iw / 2 : i * iw / (days.length - 1)); };
+      var y = function (v) { return PT + ih - (v / max * ih); };
+
+      var grid = '';
+      for (var g = 0; g <= 3; g++) {
+        var gv = max * g / 3, gy = y(gv);
+        grid += '<line x1="' + PL + '" y1="' + gy + '" x2="' + (W - PR) + '" y2="' + gy +
+          '" stroke="currentColor" stroke-opacity="0.12" stroke-width="1"/>' +
+          '<text x="' + (PL - 5) + '" y="' + (gy + 3) + '" text-anchor="end" font-size="7" ' +
+          'fill="currentColor" fill-opacity="0.45">' + Math.round(gv) + '</text>';
+      }
+
+      var lines = series.map(function (s) {
+        var pts = s.values.map(function (v, i) { return x(i) + ',' + y(v); }).join(' ');
+        var dots = s.values.map(function (v, i) {
+          return '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="2" fill="' + app.esc(s.color) + '"/>';
+        }).join('');
+        return '<polyline points="' + pts + '" fill="none" stroke="' + app.esc(s.color) +
+          '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' + dots;
+      }).join('');
+
+      var labels = days.map(function (d, i) {
+        var parts = String(d).split('-');
+        return '<text x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="7" ' +
+          'fill="currentColor" fill-opacity="0.5">' + parts[2] + '/' + parts[1] + '</text>';
+      }).join('');
+
+      el.innerHTML = '<div class="text-slate-600 dark:text-gray-300 w-full overflow-x-auto">' +
+        '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="150" ' +
+        'preserveAspectRatio="xMidYMid meet" role="img" aria-label="Trend mata harian">' +
+        grid + lines + labels + '</svg></div>';
+
+      if (legend) {
+        legend.innerHTML = series.map(function (s) {
+          return '<span class="flex items-center gap-1 text-slate-500">' +
+            '<span class="w-2.5 h-2.5 rounded-sm inline-block" style="background:' + app.esc(s.color) + '"></span>' +
+            app.esc(s.name) + '</span>';
+        }).join('');
+      }
+    },
+
+    renderLatest: function (list) {
+      var el = document.getElementById('score-latest');
+      if (!el) return;
+      if (!list.length) {
+        el.innerHTML = app.emptyCard('flag', 'Belum Ada Keputusan',
+          'Keputusan acara akan muncul di sini sebaik sahaja disahkan.');
+        return;
+      }
+      var badge = ['', 'bg-yellow-400 text-yellow-950', 'bg-slate-400 text-white', 'bg-amber-700 text-white'];
+      el.innerHTML = list.map(function (e) {
+        var rows = e.results.map(function (r) {
+          var b = badge[r.placing] || 'bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-gray-300';
+          return '<div class="flex items-center gap-2 text-xs py-1.5 border-t border-slate-100 dark:border-white/5">' +
+            '<span class="w-5 h-5 rounded-full ' + b + ' flex items-center justify-center text-[10px] font-bold flex-shrink-0">' +
+              (r.placing || '–') + '</span>' +
+            '<span class="font-medium text-slate-700 dark:text-gray-200 truncate flex-1">' + app.esc(r.name) + '</span>' +
+            '<span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded flex-shrink-0" ' +
+              'style="background:' + app.esc(r.color) + '22;color:' + app.esc(r.color) + '">' +
+              app.esc(r.contingentShort) + '</span>' +
+            (r.score ? '<span class="font-mono text-[10px] text-slate-500 flex-shrink-0">' + app.esc(r.score) + '</span>' : '') +
+          '</div>';
+        }).join('');
+        return '<div class="glass-card p-4 flex flex-col gap-1">' +
+          '<div class="flex justify-between items-start gap-2">' +
+            '<div class="min-w-0">' +
+              '<h4 class="font-sport font-bold text-sm text-slate-900 dark:text-white leading-tight truncate">' +
+                app.esc(e.name) + '</h4>' +
+              '<p class="text-[10px] text-slate-500 uppercase tracking-wide mt-0.5 truncate">' +
+                app.esc(e.sportName) + (e.round ? ' · ' + app.esc(e.round) : '') +
+                (e.venue ? ' · ' + app.esc(e.venue) : '') + '</p>' +
+            '</div>' +
+            (e.at ? '<span class="text-[10px] font-mono text-slate-400 flex-shrink-0">' + app.fmtDate(e.at) + '</span>' : '') +
+          '</div>' + rows +
+        '</div>';
+      }).join('');
+    },
+
+    renderUpcoming: function (list) {
+      var el = document.getElementById('score-upcoming');
+      if (!el) return;
+      if (!list.length) {
+        el.innerHTML = '<p class="text-xs text-slate-500 px-1">Tiada acara berjadual buat masa ini.</p>';
+        return;
+      }
+      el.innerHTML = list.map(function (e) {
+        return '<div class="glass-card px-4 py-3 flex items-center justify-between gap-3">' +
+          '<div class="min-w-0">' +
+            '<p class="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">' + app.esc(e.name) + '</p>' +
+            '<p class="text-[10px] text-slate-500 truncate">' + app.esc(e.sportName) +
+              (e.round ? ' · ' + app.esc(e.round) : '') + (e.venue ? ' · ' + app.esc(e.venue) : '') + '</p>' +
+          '</div>' +
+          '<span class="text-[10px] font-mono text-motorsport-accentCyan flex-shrink-0">' +
+            (e.at ? app.fmtDate(e.at) : 'TBA') + '</span>' +
+        '</div>';
+      }).join('');
+    },
+
+    renderNews: function (list) {
+      var el = document.getElementById('score-news');
+      var wrap = document.getElementById('score-news-wrapper');
+      if (!el || !wrap) return;
+      wrap.classList.toggle('hide', list.length === 0);
+      el.innerHTML = list.map(function (n, i) {
+        return '<div class="flex items-start gap-2 cursor-pointer" onclick="app.openNewsModal(' + i + ')">' +
+          '<i data-lucide="chevron-right" class="w-3 h-3 text-motorsport-accent mt-0.5 flex-shrink-0"></i>' +
+          '<div class="min-w-0">' +
+            '<p class="text-xs font-bold text-slate-800 dark:text-gray-100 truncate">' + app.esc(n.title) + '</p>' +
+            '<p class="text-[10px] text-slate-500 truncate">' + app.esc(n.date) + ' · ' + app.esc(n.shortDesc) + '</p>' +
+          '</div></div>';
+      }).join('');
+    },
+
+    /** Kad ringkas di skrin portal. */
+    renderPortalTeaser: function (st) {
+      var leader = document.getElementById('portal-score-leader');
+      var pts = document.getElementById('portal-score-points');
+      if (!leader || !pts) return;
+      if (!st.length) {
+        leader.textContent = '—';
+        pts.textContent = 'belum bermula';
+        return;
+      }
+      leader.textContent = st[0].short || st[0].name;
+      pts.textContent = st[0].points + ' mata · #1';
+    }
+  },
+
+  timeAgo: function (ms) {
+    var s = Math.max(0, Math.round((Date.now() - ms) / 1000));
+    if (s < 10) return 'baru sahaja';
+    if (s < 60) return s + 's lalu';
+    var m = Math.round(s / 60);
+    if (m < 60) return m + 'm lalu';
+    return Math.round(m / 60) + 'j lalu';
+  },
+
+  loginMsg: function (msg, kind) {
+    var el = document.getElementById('login-msg');
+    if (!el) return;
+    if (!msg) { el.classList.add('hide'); el.innerHTML = ''; return; }
+    var color = kind === 'error'
+      ? 'bg-red-100 dark:bg-red-500/10 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
+      : 'bg-yellow-100 dark:bg-yellow-500/10 border-yellow-300 dark:border-yellow-500/30 text-yellow-800 dark:text-yellow-300';
+    el.className = 'rounded-xl border px-4 py-3 text-xs font-medium ' + color;
+    el.textContent = msg;
+    el.classList.remove('hide');
+  },
+
+  logout: function () {
+    app.state.user = null;
+    app.state.registration = null;
+    app.state.selections = [];
+    app.state.photo = null;
+    var i = document.getElementById('login-staff-id'); if (i) i.value = '';
+    var v = document.getElementById('login-verify'); if (v) v.value = '';
+    var w = document.getElementById('verify-2fa-wrap'); if (w) w.classList.add('hide');
+    ['chk-true', 'chk-fit', 'chk-rules'].forEach(function (id) {
+      var c = document.getElementById(id); if (c) c.checked = false;
+    });
+    app.loginMsg('');
+    app.navigate('portal');
+  },
+
+  /* ---------------- Borang pendaftaran ---------------- */
+  fillForm: function (u) {
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    set('form-name', u.name);
+    set('form-id', u.staffId);
+    set('form-dept', u.department || '-');
+    set('form-contingent', u.contingent || '-');
+
+    var img = document.getElementById('form-img');
+    if (img) img.src = 'https://placehold.co/100x100/1e1e2c/f8fafc?text=' + encodeURIComponent((u.name || '?').charAt(0));
+
+    document.getElementById('input-phone').value = u.phone || '';
+    document.getElementById('input-email').value = u.email || '';
+    document.getElementById('input-emerg-name').value = '';
+    document.getElementById('input-emerg-phone').value = '';
+    app.state.photo = null;
+    var hint = document.getElementById('photo-hint');
+    if (hint) hint.innerHTML = 'Ketik gambar untuk muat naik <span class="text-red-500">*</span>';
+  },
+
+  formatPhone: function (el) {
+    var v = String(el.value || '').replace(/[^\d+\-\s]/g, '');
+    el.value = v.slice(0, 20);
+  },
+
+  handlePhotoSelect: async function (ev) {
+    var file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    var hint = document.getElementById('photo-hint');
+    if (hint) hint.textContent = 'Memproses gambar...';
+    try {
+      var r = await compressImage(file, 600, 0.82);
+      app.state.photo = r.dataUrl;
+      var img = document.getElementById('form-img');
+      if (img) img.src = r.dataUrl;
+      if (hint) hint.textContent = 'Gambar sedia (' + r.kb + 'KB selepas mampatan)';
+    } catch (e) {
+      app.state.photo = null;
+      if (hint) hint.innerHTML = 'Ketik gambar untuk muat naik <span class="text-red-500">*</span>';
+      app.alert('Gambar Tidak Sah', e.message, 'image-off');
+    }
+  },
+
+  validateStep1: function () {
+    var phone = document.getElementById('input-phone').value.trim();
+    var email = document.getElementById('input-email').value.trim();
+    var en = document.getElementById('input-emerg-name').value.trim();
+    var ep = document.getElementById('input-emerg-phone').value.trim();
+
+    if (phone.replace(/\D/g, '').length < 9) { app.alert('Nombor Telefon', 'Sila masukkan nombor telefon bimbit yang sah.', 'phone'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { app.alert('Emel Tidak Sah', 'Sila masukkan alamat emel yang sah. Emel diperlukan untuk pengesahan pendaftaran.', 'mail'); return; }
+    if (!en) { app.alert('Nama Waris', 'Sila masukkan nama waris atau orang yang boleh dihubungi ketika kecemasan.', 'user'); return; }
+    if (ep.replace(/\D/g, '').length < 9) { app.alert('Telefon Waris', 'Sila masukkan nombor telefon waris yang sah.', 'phone'); return; }
+    if (!app.state.photo) { app.alert('Gambar Profil', 'Gambar profil diperlukan. Ketik gambar di bahagian atas untuk memuat naik.', 'camera'); return; }
+
+    app.renderSports();
+    app.navigate('sports');
+  },
+
+  /* ---------------- Pemilihan sukan + kategori ---------------- */
+  renderSports: function () {
+    var c = document.getElementById('sports-container');
+    if (!c) return;
+    var list = (app.state.init && app.state.init.sportsCatalog) || [];
+    var max = (app.state.init && app.state.init.event && app.state.init.event.maxSports) || 2;
+    var gender = (app.state.user && app.state.user.gender) || '';
+    var chosen = app.state.selections.map(function (x) { return x.sportId; });
+
+    c.innerHTML =
+      '<div class="glass-card p-4 flex items-center justify-between border-l-4 border-l-motorsport-accentCyan">' +
+        '<span class="text-xs uppercase tracking-wider font-bold text-slate-600 dark:text-gray-300">Sukan Dipilih</span>' +
+        '<span id="sport-counter" class="font-sport font-bold text-lg text-motorsport-accentCyan">' + chosen.length + ' / ' + max + '</span>' +
+      '</div>' +
+      list.map(function (s) {
+        var sel = app.state.selections.filter(function (x) { return x.sportId === s.id; })[0];
+        var on = !!sel;
+        var atMax = chosen.length >= max && !on;
+        var blocked = (s.full && !on) || atMax;
+
+        // Kategori yang layak untuk jantina atlet ini.
+        var cats = (s.categories || []).filter(function (ct) {
+          return !gender || !ct.gender || ct.gender === 'ANY' || ct.gender === gender;
+        });
+
+        return '<div class="glass-card overflow-hidden transition-all ' +
+            (on ? 'border-2 border-motorsport-accentCyan shadow-[0_0_20px_rgba(6,182,212,0.15)]' : 'border border-transparent') + '">' +
+          '<div class="p-5 flex items-center gap-4 ' + (blocked ? 'opacity-50' : 'cursor-pointer') + '"' +
+            (blocked ? '' : ' onclick="app.selectSport(\'' + app.esc(s.id) + '\')"') + '>' +
+            '<div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ' +
+              (on ? 'bg-motorsport-accentCyan text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-500') + '">' +
+              '<i data-lucide="' + (on ? 'check' : 'medal') + '" class="w-6 h-6"></i></div>' +
+            '<div class="flex-1 min-w-0">' +
+              '<h3 class="font-sport font-bold text-lg uppercase leading-tight text-slate-900 dark:text-white">' + app.esc(s.name) + '</h3>' +
+              '<p class="text-[10px] font-mono text-slate-500 mt-0.5">' + s.filled +
+                (s.capacity > 0 ? ' / ' + s.capacity + ' TEMPAT' : ' PESERTA') + '</p>' +
+            '</div>' +
+            (s.full
+              ? '<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400">Penuh</span>'
+              : (atMax ? '<span class="text-[10px] font-bold uppercase px-2 py-1 rounded bg-slate-100 dark:bg-white/5 text-slate-400">Had</span>' : '')) +
+          '</div>' +
+
+          // Kategori muncul hanya selepas sukan dipilih.
+          (on ? '<div class="px-5 pb-5 pt-1 border-t border-slate-200 dark:border-gray-800">' +
+            '<p class="text-[10px] text-slate-500 uppercase tracking-wider mb-3 font-bold flex items-center gap-1.5">' +
+              '<i data-lucide="list-checks" class="w-3 h-3"></i> Pilih Kategori <span class="text-red-500">*</span></p>' +
+            (cats.length ? '<div class="flex flex-col gap-2">' + cats.map(function (ct) {
+              var picked = sel.categoryId === ct.id;
+              var ctFull = ct.full && !picked;
+              return '<button type="button" ' + (ctFull ? 'disabled' : '') +
+                ' onclick="app.selectCategory(\'' + app.esc(s.id) + '\',\'' + app.esc(ct.id) + '\')"' +
+                ' class="w-full text-left px-4 py-3 rounded-xl border transition-all flex items-center justify-between gap-3 ' +
+                  (picked
+                    ? 'border-motorsport-accentCyan bg-cyan-50 dark:bg-cyan-500/10'
+                    : (ctFull ? 'border-slate-200 dark:border-gray-800 opacity-45 cursor-not-allowed'
+                              : 'border-slate-200 dark:border-gray-800 hover:border-motorsport-accentCyan')) + '">' +
+                '<span class="flex flex-col min-w-0">' +
+                  '<span class="text-sm font-bold text-slate-800 dark:text-white truncate">' + app.esc(ct.name) + '</span>' +
+                  '<span class="text-[10px] font-mono text-slate-500">' + ct.filled +
+                    (ct.capacity > 0 ? ' / ' + ct.capacity : '') + (ctFull ? ' — PENUH' : '') + '</span>' +
+                '</span>' +
+                '<span class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center ' +
+                  (picked ? 'border-motorsport-accentCyan bg-motorsport-accentCyan' : 'border-slate-300 dark:border-slate-600') + '">' +
+                  (picked ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : '') +
+                '</span></button>';
+            }).join('') + '</div>'
+              : '<p class="text-xs text-slate-500">Tiada kategori yang layak untuk anda dalam sukan ini.</p>') +
+          '</div>' : '') +
+        '</div>';
+      }).join('');
+
+    if (!list.length) c.innerHTML = app.emptyCard('medal', 'Tiada Sukan', 'Senarai sukan belum dibuka.');
+    app.refreshIcons();
+  },
+
+  selectSport: function (id) {
+    var max = (app.state.init && app.state.init.event && app.state.init.event.maxSports) || 2;
+    var idx = -1;
+    for (var i = 0; i < app.state.selections.length; i++) {
+      if (app.state.selections[i].sportId === id) { idx = i; break; }
+    }
+    if (idx !== -1) {
+      app.state.selections.splice(idx, 1);
+    } else {
+      if (app.state.selections.length >= max) {
+        app.alert('Had Maksimum', 'Anda hanya boleh memilih ' + max + ' sukan. Nyahpilih satu sukan terlebih dahulu.', 'alert-triangle');
+        return;
+      }
+      app.state.selections.push({ sportId: id, categoryId: '' });
+    }
+    app.renderSports();
+  },
+
+  selectCategory: function (sportId, catId) {
+    app.state.selections.forEach(function (s) {
+      if (s.sportId === sportId) s.categoryId = catId;
+    });
+    app.renderSports();
+  },
+
+  validateStep2: function () {
+    if (!app.state.selections.length) {
+      app.alert('Pilih Sukan', 'Sila pilih sekurang-kurangnya satu sukan untuk meneruskan.', 'medal');
+      return;
+    }
+    var missing = app.state.selections.filter(function (s) { return !s.categoryId; });
+    if (missing.length) {
+      app.alert('Kategori Belum Dipilih', 'Sila pilih satu kategori bagi setiap sukan yang anda pilih.', 'list-checks');
+      return;
+    }
+    app.navigate('declaration');
+  },
+
+  validateStep3: function () {
+    var a = document.getElementById('chk-true').checked;
+    var b = document.getElementById('chk-fit').checked;
+    var c = document.getElementById('chk-rules').checked;
+    if (!(a && b && c)) {
+      app.alert('Pengesahan Diperlukan', 'Sila tandakan ketiga-tiga pengesahan sebelum meneruskan.', 'alert-triangle');
+      return;
+    }
+    app.renderReview();
+    app.navigate('review');
+  },
+
+  /* ---------------- Semakan akhir ---------------- */
+  renderReview: function () {
+    var u = app.state.user;
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+    var img = document.getElementById('review-img');
+    if (img) img.src = app.state.photo || '';
+
+    set('review-name', u.name);
+    set('review-id', u.staffId);
+    set('review-contingent', u.contingent || '-');
+    set('review-dept', u.department || '-');
+    set('review-pos', u.position || '-');
+    set('review-phone', document.getElementById('input-phone').value.trim());
+    set('review-emerg', document.getElementById('input-emerg-name').value.trim() + ' / ' +
+                        document.getElementById('input-emerg-phone').value.trim());
+
+    var names = app.lookupNames();
+    var wrap = document.getElementById('review-sports-list');
+    if (wrap) {
+      wrap.innerHTML = app.state.selections.map(function (s) {
+        return '<div class="flex items-center gap-3 bg-slate-100 dark:bg-[#111118] rounded-xl px-4 py-3 border border-slate-200 dark:border-gray-800">' +
+          '<div class="w-9 h-9 rounded-lg bg-motorsport-accentCyan/10 flex items-center justify-center text-motorsport-accentCyan flex-shrink-0">' +
+            '<i data-lucide="medal" class="w-4 h-4"></i></div>' +
+          '<div class="min-w-0">' +
+            '<p class="font-sport font-bold text-sm uppercase text-slate-900 dark:text-white truncate">' + app.esc(names.sport[s.sportId] || s.sportId) + '</p>' +
+            '<p class="text-[11px] text-slate-500 truncate">' + app.esc(names.cat[s.categoryId] || s.categoryId) + '</p>' +
+          '</div></div>';
+      }).join('');
+    }
+    app.refreshIcons();
+  },
+
+  lookupNames: function () {
+    var sport = {}, cat = {};
+    ((app.state.init && app.state.init.sportsCatalog) || []).forEach(function (s) {
+      sport[s.id] = s.name;
+      (s.categories || []).forEach(function (c) { cat[c.id] = c.name; });
+    });
+    return { sport: sport, cat: cat };
+  },
+
+  /* ---------------- Penghantaran ---------------- */
+  submitRegistration: async function () {
+    if (app.state.busy) return;
+    var btn = document.getElementById('btn-submit-reg');
+    app.state.busy = true;
+    app.setBtnBusy(btn, true, 'Menghantar...');
+
+    var payload = {
+      action: 'submitRegistration',
+      data: {
+        staffId: app.state.user.staffId,
+        phone: document.getElementById('input-phone').value.trim(),
+        email: document.getElementById('input-email').value.trim(),
+        emergencyName: document.getElementById('input-emerg-name').value.trim(),
+        emergencyPhone: document.getElementById('input-emerg-phone').value.trim(),
+        photoBase64: app.state.photo,
+        selections: app.state.selections,
+        declarations: { accurate: true, fit: true, rules: true },
+        clientId: app.state.clientId
+      }
+    };
+
+    try {
+      var d = await API.post(payload, 2);
+
+      if (d.status === 'already_registered') {
+        app.state.registration = d.registration;
+        app.state.selections = d.registration.selections || [];
+        app.renderDashboard(false);
+        app.navigate('dashboard');
+        app.alert('Sudah Berdaftar', 'Staff ID ini sudah mempunyai pendaftaran. Pas sukan anda dipaparkan.', 'info');
+        return;
+      }
+
+      if (d.status !== 'success') {
+        // Kapasiti penuh -> muat semula katalog supaya paparan tepat semula.
+        if (d.code === 'CAPACITY_FULL') {
+          await app.loadPortal();
+          app.renderSports();
+          app.navigate('sports');
+        }
+        app.alert('Pendaftaran Gagal', d.message || 'Sila cuba semula.', 'x-circle');
+        return;
+      }
+
+      app.state.registration = d.registration;
+      app.renderDashboard(true);
+      app.navigate('dashboard');
+
+    } catch (e) {
+      app.alert('Sambungan Gagal',
+        'Pendaftaran anda mungkin belum tersimpan. Sila log masuk semula dengan Staff ID anda untuk menyemak sebelum mencuba lagi.',
+        'wifi-off');
+    } finally {
+      app.state.busy = false;
+      app.setBtnBusy(btn, false, 'Hantar Pendaftaran');
+    }
+  },
+
+  /* ---------------- Pas sukan (baca sahaja) ---------------- */
+  renderDashboard: function (justRegistered) {
+    var r = app.state.registration;
+    if (!r) return;
+    var names = app.lookupNames();
+    var set = function (id, v) { var e = document.getElementById(id); if (e) e.textContent = v; };
+
+    var msg = document.getElementById('success-message');
+    if (msg) msg.classList.toggle('hide', !justRegistered);
+
+    set('dash-reg-no', r.regNo);
+    set('dash-name', r.name);
+    set('dash-id', r.staffId);
+    set('dash-contingent', r.contingent || '-');
+
+    var img = document.getElementById('dash-img');
+    if (img) {
+      img.onerror = function () {
+        img.onerror = null;
+        img.src = 'https://placehold.co/160x160/1e1e2c/f8fafc?text=' + encodeURIComponent((r.name || '?').charAt(0));
+      };
+      img.src = r.photoUrl || '';
+    }
+
+    var st = String(r.status || 'Registered').toLowerCase();
+    var badge = document.getElementById('dash-status-badge');
+    if (badge) {
+      if (st === 'cancelled') {
+        badge.textContent = 'Dibatalkan';
+        badge.className = 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 px-3 py-1 rounded-full text-xs font-bold uppercase border border-red-300';
+      } else if (st === 'pending') {
+        badge.textContent = 'Menunggu';
+        badge.className = 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 px-3 py-1 rounded-full text-xs font-bold uppercase border border-yellow-300';
+      } else {
+        badge.textContent = 'Berdaftar';
+        badge.className = 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold uppercase border border-green-300';
+      }
+    }
+
+    var wrap = document.getElementById('dash-sports-list');
+    if (wrap) {
+      wrap.innerHTML = (r.selections || []).map(function (s) {
+        return '<div class="flex items-center justify-between bg-slate-100 dark:bg-[#111118] rounded-lg px-4 py-3 border border-slate-200 dark:border-gray-800">' +
+          '<span class="font-sport font-bold text-sm uppercase text-slate-900 dark:text-white">' + app.esc(names.sport[s.sportId] || s.sportId) + '</span>' +
+          '<span class="text-[11px] text-motorsport-accentCyan font-bold">' + app.esc(names.cat[s.categoryId] || s.categoryId) + '</span>' +
+        '</div>';
+      }).join('') || '<p class="text-xs text-slate-500">Tiada acara.</p>';
+    }
+
+    app.renderQR(r.qrToken);
+    app.renderNavActions();
+    app.refreshIcons();
+  },
+
+  /**
+   * Kod QR dijana sepenuhnya dalam pelayar oleh encoder terbenam.
+   * Kandungan: URL portal + token legap. Tiada nama, Staff ID atau
+   * maklumat peribadi di dalam kod.
+   */
+  renderQR: function (token) {
+    var box = document.getElementById('dash-qr');
+    if (!box) return;
+    box.innerHTML = '';
+    if (!token) {
+      box.innerHTML = '<span class="text-[8px] text-black font-mono">TIADA KOD</span>';
+      return;
+    }
+    var url = location.origin + location.pathname + '?qr=' + encodeURIComponent(token);
+    try {
+      var m = QR.encode(url), n = m.length, quiet = 2;
+      var box128 = 128;
+      var scale = Math.max(1, Math.floor(box128 / (n + quiet * 2)));
+      var px = (n + quiet * 2) * scale;
+      var dpr = Math.min(3, window.devicePixelRatio || 1);
+
+      var cv = document.createElement('canvas');
+      cv.width = px * dpr; cv.height = px * dpr;
+      cv.style.width = px + 'px'; cv.style.height = px + 'px';
+      cv.setAttribute('role', 'img');
+      cv.setAttribute('aria-label', 'Kod QR pas sukan');
+
+      var ctx = cv.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, px, px);
+      ctx.fillStyle = '#000000';
+      for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) {
+        if (m[r][c]) ctx.fillRect((c + quiet) * scale, (r + quiet) * scale, scale, scale);
+      }
+      box.appendChild(cv);
+    } catch (e) {
+      box.innerHTML = '<span class="text-[7px] text-black font-mono break-all px-1">' + app.esc(token) + '</span>';
+    }
+  },
+
+  /* ---------------- Modal amaran ---------------- */
+  alert: function (title, message, icon) {
+    var m = document.getElementById('custom-alert'), b = document.getElementById('alert-box');
+    document.getElementById('alert-title').textContent = title;
+    document.getElementById('alert-message').textContent = message;
+    var ic = document.getElementById('alert-icon');
+    if (ic) { ic.setAttribute('data-lucide', icon || 'alert-triangle'); }
+    m.classList.remove('hide');
+    requestAnimationFrame(function () {
+      m.classList.remove('opacity-0');
+      b.classList.remove('scale-95');
+    });
+    app.refreshIcons();
+  },
+
+  closeAlert: function () {
+    var m = document.getElementById('custom-alert'), b = document.getElementById('alert-box');
+    m.classList.add('opacity-0');
+    b.classList.add('scale-95');
+    setTimeout(function () { m.classList.add('hide'); }, 300);
+  },
+
+  /* ---------------- Pembantu ---------------- */
+  setBtnBusy: function (btn, busy, label) {
+    if (!btn) return;
+    btn.disabled = !!busy;
+    btn.style.opacity = busy ? '0.6' : '';
+    var span = btn.querySelector('span');
+    if (span) span.textContent = label;
+    else btn.textContent = label;
+  },
+
+  emptyCard: function (icon, title, msg) {
+    return '<div class="glass-card p-8 flex flex-col items-center text-center gap-3">' +
+      '<div class="w-14 h-14 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400">' +
+        '<i data-lucide="' + icon + '" class="w-6 h-6"></i></div>' +
+      '<h3 class="font-sport font-bold uppercase text-slate-700 dark:text-gray-200">' + title + '</h3>' +
+      '<p class="text-xs text-slate-500 max-w-xs">' + msg + '</p></div>';
+  },
+
+  esc: function (s) {
+    return String(s === null || s === undefined ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  },
+
+  bindStatic: function () {
+    var id = document.getElementById('login-staff-id');
+    if (id) {
+      id.addEventListener('input', function () { this.value = this.value.toUpperCase(); });
+      id.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); app.login(); } });
+    }
+    var v = document.getElementById('login-verify');
+    if (v) {
+      v.addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(0, 4); });
+      v.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); app.login(); } });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { app.closeAlert(); app.closeNewsModal(); }
+    });
+
+    // Tab yang tersembunyi tidak perlu polling. Apabila pengguna kembali,
+    // kita segarkan sekali serta-merta supaya markah tidak nampak beku.
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) return;
+      if (app.state.view === 'scoreboard') {
+        app.score.running = true;
+        app.score.refresh(true);
+      }
+    });
+  }
+};
+
+/* ---------- PWA ---------- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () { });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', app.init);
+
+</script>
+</body>
+</html>

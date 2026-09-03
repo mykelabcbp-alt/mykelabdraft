@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Juri | CSC 2026</title>
+    <meta name="theme-color" content="#f1f5f9">
+    <link rel="icon" href="../assets/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/favicon-16.png">
+    <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="description" content="Portal kemasukan markah juri CBP Sports Carnival 2026">
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg-color: #f1f5f9; --text-color: #0f172a;
+            --glass-bg: rgba(255,255,255,0.95); --glass-border: rgba(0,0,0,0.08);
+            --input-bg: #ffffff; --input-border: #cbd5e1;
+        }
+        .dark {
+            --bg-color: #15151e; --text-color: #f8fafc;
+            --glass-bg: rgba(30,30,44,0.85); --glass-border: rgba(255,255,255,0.06);
+            --input-bg: #111118; --input-border: #2a2a35;
+        }
+        body {
+            background-color: var(--bg-color); color: var(--text-color);
+            font-family: Inter, system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent; overflow-x: hidden;
+        }
+        .font-sport { font-family: Rajdhani, Inter, system-ui, sans-serif; }
+        .font-mono  { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+        .glass-card {
+            background: var(--glass-bg); backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 1.25rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
+        }
+        .dark .glass-card { box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
+        .neo-input {
+            background: var(--input-bg); border: 1px solid var(--input-border);
+            color: var(--text-color); border-radius: 0.75rem;
+            padding: 0.75rem 0.9rem; width: 100%;
+        }
+        .neo-input:focus { outline: none; border-color: #06b6d4; box-shadow: 0 0 0 2px rgba(6,182,212,0.2); }
+        .hide { display: none !important; }
+        .view-section { animation: fadeIn 0.35s ease-out; }
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px);} to { opacity:1; transform:none;} }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+    </style>
+</head>
+<body class="min-h-screen">
+
+<div id="global-loader" class="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--bg-color)]">
+    <div class="flex flex-col items-center gap-3">
+        <div class="w-10 h-10 border-4 border-slate-300 dark:border-slate-700 border-t-cyan-500 rounded-full animate-spin"></div>
+        <p class="text-xs text-slate-500 font-mono">Memuatkan portal juri…</p>
+    </div>
+</div>
+
+<!-- ============ GERBANG LOG MASUK ============ -->
+<div id="login-gate" class="fixed inset-0 z-50 hide items-center justify-center px-4 bg-[var(--bg-color)]">
+    <div class="glass-card p-8 w-full max-w-sm flex flex-col gap-5">
+        <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-cyan-100 dark:bg-cyan-500/10 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
+                <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="font-sport font-bold text-2xl uppercase leading-none">Portal Juri</h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mt-1">CSC 2026</p>
+            </div>
+        </div>
+
+        <div id="gate-msg" class="hide"></div>
+
+        <div class="flex flex-col gap-3">
+            <div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Username</label>
+                <input id="gate-user" class="neo-input text-sm" autocomplete="username" inputmode="text">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Kata Laluan</label>
+                <input id="gate-pass" type="password" class="neo-input text-sm" autocomplete="current-password">
+            </div>
+        </div>
+
+        <button id="btn-gate-login" onclick="juri.login()"
+            class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2">
+            <i data-lucide="log-out" class="w-4 h-4"></i> <span>Log Masuk</span>
+        </button>
+
+        <p class="text-[10px] text-slate-500 leading-relaxed">
+            Akaun juri dikeluarkan oleh urus setia dan hanya boleh memasukkan markah
+            bagi sukan yang ditetapkan.
+        </p>
+    </div>
+</div>
+
+<!-- ============ APLIKASI ============ -->
+<div id="app-shell" class="hide flex flex-col min-h-screen">
+
+    <header class="sticky top-0 z-30 glass-card rounded-none border-x-0 border-t-0 px-4 py-3 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2 min-w-0">
+            <span id="brand-logo-slot" class="w-5 h-5 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="clipboard-check" class="w-5 h-5 text-cyan-500"></i>
+            </span>
+            <div class="min-w-0">
+                <p id="hdr-name" class="text-sm font-bold truncate leading-tight">—</p>
+                <p id="hdr-scope" class="text-[10px] text-slate-500 truncate">—</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 flex-shrink-0">
+            <span id="queue-chip" class="hide text-[10px] font-bold px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400"></span>
+            <button onclick="juri.toggleTheme()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300">
+                <i id="theme-icon" data-lucide="sun" class="w-4 h-4"></i>
+            </button>
+            <button onclick="juri.logout()" title="Log keluar" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-600 dark:text-slate-300">
+                <i data-lucide="log-out" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-lg mx-auto px-4 py-5 flex flex-col gap-4">
+
+        <!-- SENARAI ACARA -->
+        <section id="view-events" class="view-section flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+                <h2 class="font-sport text-2xl font-bold uppercase italic">Acara Saya</h2>
+                <button onclick="juri.loadEvents(true)" class="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1">
+                    <i data-lucide="refresh-cw" class="w-3 h-3"></i> Segarkan
+                </button>
+            </div>
+
+            <div id="offline-banner" class="hide rounded-xl border border-yellow-300 dark:border-yellow-500/30 bg-yellow-50 dark:bg-yellow-500/10 px-4 py-3 text-xs text-yellow-800 dark:text-yellow-300 flex items-start gap-2">
+                <i data-lucide="wifi-off" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+                <span id="offline-text">Sambungan terputus. Markah yang anda hantar disimpan dan akan dihantar automatik.</span>
+            </div>
+
+            <div class="glass-card p-3">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">Tapis Sukan</label>
+                <select id="event-filter" class="neo-input text-sm" onchange="juri.renderEvents()">
+                    <option value="">Semua sukan dalam skop saya</option>
+                </select>
+            </div>
+
+            <div id="events-list" class="flex flex-col gap-3"></div>
+        </section>
+
+        <!-- BORANG MARKAH -->
+        <section id="view-entry" class="view-section hide flex flex-col gap-4">
+            <button onclick="juri.backToEvents()" class="self-start text-xs text-slate-500 flex items-center gap-1 bg-white/60 dark:bg-black/20 px-3 py-1.5 rounded-full">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Kembali ke senarai
+            </button>
+
+            <div class="glass-card p-5 flex flex-col gap-1">
+                <h2 id="entry-title" class="font-sport text-xl font-bold leading-tight">—</h2>
+                <p id="entry-sub" class="text-[11px] text-slate-500 uppercase tracking-wide">—</p>
+                <p id="entry-points-hint" class="text-[10px] text-slate-500 mt-2 font-mono"></p>
+            </div>
+
+            <div id="entry-status" class="hide"></div>
+
+            <div id="entry-rows" class="flex flex-col gap-3"></div>
+
+            <button onclick="juri.addRow()" class="glass-card py-3 text-xs font-bold text-cyan-600 dark:text-cyan-400 flex items-center justify-center gap-2">
+                <i data-lucide="plus" class="w-4 h-4"></i> Tambah baris
+            </button>
+
+            <button id="btn-submit" onclick="juri.submit()"
+                class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg">
+                <i data-lucide="check" class="w-4 h-4"></i> <span>Hantar Markah</span>
+            </button>
+
+            <p class="text-[10px] text-slate-500 leading-relaxed px-1">
+                Markah dihantar sebagai <b>draf</b> dan hanya dipapar di papan markah
+                selepas urus setia mengesahkannya. Jika sambungan terputus, markah
+                disimpan dalam peranti dan dihantar semula secara automatik.
+            </p>
+
+            <!-- Markah sedia ada -->
+            <div class="glass-card p-5 flex flex-col gap-3" id="entry-existing-wrap">
+                <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-gray-200">Markah Sedia Ada</h3>
+                <div id="entry-existing" class="flex flex-col gap-2"></div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Modal makluman -->
+<div id="alert-modal" class="hide fixed inset-0 z-[60] bg-black/60 items-center justify-center px-6">
+    <div class="glass-card p-6 w-full max-w-sm flex flex-col gap-3 text-center">
+        <div id="alert-icon-wrap" class="mx-auto w-12 h-12 rounded-full bg-cyan-100 dark:bg-cyan-500/10 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
+            <i id="alert-icon" data-lucide="info" class="w-5 h-5"></i>
+        </div>
+        <h3 id="alert-title" class="font-sport font-bold text-lg uppercase">—</h3>
+        <p id="alert-msg" class="text-xs text-slate-500 leading-relaxed"></p>
+        <button onclick="juri.closeAlert()" class="mt-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 rounded-xl text-sm font-bold">Tutup</button>
+    </div>
+</div>
+
+<script>
+/* ==========================================================================
+   PORTAL JURI — CSC2026
+   --------------------------------------------------------------------------
+   Direka untuk keadaan sebenar di gelanggang: telefon, satu tangan, talian
+   yang putus-putus.
+
+   Dua keputusan reka bentuk yang penting:
+
+   1. BARIS GILIRAN SETEMPAT. Setiap hantaran dimasukkan ke dalam baris
+      giliran dalam localStorage SEBELUM permintaan rangkaian dibuat. Kalau
+      talian mati, juri nampak "1 hantaran menunggu" dan bukan skrin kosong,
+      dan hantaran dicuba semula secara automatik.
+
+   2. KUNCI IDEMPOTENCY. Setiap hantaran membawa kunci rawak yang dijana
+      sekali dan digunakan semula untuk setiap percubaan. Pelayan menolak
+      kunci yang sama kali kedua. Tanpa ini, "tekan dua kali sebab lambat"
+      menjadi markah yang dikira dua kali.
+   ========================================================================== */
+
+var SCRIPT_URL = 'GANTI_DENGAN_URL_WEB_APP_ANDA';
+
+var API = {
+  token: null,
+  _wait: function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); },
+
+  call: async function (body, retries) {
+    var tries = retries === undefined ? 2 : retries;
+    var lastErr = null;
+    for (var i = 0; i <= tries; i++) {
+      if (i > 0) await API._wait(Math.min(6000, 600 * Math.pow(2, i - 1)) + Math.random() * 300);
+      try {
+        var payload = Object.assign({}, body);
+        if (API.token) payload.token = API.token;
+        var res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+          redirect: 'follow'
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var d = await res.json();
+        if (d.status === 'error' && (d.code === 'BUSY' || d.code === 'SERVER_ERROR') && i < tries) {
+          lastErr = new Error(d.message); continue;
+        }
+        return d;
+      } catch (e) { lastErr = e; }
+    }
+    throw lastErr || new Error('Sambungan gagal.');
+  }
+};
+
+var juri = {
+  me: null,
+  events: [],
+  current: null,
+  rows: [],
+  queue: [],
+  flushing: false,
+  flushTimer: null,
+
+  /* ---------------- Kitaran hayat ---------------- */
+  init: function () {
+    juri.applyTheme(juri.savedTheme());
+    juri.queue = juri.loadQueue();
+    juri.renderQueueChip();
+    juri.bind();
+
+    var t = null;
+    try { t = sessionStorage.getItem('csc26_juri_token'); } catch (e) { }
+    juri.hideLoader();
+    if (t) { API.token = t; juri.enter(true); }
+    else juri.showGate();
+  },
+
+  hideLoader: function () {
+    var l = document.getElementById('global-loader');
+    if (!l) return;
+    l.style.opacity = '0';
+    setTimeout(function () { l.classList.add('hide'); }, 350);
+  },
+
+  bind: function () {
+    ['gate-user', 'gate-pass'].forEach(function (id) {
+      var e = document.getElementById(id);
+      if (e) e.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter') { ev.preventDefault(); juri.login(); }
+      });
+    });
+    window.addEventListener('online', function () { juri.setOffline(false); juri.flushQueue(); });
+    window.addEventListener('offline', function () { juri.setOffline(true); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') juri.closeAlert(); });
+    juri.icons();
+  },
+
+  icons: function () { try { if (window.lucide && lucide.createIcons) lucide.createIcons(); } catch (e) { } },
+
+  /* ---------------- Tema ---------------- */
+  savedTheme: function () {
+    try { var t = localStorage.getItem('mykelab_theme'); if (t) return t; } catch (e) { }
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  },
+  applyTheme: function (theme) {
+    var dark = theme === 'dark';
+    document.documentElement.classList.toggle('dark', dark);
+    var i = document.getElementById('theme-icon');
+    if (i) { i.setAttribute('data-lucide', dark ? 'sun' : 'moon'); juri.icons(); }
+  },
+  toggleTheme: function () {
+    var next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+    try { localStorage.setItem('mykelab_theme', next); } catch (e) { }
+    juri.applyTheme(next);
+  },
+
+  /* ---------------- Log masuk ---------------- */
+  showGate: function () {
+    var g = document.getElementById('login-gate');
+    g.classList.remove('hide'); g.classList.add('flex');
+    document.getElementById('app-shell').classList.add('hide');
+    juri.icons();
+  },
+
+  hideGate: function () {
+    var g = document.getElementById('login-gate');
+    g.classList.add('hide'); g.classList.remove('flex');
+    document.getElementById('app-shell').classList.remove('hide');
+  },
+
+  gateMsg: function (msg, kind) {
+    var el = document.getElementById('gate-msg');
+    if (!el) return;
+    if (!msg) { el.classList.add('hide'); el.textContent = ''; return; }
+    el.className = 'rounded-xl border px-4 py-3 text-xs font-medium ' + (kind === 'error'
+      ? 'bg-red-100 dark:bg-red-500/10 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
+      : 'bg-yellow-100 dark:bg-yellow-500/10 border-yellow-300 dark:border-yellow-500/30 text-yellow-800 dark:text-yellow-300');
+    el.textContent = msg;
+    el.classList.remove('hide');
+  },
+
+  login: async function () {
+    var btn = document.getElementById('btn-gate-login');
+    var u = document.getElementById('gate-user').value.trim();
+    var p = document.getElementById('gate-pass').value;
+    if (!u || !p) { juri.gateMsg('Sila isi username dan kata laluan.', 'error'); return; }
+
+    juri.busy(btn, true, 'Mengesahkan…');
+    juri.gateMsg('');
+    try {
+      var d = await API.call({ action: 'adminLogin', username: u, password: p }, 1);
+      if (d.status !== 'success') { juri.gateMsg(d.message || 'Log masuk gagal.', 'error'); return; }
+      API.token = d.token;
+      try { sessionStorage.setItem('csc26_juri_token', d.token); } catch (e) { }
+      document.getElementById('gate-pass').value = '';
+      await juri.enter();
+    } catch (e) {
+      juri.gateMsg('Sambungan gagal. Semak URL Web App dan talian anda.', 'error');
+    } finally {
+      juri.busy(btn, false, 'Log Masuk');
+    }
+  },
+
+  enter: async function (silent) {
+    try {
+      var me = await API.call({ action: 'judgeMe' }, 2);
+      if (me.status !== 'success') { juri.forceLogout('Sesi tamat. Sila log masuk semula.'); return; }
+      juri.me = me;
+      juri.hideGate();
+      juri.renderMe();
+      await juri.loadEvents();
+      juri.flushQueue();
+    } catch (e) {
+      if (silent) juri.forceLogout('Tidak dapat mengesahkan sesi.');
+      else juri.gateMsg('Sambungan gagal.', 'error');
+    }
+  },
+
+  logout: async function () {
+    if (!confirm('Log keluar dari portal juri?')) return;
+    if (juri.queue.length && !confirm(juri.queue.length + ' hantaran masih menunggu dihantar. Log keluar juga?')) return;
+    try { await API.call({ action: 'adminLogout' }, 0); } catch (e) { }
+    juri.forceLogout();
+  },
+
+  forceLogout: function (msg) {
+    API.token = null; juri.me = null;
+    try { sessionStorage.removeItem('csc26_juri_token'); } catch (e) { }
+    juri.showGate();
+    if (msg) juri.gateMsg(msg, 'warn');
+  },
+
+  renderMe: function () {
+    var m = juri.me || {};
+    var u = m.user || {};
+    juri.applyBranding(m.branding);
+    document.getElementById('hdr-name').textContent = u.fullName || u.username || '—';
+    var sports = (m.sports || []).map(function (s) { return s.name; });
+    document.getElementById('hdr-scope').textContent =
+      m.scopeAll ? 'Semua sukan' : (sports.length ? sports.join(', ') : 'Tiada sukan ditetapkan');
+
+    var sel = document.getElementById('event-filter');
+    if (sel) {
+      sel.innerHTML = '<option value="">Semua sukan dalam skop saya</option>' +
+        (m.sports || []).map(function (s) {
+          return '<option value="' + juri.esc(s.id) + '">' + juri.esc(s.name) + '</option>';
+        }).join('');
+    }
+    juri.icons();
+  },
+
+  /** Logo urus setia menggantikan ikon lalai; kembali ke ikon jika gagal. */
+  applyBranding: function (b) {
+    var slot = document.getElementById('brand-logo-slot');
+    if (!slot || !b) return;
+    var fallback = function () {
+      slot.innerHTML = '<i data-lucide="clipboard-check" class="w-5 h-5 text-cyan-500"></i>';
+      juri.icons();
+    };
+    if (!b.logoUrl) { fallback(); return; }
+
+    var img = document.createElement('img');
+    img.alt = b.name || 'Logo';
+    img.className = 'w-5 h-5 object-contain';
+    img.onerror = fallback;
+    img.onload = function () { juri.applyFavicon(b.logoUrl); };
+    img.src = b.logoUrl;
+    slot.innerHTML = '';
+    slot.appendChild(img);
+  },
+
+  /** Tukar favicon tab selepas logo disahkan boleh dimuatkan. */
+  applyFavicon: function (url) {
+    if (!url) return;
+    var head = document.head;
+    head.querySelectorAll('link[rel~="icon"], link[rel="apple-touch-icon"]')
+      .forEach(function (l) { l.parentNode.removeChild(l); });
+    ['icon', 'apple-touch-icon'].forEach(function (rel) {
+      var l = document.createElement('link');
+      l.rel = rel; l.href = url;
+      head.appendChild(l);
+    });
+  },
+
+  /* ---------------- Acara ---------------- */
+  loadEvents: async function (manual) {
+    try {
+      var d = await API.call({ action: 'judgeEvents' }, 2);
+      if (d.status !== 'success') {
+        if (d.code === 'UNAUTHENTICATED') { juri.forceLogout('Sesi tamat. Sila log masuk semula.'); return; }
+        juri.alert('Ralat', d.message || 'Tidak dapat memuatkan acara.', 'alert-triangle');
+        return;
+      }
+      juri.events = d.events || [];
+      juri.setOffline(false);
+      juri.renderEvents();
+      if (manual) juri.flushQueue();
+    } catch (e) {
+      juri.setOffline(true);
+    }
+  },
+
+  renderEvents: function () {
+    var el = document.getElementById('events-list');
+    if (!el) return;
+    var filter = (document.getElementById('event-filter') || {}).value || '';
+    var list = juri.events.filter(function (e) { return !filter || e.sportId === filter; });
+
+    if (!list.length) {
+      el.innerHTML = '<div class="glass-card p-8 flex flex-col items-center text-center gap-3">' +
+        '<div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center text-slate-400">' +
+        '<i data-lucide="calendar" class="w-5 h-5"></i></div>' +
+        '<h3 class="font-sport font-bold uppercase text-slate-700 dark:text-gray-200">Tiada Acara</h3>' +
+        '<p class="text-xs text-slate-500">Urus setia belum menetapkan acara untuk sukan anda.</p></div>';
+      juri.icons();
+      return;
+    }
+
+    el.innerHTML = list.map(function (e) {
+      var badge = '';
+      if (e.counts.draft) badge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">' + e.counts.draft + ' draf</span>';
+      else if (e.counts.verified) badge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400">' + e.counts.verified + ' sah</span>';
+      else badge = '<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/5 text-slate-500">belum</span>';
+
+      return '<div class="glass-card p-4 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.99] transition-transform" ' +
+          'onclick="juri.openEvent(\'' + juri.esc(e.id) + '\')">' +
+          '<div class="min-w-0">' +
+            '<p class="text-sm font-bold truncate">' + juri.esc(e.name) + '</p>' +
+            '<p class="text-[10px] text-slate-500 truncate mt-0.5">' + juri.esc(e.sportName) +
+              (e.round ? ' · ' + juri.esc(e.round) : '') + (e.venue ? ' · ' + juri.esc(e.venue) : '') + '</p>' +
+            '<p class="text-[10px] font-mono text-slate-400 mt-0.5">' + (e.at ? juri.fmtDate(e.at) : 'Tarikh belum ditetapkan') + '</p>' +
+          '</div>' +
+          '<div class="flex flex-col items-end gap-1 flex-shrink-0">' + badge +
+            '<i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i></div>' +
+        '</div>';
+    }).join('');
+    juri.icons();
+  },
+
+  openEvent: async function (id) {
+    try {
+      var d = await API.call({ action: 'judgeEventDetail', eventId: id }, 2);
+      if (d.status !== 'success') {
+        juri.alert('Tidak Dibenarkan', d.message || 'Acara tidak boleh dibuka.', 'alert-triangle');
+        return;
+      }
+      juri.current = d;
+      juri.rows = [];
+      document.getElementById('view-events').classList.add('hide');
+      document.getElementById('view-entry').classList.remove('hide');
+      document.getElementById('entry-title').textContent = d.event.name;
+      document.getElementById('entry-sub').textContent =
+        [d.event.round, d.event.venue, d.event.at ? juri.fmtDate(d.event.at) : ''].filter(Boolean).join(' · ');
+
+      var pts = d.pointsPreview || {};
+      document.getElementById('entry-points-hint').textContent =
+        'Mata: ' + Object.keys(pts).sort().map(function (k) { return '#' + k + '=' + pts[k]; }).join('  ') +
+        '  · kedudukan 0 = tiada pingat';
+
+      // Baris awal: emas, perak, gangsa — susunan yang paling kerap diisi.
+      juri.addRow(1); juri.addRow(2); juri.addRow(3);
+      juri.renderExisting(d.results || []);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      juri.alert('Luar Talian', 'Tidak dapat membuka acara. Semak sambungan anda.', 'wifi-off');
+    }
+  },
+
+  backToEvents: function () {
+    document.getElementById('view-entry').classList.add('hide');
+    document.getElementById('view-events').classList.remove('hide');
+    juri.current = null;
+    juri.loadEvents();
+  },
+
+  /* ---------------- Baris markah ---------------- */
+  addRow: function (placing) {
+    juri.rows.push({
+      participantId: '', participantName: '', contingent: '',
+      score: '', placing: placing || 0, type: 'INDIVIDU'
+    });
+    juri.renderRows();
+  },
+
+  removeRow: function (i) {
+    juri.rows.splice(i, 1);
+    juri.renderRows();
+  },
+
+  setRow: function (i, field, value) {
+    if (!juri.rows[i]) return;
+    juri.rows[i][field] = value;
+
+    // Memilih peserta berdaftar mengisi kontinjen secara automatik —
+    // ini menghapuskan punca ralat paling biasa di gelanggang.
+    if (field === 'participantId' && value) {
+      var p = (juri.current.participants || []).find(function (x) { return x.id === value; });
+      if (p) {
+        juri.rows[i].participantName = p.name;
+        juri.rows[i].contingent = p.contingent || juri.rows[i].contingent;
+        juri.renderRows();
+      }
+    }
+  },
+
+  renderRows: function () {
+    var el = document.getElementById('entry-rows');
+    if (!el || !juri.current) return;
+
+    var people = juri.current.participants || [];
+    var conts = juri.current.contingents || [];
+
+    el.innerHTML = juri.rows.map(function (r, i) {
+      var opts = '<option value="">— Nama bebas / pasukan —</option>' + people.map(function (p) {
+        return '<option value="' + juri.esc(p.id) + '"' + (r.participantId === p.id ? ' selected' : '') + '>' +
+          juri.esc(p.name) + ' (' + juri.esc(p.contingent || '-') + ')</option>';
+      }).join('');
+
+      var contOpts = '<option value="">— Pilih kontinjen —</option>' + conts.map(function (c) {
+        return '<option value="' + juri.esc(c.code) + '"' +
+          (String(r.contingent).toUpperCase() === String(c.code).toUpperCase() ? ' selected' : '') + '>' +
+          juri.esc(c.name) + '</option>';
+      }).join('');
+
+      var medal = r.placing === 1 ? '🥇' : r.placing === 2 ? '🥈' : r.placing === 3 ? '🥉' : '';
+
+      return '<div class="glass-card p-4 flex flex-col gap-2.5">' +
+        '<div class="flex items-center justify-between">' +
+          '<span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Baris ' + (i + 1) + ' ' + medal + '</span>' +
+          '<button onclick="juri.removeRow(' + i + ')" class="text-slate-400 hover:text-red-500">' +
+            '<i data-lucide="x" class="w-4 h-4"></i></button>' +
+        '</div>' +
+
+        '<select class="neo-input text-sm" onchange="juri.setRow(' + i + ',\'participantId\',this.value)">' + opts + '</select>' +
+
+        '<input class="neo-input text-sm" placeholder="Nama peserta / pasukan" ' +
+          'value="' + juri.esc(r.participantName) + '" ' +
+          'oninput="juri.setRow(' + i + ',\'participantName\',this.value)">' +
+
+        '<select class="neo-input text-sm" onchange="juri.setRow(' + i + ',\'contingent\',this.value)">' + contOpts + '</select>' +
+
+        '<div class="grid grid-cols-2 gap-2">' +
+          '<input class="neo-input text-sm font-mono" placeholder="Markah (21-15)" ' +
+            'value="' + juri.esc(r.score) + '" oninput="juri.setRow(' + i + ',\'score\',this.value)">' +
+          '<input type="number" min="0" max="99" class="neo-input text-sm font-mono" placeholder="Kedudukan" ' +
+            'value="' + (r.placing || '') + '" ' +
+            'oninput="juri.setRow(' + i + ',\'placing\',parseInt(this.value,10)||0)">' +
+        '</div>' +
+      '</div>';
+    }).join('');
+    juri.icons();
+  },
+
+  renderExisting: function (list) {
+    var wrap = document.getElementById('entry-existing-wrap');
+    var el = document.getElementById('entry-existing');
+    if (!wrap || !el) return;
+    wrap.classList.toggle('hide', !list.length);
+    el.innerHTML = list.map(function (r) {
+      var tone = r.status === 'SAH'
+        ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400'
+        : r.status === 'TOLAK'
+          ? 'bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400'
+          : 'bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400';
+      return '<div class="flex items-center gap-2 text-xs py-1.5 border-t border-slate-100 dark:border-white/5">' +
+        '<span class="w-5 text-[10px] font-mono font-bold text-slate-400">' + (r.placing || '–') + '</span>' +
+        '<span class="flex-1 truncate">' + juri.esc(r.participantName) + '</span>' +
+        '<span class="font-mono text-[10px] text-slate-500">' + juri.esc(r.score) + '</span>' +
+        '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded ' + tone + '">' + juri.esc(r.status) + '</span>' +
+      '</div>';
+    }).join('');
+  },
+
+  /* ---------------- Hantar ---------------- */
+  submit: function () {
+    if (!juri.current) return;
+    var rows = juri.rows.filter(function (r) {
+      return (r.participantName || r.participantId) && r.contingent;
+    });
+    if (!rows.length) {
+      juri.alert('Tiada Markah', 'Isi sekurang-kurangnya satu baris lengkap dengan nama dan kontinjen.', 'alert-triangle');
+      return;
+    }
+
+    var placings = rows.map(function (r) { return r.placing; }).filter(function (p) { return p > 0; });
+    var dup = placings.filter(function (p, i) { return placings.indexOf(p) !== i; });
+    if (dup.length && !confirm('Kedudukan ' + dup.join(', ') + ' berulang. Teruskan juga?')) return;
+
+    var job = {
+      id: 'q' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+      eventId: juri.current.event.id,
+      eventName: juri.current.event.name,
+      // Kunci idempotency dijana SEKALI di sini dan digunakan semula untuk
+      // setiap percubaan. Inilah yang menghalang markah dikira dua kali.
+      idempotencyKey: 'IDEM-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10),
+      rows: rows.map(function (r) {
+        return {
+          participantType: r.type, participantId: r.participantId,
+          participantName: r.participantName, contingent: r.contingent,
+          score: r.score, placing: r.placing
+        };
+      }),
+      tries: 0
+    };
+
+    juri.queue.push(job);
+    juri.saveQueue();
+    juri.renderQueueChip();
+    juri.entryStatus('Markah dimasukkan ke baris giliran…', 'wait');
+    // Sedia semula tiga baris kosong. Juri di gelanggang biasanya merekod
+    // beberapa pusingan berturut-turut; memaksa mereka menekan "Tambah baris"
+    // tiga kali selepas setiap hantaran ialah geseran yang tidak perlu.
+    juri.rows = [];
+    juri.addRow(1); juri.addRow(2); juri.addRow(3);
+    juri.flushQueue();
+  },
+
+  /* ---------------- Baris giliran setempat ---------------- */
+  loadQueue: function () {
+    try { return JSON.parse(localStorage.getItem('csc26_juri_queue') || '[]'); }
+    catch (e) { return []; }
+  },
+  saveQueue: function () {
+    try { localStorage.setItem('csc26_juri_queue', JSON.stringify(juri.queue)); } catch (e) { }
+  },
+
+  renderQueueChip: function () {
+    var c = document.getElementById('queue-chip');
+    if (!c) return;
+    if (!juri.queue.length) { c.classList.add('hide'); return; }
+    c.classList.remove('hide');
+    c.textContent = juri.queue.length + ' menunggu';
+  },
+
+  flushQueue: async function () {
+    if (juri.flushing || !juri.queue.length || !API.token) return;
+    juri.flushing = true;
+
+    try {
+      while (juri.queue.length) {
+        var job = juri.queue[0];
+        var d;
+        try {
+          d = await API.call({
+            action: 'judgeSubmitResults',
+            eventId: job.eventId,
+            idempotencyKey: job.idempotencyKey,
+            rows: job.rows
+          }, 1);
+        } catch (netErr) {
+          job.tries++;
+          juri.saveQueue();
+          juri.setOffline(true);
+          juri.entryStatus('Talian terputus. ' + juri.queue.length +
+            ' hantaran disimpan dan akan dihantar automatik.', 'wait');
+          break;
+        }
+
+        if (d.status === 'success') {
+          juri.queue.shift();
+          juri.saveQueue();
+          juri.setOffline(false);
+          juri.entryStatus(d.message || 'Markah dihantar.', 'ok');
+        } else if (d.code === 'UNAUTHENTICATED') {
+          juri.forceLogout('Sesi tamat. Log masuk semula — markah anda masih disimpan.');
+          break;
+        } else if (d.code === 'BUSY') {
+          job.tries++;
+          juri.saveQueue();
+          juri.entryStatus('Pelayan sibuk. Cuba semula sebentar lagi…', 'wait');
+          break;
+        } else {
+          // Ralat pengesahan: mencuba semula tidak akan menolongnya.
+          // Keluarkan daripada baris giliran dan beritahu juri dengan jelas.
+          juri.queue.shift();
+          juri.saveQueue();
+          juri.entryStatus('DITOLAK: ' + (d.message || 'Markah tidak sah.'), 'err');
+        }
+      }
+    } finally {
+      juri.flushing = false;
+      juri.renderQueueChip();
+      juri.scheduleFlush();
+      if (juri.current) juri.refreshCurrent();
+    }
+  },
+
+  scheduleFlush: function () {
+    if (juri.flushTimer) clearTimeout(juri.flushTimer);
+    if (!juri.queue.length) return;
+    // Cuba semula dengan backoff, maksimum seminit.
+    var tries = juri.queue[0].tries || 1;
+    var delay = Math.min(60000, 4000 * tries) + Math.random() * 2000;
+    juri.flushTimer = setTimeout(function () { juri.flushQueue(); }, delay);
+  },
+
+  refreshCurrent: async function () {
+    if (!juri.current) return;
+    try {
+      var d = await API.call({ action: 'judgeEventDetail', eventId: juri.current.event.id }, 1);
+      if (d.status === 'success') {
+        juri.current.results = d.results;
+        juri.renderExisting(d.results || []);
+      }
+    } catch (e) { /* biarkan paparan sedia ada */ }
+  },
+
+  entryStatus: function (msg, kind) {
+    var el = document.getElementById('entry-status');
+    if (!el) return;
+    var tone = kind === 'ok'
+      ? 'bg-green-100 dark:bg-green-500/10 border-green-300 dark:border-green-500/30 text-green-700 dark:text-green-400'
+      : kind === 'err'
+        ? 'bg-red-100 dark:bg-red-500/10 border-red-300 dark:border-red-500/30 text-red-700 dark:text-red-400'
+        : 'bg-yellow-100 dark:bg-yellow-500/10 border-yellow-300 dark:border-yellow-500/30 text-yellow-800 dark:text-yellow-300';
+    el.className = 'rounded-xl border px-4 py-3 text-xs font-medium ' + tone;
+    el.textContent = msg;
+    el.classList.remove('hide');
+  },
+
+  setOffline: function (on) {
+    var b = document.getElementById('offline-banner');
+    if (b) b.classList.toggle('hide', !on);
+    juri.icons();
+  },
+
+  /* ---------------- Pembantu ---------------- */
+  alert: function (title, msg, icon) {
+    document.getElementById('alert-title').textContent = title;
+    document.getElementById('alert-msg').textContent = msg;
+    var i = document.getElementById('alert-icon');
+    if (i) i.setAttribute('data-lucide', icon || 'info');
+    var m = document.getElementById('alert-modal');
+    m.classList.remove('hide'); m.classList.add('flex');
+    juri.icons();
+  },
+  closeAlert: function () {
+    var m = document.getElementById('alert-modal');
+    m.classList.add('hide'); m.classList.remove('flex');
+  },
+  busy: function (btn, on, label) {
+    if (!btn) return;
+    btn.disabled = !!on;
+    btn.style.opacity = on ? '0.6' : '';
+    var s = btn.querySelector('span');
+    if (s) s.textContent = label; else btn.textContent = label;
+  },
+  fmtDate: function (iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso || '');
+    var p = function (x) { return x < 10 ? '0' + x : '' + x; };
+    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' +
+           p(d.getHours()) + ':' + p(d.getMinutes());
+  },
+  esc: function (s) {
+    return String(s === null || s === undefined ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+};
+
+document.addEventListener('DOMContentLoaded', juri.init);
+</script>
+</body>
+</html>

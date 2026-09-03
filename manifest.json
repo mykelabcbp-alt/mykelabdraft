@@ -1,0 +1,51 @@
+{
+  "name": "CSC2026 — Portal Pendaftaran Atlet",
+  "short_name": "CSC2026",
+  "description": "Portal pendaftaran atlet CBP Sports Carnival 2026",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1117",
+  "theme_color": "#0f172a",
+  "lang": "ms",
+  "dir": "ltr",
+  "categories": [
+    "sports",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Papan Pemuka Atlet",
+      "short_name": "Papan Pemuka",
+      "url": "./index.html",
+      "description": "Semak status pendaftaran anda"
+    }
+  ]
+}
