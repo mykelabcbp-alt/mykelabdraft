@@ -16,7 +16,7 @@
    - Fon & pustaka CDN             -> cache-first (jarang berubah).
    ========================================================================== */
 
-var VERSION = 'csc2026-v3.2.0';
+var VERSION = 'csc2026-v3.4.1';
 var SHELL_CACHE = VERSION + '-shell';
 var CDN_CACHE = VERSION + '-cdn';
 
@@ -26,6 +26,7 @@ var SHELL_ASSETS = [
   './manifest.json',
   './vendor/tailwind.css',
   './vendor/lucide-subset.js',
+  './vendor/fonts.css',
   './assets/icon-192.png',
   './assets/icon-512.png',
   './assets/icon-maskable-512.png',
@@ -39,11 +40,14 @@ var SHELL_ASSETS = [
   './juri/index.html'
 ];
 
-var CDN_HOSTS = [
-  'fonts.googleapis.com',
-  'fonts.gstatic.com',
-  'cdnjs.cloudflare.com'
-];
+/*
+ * Tiada lagi hos CDN. Fon, Tailwind, ikon dan SheetJS semuanya di-hos
+ * sendiri dalam vendor/, jadi portal tidak menghubungi mana-mana domain
+ * pihak ketiga. Senarai ini dikekalkan kosong dengan sengaja: kalau
+ * seseorang menambah CDN pada masa hadapan, mereka perlu menambahnya di
+ * sini DAN mengemas kini permohonan whitelist IT.
+ */
+var CDN_HOSTS = [];
 
 self.addEventListener('install', function (event) {
   event.waitUntil(
