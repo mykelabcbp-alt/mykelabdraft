@@ -11,9 +11,8 @@
     <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
     <meta name="theme-color" content="#ffffff">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Fon di-hos sendiri (vendor/fonts.css) — tiada panggilan ke domain luar -->
+    <link rel="stylesheet" href="../vendor/fonts.css">
     
     <link rel="stylesheet" href="../vendor/tailwind.css">
     <script src="../vendor/lucide-subset.js"></script>
@@ -559,10 +558,11 @@
                     <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Pendaftaran Ditutup (ISO)</label><input type="text" id="cf-REG_CLOSE" class="neo-input text-sm font-mono" placeholder="Kosong = tiada had"></div>
                     <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Maksimum Sukan</label><input type="number" id="cf-MAX_SPORTS" min="1" max="5" class="neo-input text-sm"></div>
                     <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Saiz Gambar Maks (KB)</label><input type="number" id="cf-PHOTO_MAX_KB" min="100" class="neo-input text-sm"></div>
-                    <div class="md:col-span-2"><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">URL Portal Atlet (untuk QR)</label><input type="text" id="cf-PORTAL_URL" class="neo-input text-sm font-mono" placeholder="https://akaun.github.io/csc2026/"></div>
+                    <div class="md:col-span-2"><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">URL Portal Atlet (untuk QR)</label><input type="text" id="cf-PORTAL_URL" class="neo-input text-sm font-mono" placeholder="https://mykelabcbp.com/"></div>
                     <div class="md:col-span-2"><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">ID Folder Google Drive</label><input type="text" id="cf-DRIVE_FOLDER_ID" class="neo-input text-sm font-mono"></div>
                     <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Emel Urus Setia</label><input type="text" id="cf-SUPPORT_CONTACT" class="neo-input text-sm"></div>
                     <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Faktor Kedua (4 digit telefon)</label><select id="cf-REQUIRE_SECOND_FACTOR" class="neo-input text-sm"><option value="FALSE">Tidak</option><option value="TRUE">Ya — lebih selamat</option></select></div>
+                    <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Maklumat Hubungan Atlet</label><select id="cf-REQUIRE_CONTACT_INFO" class="neo-input text-sm"><option value="FALSE">Pilihan — boleh dikosongkan</option><option value="TRUE">Wajib diisi</option></select><p class="text-[10px] text-slate-500 mt-1">No. Telefon &amp; Emel atlet. Waris/kecemasan sentiasa wajib.</p></div>
                     <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Papar Statistik Awam</label><select id="cf-PUBLIC_STATS" class="neo-input text-sm"><option value="TRUE">Ya</option><option value="FALSE">Tidak</option></select></div>
                     <div><label class="block text-xs text-slate-500 uppercase tracking-wider mb-2">Mod Penyelenggaraan</label><select id="cf-MAINTENANCE_MODE" class="neo-input text-sm"><option value="FALSE">Tidak</option><option value="TRUE">Ya — sekat pendaftaran</option></select></div>
                     <div class="md:col-span-2 border-t border-[var(--glass-border)] pt-4 mt-1">
@@ -690,20 +690,33 @@
                                 <option value="Registered">Registered Sahaja</option>
                                 <option value="Pending">Pending Sahaja</option>
                             </select>
-                            <button onclick="adminApp.exportParticipantsCSV()" class="btn-sport cyan px-5 py-2 rounded-lg text-xs flex items-center gap-1 shadow-md ml-auto">
-                                <i data-lucide="download" class="w-4 h-4"></i> Eksport Data Terpilih
+                            <label class="flex items-center gap-2 text-xs text-slate-500 ml-auto cursor-pointer select-none">
+                                <input type="checkbox" id="report-p-photos" class="rounded" checked onchange="adminApp.previewReportData()">
+                                Papar gambar
+                            </label>
+                            <button onclick="adminApp.exportParticipantsCSV()" class="btn-sport cyan px-5 py-2 rounded-lg text-xs flex items-center gap-1 shadow-md">
+                                <i data-lucide="download" class="w-4 h-4"></i> Eksport CSV
                             </button>
+                            <button onclick="adminApp.exportParticipantsPDF()" id="btn-export-pdf" class="btn-sport px-5 py-2 rounded-lg text-xs flex items-center gap-1 shadow-md">
+                                <i data-lucide="file-text" class="w-4 h-4"></i> Eksport PDF (Bergambar)
+                            </button>
+                        </div>
+                        <div id="pdf-progress" class="hide rounded-xl border border-[var(--glass-border)] bg-slate-50 dark:bg-black/20 px-4 py-3">
+                            <p id="pdf-progress-text" class="text-xs font-medium mb-2">Menyediakan...</p>
+                            <div class="h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                                <div id="pdf-progress-bar" class="h-full bg-motorsport-accentCyan transition-all" style="width:0%"></div>
+                            </div>
                         </div>
                         <div class="border border-[var(--glass-border)] rounded-xl overflow-hidden bg-slate-50 dark:bg-black/20">
                             <table class="w-full text-left text-xs whitespace-nowrap">
                                 <thead>
                                     <tr class="bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                                        <th class="p-2.5">Reg No</th><th class="p-2.5">Nama</th><th class="p-2.5">Kontinjen</th><th class="p-2.5">Sukan</th><th class="p-2.5">Status</th>
+                                        <th class="p-2.5" id="th-report-photo">Gambar</th><th class="p-2.5">Reg No</th><th class="p-2.5">Nama</th><th class="p-2.5">Kontinjen</th><th class="p-2.5">Sukan</th><th class="p-2.5">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="report-p-table"></tbody>
                             </table>
-                            <div class="p-2 text-center text-[10px] text-slate-500 bg-white dark:bg-[#111118]">* Preview memaparkan maksimum 20 rekod terawal sahaja. Download untuk laporan penuh.</div>
+                            <div id="report-p-note" class="p-2 text-center text-[10px] text-slate-500 bg-white dark:bg-[#111118]">Memuatkan...</div>
                         </div>
                     </div>
 
@@ -723,7 +736,7 @@
                                 </thead>
                                 <tbody id="report-s-table"></tbody>
                             </table>
-                            <div class="p-2 text-center text-[10px] text-slate-500 bg-white dark:bg-[#111118]">* Preview memaparkan maksimum 20 rekod terawal sahaja. Download untuk laporan penuh.</div>
+                            <div id="report-s-note" class="p-2 text-center text-[10px] text-slate-500 bg-white dark:bg-[#111118]">Memuatkan...</div>
                         </div>
                     </div>
 
@@ -1351,6 +1364,10 @@ var adminApp = {
     if (target === 'events') adminApp.loadEventsAdmin();
     if (target === 'contingents') adminApp.loadContingents();
     if (target === 'judges') adminApp.loadJudges();
+    // Penapis laporan perlukan senarai induk kontinjen, yang sebelum ini
+    // hanya dimuatkan apabila panel Kontinjen dibuka. Membuka Laporan tanpa
+    // menyentuh panel itu dahulu meninggalkan dropdown kosong.
+    if (target === 'reports-preview') adminApp.loadReportFilters();
 
     var sb = document.getElementById('sidebar'), ov = document.getElementById('sidebar-overlay');
     if (sb) sb.classList.remove('sidebar-open');
@@ -1385,6 +1402,7 @@ var adminApp = {
         adminApp.data.facets = pr.facets;
         adminApp.renderParticipants();
         adminApp.buildContingentFilter(pr.facets);
+        adminApp.buildReportFilters();
         adminApp.renderReports();
       }
 
@@ -1392,6 +1410,10 @@ var adminApp = {
       if (st.status === 'success') {
         adminApp.data.staff = st.rows;
         adminApp.renderStaff();
+        // Data staf menyumbang nama kontinjen kepada penapis, jadi bina
+        // semula selepas ia tiba.
+        adminApp.buildReportFilters();
+        adminApp.renderReports();
       }
 
       adminApp.loadNews();
@@ -2091,7 +2113,7 @@ var adminApp = {
     if (!window.XLSX) {
       await new Promise(function (res, rej) {
         var sc = document.createElement('script');
-        sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+        sc.src = '../vendor/xlsx.full.min.js';
         sc.onload = res;
         sc.onerror = function () { rej(new Error('Gagal memuat pembaca XLSX. Sila guna format CSV.')); };
         document.head.appendChild(sc);
@@ -2242,9 +2264,12 @@ var adminApp = {
     var st = document.getElementById('report-tab-staff');
     var bp = document.getElementById('tab-btn-participants');
     var bs = document.getElementById('tab-btn-staff');
-    var on = 'px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-motorsport-accentCyan text-motorsport-accentCyan';
-    var off = 'px-4 py-2 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-500';
-    if (tab === 'staff') {
+    var on = 'pb-2 font-bold text-sm border-b-2 border-motorsport-accentCyan text-motorsport-accentCyan transition-colors';
+    var off = 'pb-2 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition-colors';
+    // Butang menghantar id penuh ('report-tab-staff'), bukan 'staff'. Terima
+    // kedua-duanya supaya butang tab tidak senyap-senyap tidak berfungsi.
+    var wantStaff = String(tab || '').indexOf('staff') !== -1;
+    if (wantStaff) {
       if (pt) pt.classList.add('hide'); if (st) st.classList.remove('hide');
       if (bp) bp.className = off; if (bs) bs.className = on;
     } else {
@@ -2253,29 +2278,181 @@ var adminApp = {
     }
   },
 
+  /**
+   * Isi dropdown penapis laporan.
+   *
+   * Kontinjen digabungkan daripada TIGA sumber, kerana bergantung pada satu
+   * sahaja meninggalkan lubang yang nyata:
+   *   1. Senarai induk tab Contingents (kontinjen yang sudah didaftarkan
+   *      tetapi belum ada sesiapa mendaftar — inilah yang hilang sebelum ini)
+   *   2. facets daripada searchParticipants (apa yang benar-benar ada dalam
+   *      rekod pendaftaran)
+   *   3. Nilai dalam Staff_Master (kontinjen yang wujud pada staf tetapi
+   *      belum didaftarkan dalam tab induk)
+   */
+  buildReportFilters: function () {
+    var opt = function (v, label) {
+      return '<option value="' + adminApp.esc(v) + '">' + adminApp.esc(label) + '</option>';
+    };
+    var keep = function (sel, html, first) {
+      if (!sel) return;
+      var cur = sel.value;
+      sel.innerHTML = first + html;
+      // Kekalkan pilihan semasa jika ia masih wujud selepas dibina semula.
+      sel.value = cur;
+      if (sel.selectedIndex === -1) sel.selectedIndex = 0;
+    };
+
+    // ---- Kontinjen ----
+    var label = {}, order = [];
+    var add = function (code, name) {
+      var c = String(code || '').trim();
+      if (!c) return;
+      if (!(c in label)) { label[c] = name || c; order.push(c); }
+      else if (name && label[c] === c) { label[c] = name; }
+    };
+    (adminApp.scoring.contingents || []).forEach(function (c) { add(c.code, c.name || c.code); });
+    ((adminApp.data.facets && adminApp.data.facets.contingents) || []).forEach(function (c) { add(c, ''); });
+    (adminApp.data.staff || []).forEach(function (s) { add(s.contingent, ''); });
+    order.sort(function (a, b) {
+      return String(label[a]).localeCompare(String(label[b]), 'ms');
+    });
+    var contHtml = order.map(function (c) {
+      return opt(c, label[c] === c ? c : label[c] + ' (' + c + ')');
+    }).join('');
+
+    keep(document.getElementById('report-p-cont'), contHtml, opt('', 'Semua Kontinjen'));
+    keep(document.getElementById('report-s-cont'), contHtml, opt('', 'Semua Kontinjen'));
+
+    // ---- Sukan ----
+    var sportHtml = ((adminApp.data.dashboard && adminApp.data.dashboard.sports) || [])
+      .map(function (s) { return opt(s.id, s.name || s.id); }).join('');
+    keep(document.getElementById('report-p-sport'), sportHtml, opt('', 'Semua Sukan'));
+
+    // ---- Status ----
+    // Dibina daripada data sebenar, bukan senarai keras. Senarai keras
+    // sebelum ini terlepas 'Cancelled', jadi rekod dibatalkan tidak boleh
+    // ditapis langsung.
+    var seen = {};
+    (adminApp.data.participants || []).forEach(function (r) {
+      if (r.status) seen[r.status] = true;
+    });
+    ((adminApp.data.facets && adminApp.data.facets.statuses) || []).forEach(function (s) {
+      if (s) seen[s] = true;
+    });
+    var statuses = Object.keys(seen).sort();
+    if (!statuses.length) statuses = ['Registered', 'Pending', 'Cancelled'];
+    keep(document.getElementById('report-p-status'),
+      statuses.map(function (s) { return opt(s, s + ' sahaja'); }).join(''),
+      opt('', 'Semua Status'));
+  },
+
+  /** Muatkan senarai induk kontinjen jika belum ada, kemudian bina penapis. */
+  loadReportFilters: async function () {
+    if (!(adminApp.scoring.contingents || []).length) {
+      try {
+        var d = await API.call({ action: 'listContingents' }, 2);
+        if (d.status === 'success') adminApp.scoring.contingents = d.contingents || [];
+      } catch (e) { /* penapis masih boleh dibina dari facets + staf */ }
+    }
+    adminApp.buildReportFilters();
+    adminApp.renderReports();
+  },
+
+  reportPhotosOn: function () {
+    var c = document.getElementById('report-p-photos');
+    return !c || c.checked;
+  },
+
+  /**
+   * Thumbnail untuk jadual preview.
+   *
+   * Guna URL lh3 terus dalam <img>, bukan data URI dari pelayan: memaparkan
+   * gambar silang-domain tidak memerlukan CORS, jadi ini percuma. Saiz
+   * diminta =s80 supaya menapis 200 peserta tidak menarik 200 gambar 600px.
+   */
+  reportThumb: function (r) {
+    var box = 'w-9 h-9 rounded-lg object-cover border border-[var(--glass-border)] bg-slate-200 dark:bg-slate-700';
+    if (!r.photoUrl) {
+      return '<div class="' + box + ' flex items-center justify-center text-[9px] text-slate-500">—</div>';
+    }
+    var small = String(r.photoUrl).replace(/=s\d+$/, '=s80');
+    return '<img src="' + adminApp.esc(small) + '" alt="" loading="lazy" class="' + box + '" ' +
+           'onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),' +
+           '{className:this.className,textContent:\'—\'}))">';
+  },
+
+  filteredReportParticipants: function () {
+    var g = function (id) { return (document.getElementById(id) || {}).value || ''; };
+    var cont = g('report-p-cont'), sport = g('report-p-sport'), status = g('report-p-status');
+    return (adminApp.data.participants || []).filter(function (r) {
+      if (cont && r.contingent !== cont) return false;
+      if (sport && r.sport1 !== sport && r.sport2 !== sport) return false;
+      if (status && String(r.status || '').toLowerCase() !== status.toLowerCase()) return false;
+      return true;
+    });
+  },
+
+  filteredReportStaff: function () {
+    var cont = (document.getElementById('report-s-cont') || {}).value || '';
+    return (adminApp.data.staff || []).filter(function (r) {
+      return !cont || r.contingent === cont;
+    });
+  },
+
   renderReports: function () {
     var names = adminApp.nameMaps();
+    var LIMIT = 300;
+
+    var note = function (id, total, shown) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = total === 0
+        ? 'Tiada rekod sepadan dengan penapis ini.'
+        : (total > shown
+            ? 'Memaparkan ' + shown + ' daripada ' + total + ' rekod sepadan. Eksport untuk senarai penuh.'
+            : 'Memaparkan kesemua ' + total + ' rekod sepadan.');
+    };
+
     var pt = document.getElementById('report-p-table');
     if (pt) {
-      pt.innerHTML = adminApp.data.participants.slice(0, 300).map(function (r) {
+      var pRows = adminApp.filteredReportParticipants();
+      var pShown = pRows.slice(0, LIMIT);
+      var showPhotos = adminApp.reportPhotosOn();
+      var th = document.getElementById('th-report-photo');
+      if (th) th.classList.toggle('hide', !showPhotos);
+      var cols = showPhotos ? 6 : 5;
+
+      pt.innerHTML = pShown.length ? pShown.map(function (r) {
         return '<tr class="border-b border-[var(--glass-border)]">' +
+          (showPhotos ? '<td class="px-4 py-1.5">' + adminApp.reportThumb(r) + '</td>' : '') +
           '<td class="px-4 py-2 font-mono text-[11px]">' + adminApp.esc(r.regNo) + '</td>' +
           '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.name) + '</td>' +
           '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.contingent) + '</td>' +
           '<td class="px-4 py-2 text-xs">' + adminApp.esc([r.sport1, r.sport2].filter(Boolean)
             .map(function (x) { return names.sport[x] || x; }).join(', ')) + '</td>' +
           '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.status) + '</td></tr>';
-      }).join('');
+      }).join('')
+        : '<tr><td colspan="' + cols + '" class="text-center py-10 text-xs text-slate-500">Tiada rekod sepadan.</td></tr>';
+      note('report-p-note', pRows.length, pShown.length);
     }
+
     var st = document.getElementById('report-s-table');
     if (st) {
-      st.innerHTML = adminApp.data.staff.slice(0, 300).map(function (r) {
+      var sRows = adminApp.filteredReportStaff();
+      var sShown = sRows.slice(0, LIMIT);
+      st.innerHTML = sShown.length ? sShown.map(function (r) {
         return '<tr class="border-b border-[var(--glass-border)]">' +
           '<td class="px-4 py-2 font-mono text-[11px]">' + adminApp.esc(r.staffId) + '</td>' +
           '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.name) + '</td>' +
           '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.department) + '</td>' +
-          '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.contingent) + '</td></tr>';
-      }).join('');
+          '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.contingent) + '</td>' +
+          // Lajur kelima wujud dalam pengepala jadual; tanpa sel ini seluruh
+          // baris tersasar satu lajur.
+          '<td class="px-4 py-2 text-xs">' + adminApp.esc(r.phone || '-') + '</td></tr>';
+      }).join('')
+        : '<tr><td colspan="5" class="text-center py-10 text-xs text-slate-500">Tiada rekod sepadan.</td></tr>';
+      note('report-s-note', sRows.length, sShown.length);
     }
   },
 
@@ -2284,7 +2461,20 @@ var adminApp = {
       var d = await API.call({ action: 'exportParticipants' }, 2);
       if (d.status !== 'success') { alert(d.message); return; }
       var names = adminApp.nameMaps();
-      var rows = d.rows.map(function (r) {
+
+      // Butang berbunyi "Eksport Data Terpilih", jadi ia mesti menghormati
+      // penapis. Sebelum ini ia mengeksport semuanya tanpa mengira penapis.
+      var g = function (id) { return (document.getElementById(id) || {}).value || ''; };
+      var fc = g('report-p-cont'), fs = g('report-p-sport'), fst = g('report-p-status');
+      var picked = d.rows.filter(function (r) {
+        if (fc && r.contingent !== fc) return false;
+        if (fs && r.sport1 !== fs && r.sport2 !== fs) return false;
+        if (fst && String(r.status || '').toLowerCase() !== fst.toLowerCase()) return false;
+        return true;
+      });
+      if (!picked.length) { alert('Tiada rekod sepadan dengan penapis semasa. Tiada fail dijana.'); return; }
+
+      var rows = picked.map(function (r) {
         return {
           NoPendaftaran: r.regNo, StaffID: r.staffId, Nama: r.name, Kontinjen: r.contingent,
           Jabatan: r.department, Jawatan: r.position, Jantina: r.gender,
@@ -2294,13 +2484,411 @@ var adminApp = {
           Status: r.status, MasaDaftar: r.timestamp, URLGambar: r.photoUrl
         };
       });
-      adminApp.downloadCSV('CSC2026_Senarai_Atlet', rows, Object.keys(rows[0] || { Kosong: '' }));
-      alert(d.count + ' rekod dieksport.');
+      // Nama fail membawa kontinjen yang ditapis supaya fail yang sudah
+      // dimuat turun boleh dikenal pasti tanpa membukanya.
+      var cont = fc ? '_' + fc.replace(/[^A-Za-z0-9\-]/g, '') : '';
+      adminApp.downloadCSV('CSC2026_Senarai_Atlet' + cont, rows, Object.keys(rows[0] || { Kosong: '' }));
+
+      // MESTI picked.length, BUKAN d.count. d.count ialah jumlah keseluruhan
+      // dari pelayan sebelum penapisan — memaparkannya membuatkan eksport
+      // yang betul-betul ditapis kelihatan seperti ia mengeksport semuanya.
+      alert(picked.length + ' daripada ' + d.count + ' rekod dieksport.\n' +
+            adminApp.reportFilterLabel());
     } catch (e) { alert('Sambungan gagal.'); }
   },
 
+  /* ---------------- Eksport PDF bergambar ---------------- */
+
+  pdfProgress: function (text, pct) {
+    var wrap = document.getElementById('pdf-progress');
+    var t = document.getElementById('pdf-progress-text');
+    var bar = document.getElementById('pdf-progress-bar');
+    if (!wrap) return;
+    if (text === null) { wrap.classList.add('hide'); return; }
+    wrap.classList.remove('hide');
+    if (t) t.textContent = text;
+    if (bar) bar.style.width = Math.max(0, Math.min(100, pct || 0)) + '%';
+  },
+
+  /** Muat jsPDF hanya bila diperlukan — 365KB tidak perlu dibawa oleh setiap
+   *  sesi admin yang tidak pernah mengeksport PDF. */
+  loadJsPDF: async function () {
+    if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF;
+    var src = '../vendor/jspdf.umd.min.js';
+    await new Promise(function (res, rej) {
+      var done = false;
+      var finish = function (fn, arg) { if (!done) { done = true; clearTimeout(timer); fn(arg); } };
+
+      // Tanpa had masa, tag <script> yang tidak pernah selesai (sambungan
+      // tergantung, proksi menelan permintaan) meninggalkan butang lumpuh
+      // dan mesej "Memuat..." selama-lamanya. Itulah rupa "keep on failed".
+      var timer = setTimeout(function () {
+        finish(rej, new Error('Penjana PDF terlalu lama dimuat (lebih 20 saat). ' +
+                              'Sambungan mungkin perlahan atau fail web/vendor/jspdf.umd.min.js tersekat.'));
+      }, 20000);
+
+      var sc = document.createElement('script');
+      sc.src = src;
+      sc.onload = function () { finish(res); };
+      // Sebut nama fail. "Gagal memuat penjana PDF" tidak memberitahu sesiapa
+      // apa yang perlu dibaiki; sebab paling lazim ialah fail itu tidak
+      // ternaik ke pelayan semasa upload folder web.
+      sc.onerror = function () {
+        finish(rej, new Error('Fail ' + src.replace('../', 'web/') + ' tidak dijumpai di pelayan. ' +
+                              'Pastikan seluruh folder web/vendor/ dinaikkan ke hosting.'));
+      };
+      document.head.appendChild(sc);
+    });
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      throw new Error('Fail penjana PDF dimuat tetapi rosak atau tidak lengkap. Muat naik semula web/vendor/jspdf.umd.min.js.');
+    }
+    return window.jspdf.jsPDF;
+  },
+
+  /** Ambil gambar dalam kelompok kecil. Lihat komen adminPhotoBatch_ dalam
+   *  05_Admin.gs untuk sebab ia melalui pelayan dan bukan terus dari lh3. */
+  fetchReportPhotos: async function (rows, onProgress) {
+    var BATCH = 25;
+    var photos = {}, missing = 0;
+    for (var i = 0; i < rows.length; i += BATCH) {
+      var slice = rows.slice(i, i + BATCH).map(function (r) { return r.regNo; });
+      try {
+        var d = await API.call({ action: 'photoBatch', data: { regNos: slice } }, 1);
+        if (d.status === 'success') {
+          Object.keys(d.photos || {}).forEach(function (k) { photos[k] = d.photos[k]; });
+          missing += (d.skipped || []).length;
+        } else {
+          missing += slice.length;
+        }
+      } catch (e) {
+        // Satu kelompok gagal bukan sebab untuk membatalkan keseluruhan
+        // laporan. Kad berkenaan dipapar tanpa gambar.
+        missing += slice.length;
+      }
+      if (onProgress) onProgress(Math.min(i + BATCH, rows.length), rows.length);
+    }
+    return { photos: photos, missing: missing };
+  },
+
+  exportParticipantsPDF: async function () {
+    var btn = document.getElementById('btn-export-pdf');
+    var rows = adminApp.filteredReportParticipants();
+
+    if (!rows.length) { alert('Tiada rekod sepadan dengan penapis semasa. Tiada fail dijana.'); return; }
+    if (rows.length > 400 &&
+        !confirm(rows.length + ' peserta akan dimasukkan. Ini mengambil masa beberapa minit dan menghasilkan fail besar.\n\nTapis dahulu mengikut kontinjen untuk fail yang lebih kecil.\n\nTeruskan?')) {
+      return;
+    }
+
+    if (btn) { btn.disabled = true; btn.classList.add('opacity-50'); }
+
+    // Penjana PDF dimuat DAHULU, sebelum gambar diambil. Kalau fail vendor
+    // itu tiada, kita tahu segera dan boleh tawarkan paparan cetak tanpa
+    // membazirkan masa mengambil ratusan gambar.
+    var jsPDF = null;
+    try {
+      adminApp.pdfProgress('Memuat penjana PDF...', 2);
+      jsPDF = await adminApp.loadJsPDF();
+    } catch (e) {
+      adminApp.pdfProgress(null);
+      if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+      if (confirm(e.message + '\n\nSementara itu, buka paparan cetak? ' +
+                  'Dari situ pilih "Save as PDF" dalam kotak cetak pelayar — hasilnya sama.')) {
+        adminApp.openPrintableReport(rows);
+      }
+      return;
+    }
+
+    try {
+      adminApp.pdfProgress('Mengambil gambar 0/' + rows.length + '...', 5);
+      var got = await adminApp.fetchReportPhotos(rows, function (done, total) {
+        adminApp.pdfProgress('Mengambil gambar ' + done + '/' + total + '...',
+          5 + (done / total) * 70);
+      });
+
+      adminApp.pdfProgress('Menyusun PDF...', 80);
+      var doc = adminApp.buildParticipantsPDF(jsPDF, rows, got.photos);
+
+      adminApp.pdfProgress('Menyimpan fail...', 97);
+      var stamp = new Date().toISOString().slice(0, 10);
+      var cont = (document.getElementById('report-p-cont') || {}).value || '';
+      var fname = 'CSC2026_Peserta' + (cont ? '_' + cont.replace(/[^A-Za-z0-9\-]/g, '') : '') + '_' + stamp + '.pdf';
+
+      // Muat turun boleh gagal dalam pelayar dalam-app (WhatsApp, Instagram)
+      // dan sebahagian pelayar mudah alih yang mengabaikan atribut download.
+      // PDF sudah siap pada ketika ini — jangan buang kerja itu.
+      try {
+        doc.save(fname);
+      } catch (saveErr) {
+        adminApp.pdfProgress(null);
+        if (confirm('PDF sudah siap tetapi pelayar ini menolak muat turun.\n\n' +
+                    'Ini lazim berlaku dalam pelayar dalam-app seperti WhatsApp. ' +
+                    'Buka paparan cetak sebagai ganti?')) {
+          adminApp.openPrintableReport(rows);
+        }
+        return;
+      }
+
+      adminApp.pdfProgress(null);
+
+      // Catat sekali sahaja, selepas fail benar-benar dijana.
+      try {
+        await API.call({ action: 'logPdfExport',
+          data: { count: rows.length, filters: adminApp.reportFilterLabel() } }, 0);
+      } catch (e) { /* audit gagal tidak membatalkan eksport yang sudah siap */ }
+
+      if (got.missing) {
+        alert('Siap. ' + got.missing + ' daripada ' + rows.length +
+              ' peserta tiada gambar yang boleh diambil — kad mereka dipapar tanpa gambar.');
+      }
+    } catch (e) {
+      adminApp.pdfProgress(null);
+      alert('Gagal menjana PDF: ' + (e.message || 'ralat tidak diketahui'));
+    } finally {
+      if (btn) { btn.disabled = false; btn.classList.remove('opacity-50'); }
+    }
+  },
+
+  /**
+   * Laluan sandaran: laporan boleh cetak, tanpa sebarang pustaka.
+   *
+   * Digunakan bila jsPDF tidak dapat dimuat (fail vendor tertinggal semasa
+   * upload) atau bila pelayar menolak muat turun. Pengguna tekan Cetak dan
+   * pilih "Save as PDF" — hasilnya PDF yang sama gunanya.
+   *
+   * Gambar dirujuk terus melalui URL lh3 dalam <img>. Memaparkan gambar
+   * silang-domain tidak memerlukan CORS, jadi laluan ini tidak perlukan
+   * endpoint photoBatch langsung. Ia juga jauh lebih pantas.
+   */
+  openPrintableReport: function (rows) {
+    var names = adminApp.nameMaps();
+    var cfg = (adminApp.data.dashboard && adminApp.data.dashboard.config) || {};
+    var eventName = cfg.EVENT_NAME || 'CBP Sports Carnival 2026';
+    var esc = adminApp.esc;
+
+    var d = new Date();
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var stamp = pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() +
+                ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+
+    var cards = rows.map(function (r) {
+      var sports = [r.sport1, r.sport2].filter(Boolean)
+        .map(function (x) { return names.sport[x] || x; }).join(', ');
+      var st = String(r.status || '').toLowerCase();
+      var stCls = st === 'cancelled' ? 'st-c' : (st === 'pending' ? 'st-p' : 'st-r');
+      var img = r.photoUrl
+        ? '<img src="' + esc(String(r.photoUrl).replace(/=s\d+$/, '=s240')) + '" alt="">'
+        : '<div class="noimg">TIADA GAMBAR</div>';
+      return '<div class="card">' + img +
+        '<div class="nm">' + esc(r.name) + '</div>' +
+        '<div class="mt">' + esc(r.regNo) + ' &middot; ' + esc(r.staffId) + '</div>' +
+        '<div class="mt">' + esc(r.contingent || '-') + '</div>' +
+        '<div class="mt">' + esc(sports || '-') + '</div>' +
+        '<div class="' + stCls + '">' + esc(r.status).toUpperCase() + '</div>' +
+        '</div>';
+    }).join('');
+
+    var html =
+      '<!doctype html><html lang="ms"><head><meta charset="utf-8">' +
+      '<title>' + esc(eventName) + ' — Laporan Peserta</title><style>' +
+      '*{box-sizing:border-box}' +
+      'body{font-family:Arial,Helvetica,sans-serif;margin:0;padding:12mm;color:#111}' +
+      '.hd{background:#111118;color:#fff;padding:10px 14px;margin:-12mm -12mm 8mm}' +
+      '.hd h1{font-size:15pt;margin:0 0 2px}.hd p{font-size:9pt;margin:0;opacity:.85}' +
+      '.meta{display:flex;justify-content:space-between;font-size:9pt;' +
+      'border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:8px}' +
+      '.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6mm}' +
+      '.card{border:1px solid #ddd;border-radius:3mm;padding:2.5mm;' +
+      'background:#fafafb;break-inside:avoid;page-break-inside:avoid}' +
+      '.card img{width:100%;height:30mm;object-fit:contain;background:#fff;border-radius:1.5mm}' +
+      '.noimg{width:100%;height:30mm;background:#e8e8ec;border-radius:1.5mm;display:flex;' +
+      'align-items:center;justify-content:center;font-size:7pt;color:#8c8c8c}' +
+      '.nm{font-weight:bold;font-size:8.5pt;margin-top:2mm;line-height:1.25}' +
+      '.mt{font-size:7pt;color:#5a5a5a;margin-top:.8mm;line-height:1.25}' +
+      '.st-r,.st-p,.st-c{font-size:6.5pt;font-weight:bold;text-align:right;margin-top:1.5mm}' +
+      '.st-r{color:#1e8c46}.st-p{color:#be820a}.st-c{color:#c82828}' +
+      '.ft{margin-top:8mm;font-size:7.5pt;color:#787878;text-align:center}' +
+      '.bar{position:fixed;top:0;left:0;right:0;background:#0f766e;color:#fff;' +
+      'padding:10px 14px;font-size:13px;text-align:center;z-index:9}' +
+      '.bar button{margin-left:10px;padding:5px 14px;font-size:13px;cursor:pointer;' +
+      'border:0;border-radius:4px;background:#fff;color:#0f766e;font-weight:bold}' +
+      '@media print{.bar{display:none}body{padding:0}.hd{margin:0 0 6mm}}' +
+      '@page{size:A4 portrait;margin:10mm}' +
+      '</style></head><body>' +
+      '<div class="bar">Tekan Cetak, kemudian pilih <b>Save as PDF</b> sebagai printer.' +
+      '<button onclick="window.print()">Cetak</button></div>' +
+      '<div style="height:44px" class="sp"></div>' +
+      '<div class="hd"><h1>' + esc(eventName) + '</h1><p>Laporan Peserta Berdaftar</p></div>' +
+      '<div class="meta"><span>' + esc(adminApp.reportFilterLabel()) + '</span>' +
+      '<span><b>Jumlah: ' + rows.length + ' peserta</b></span></div>' +
+      '<div class="grid">' + cards + '</div>' +
+      '<div class="ft">Dijana ' + stamp + '</div>' +
+      '<style>@media print{.sp{display:none}}</style>' +
+      '</body></html>';
+
+    var win = window.open('', '_blank');
+    if (!win) {
+      alert('Pelayar menyekat tetingkap baharu. Benarkan pop-up untuk laman ini, kemudian cuba lagi.');
+      return;
+    }
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+  },
+
+  /** Teks ringkas menerangkan penapis semasa — dicetak pada PDF supaya
+   *  orang yang menerima fail tahu ia senarai penuh atau sebahagian. */
+  reportFilterLabel: function () {
+    var g = function (id) { return (document.getElementById(id) || {}).value || ''; };
+    var names = adminApp.nameMaps();
+    var parts = [];
+    var cont = g('report-p-cont'), sport = g('report-p-sport'), status = g('report-p-status');
+    if (cont) parts.push('Kontinjen: ' + cont);
+    if (sport) parts.push('Sukan: ' + (names.sport[sport] || sport));
+    if (status) parts.push('Status: ' + status);
+    return parts.length ? parts.join('  |  ') : 'Semua peserta (tiada penapis)';
+  },
+
+  buildParticipantsPDF: function (jsPDF, rows, photos) {
+    var doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    var names = adminApp.nameMaps();
+    var cfg = (adminApp.data.dashboard && adminApp.data.dashboard.config) || {};
+    var eventName = cfg.EVENT_NAME || 'CBP Sports Carnival 2026';
+
+    var PW = 210, PH = 297, M = 12;
+    var COLS = 3, ROWS = 4;
+    var GAP = 6;
+    var CW = (PW - M * 2 - GAP * (COLS - 1)) / COLS;   // lebar kad
+    var PHOTO_H = 30;
+    var CH = 54;                                      // tinggi kad
+    var HEAD = 26;                                    // ruang kepala halaman 1
+
+    var esc = function (s) { return String(s === null || s === undefined ? '' : s); };
+
+    var drawHeader = function (first) {
+      doc.setFillColor(17, 17, 24);
+      doc.rect(0, 0, PW, first ? 22 : 14, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(first ? 13 : 9);
+      doc.text(esc(eventName), M, first ? 10 : 9);
+      if (first) {
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8.5);
+        doc.text('Laporan Peserta Berdaftar', M, 16.5);
+      }
+      doc.setTextColor(0, 0, 0);
+    };
+
+    var d = new Date();
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var stamp = 'Dijana ' + pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' +
+      d.getFullYear() + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+
+    var drawFooter = function (pageNo) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(120, 120, 120);
+      doc.text(stamp, M, PH - 6);
+      doc.text('Halaman ' + pageNo, PW - M, PH - 6, { align: 'right' });
+      doc.setTextColor(0, 0, 0);
+    };
+
+    // --- Maklumat penapis pada halaman pertama ---
+    drawHeader(true);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.text(adminApp.reportFilterLabel(), M, HEAD + 1);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Jumlah: ' + rows.length + ' peserta', PW - M, HEAD + 1, { align: 'right' });
+    doc.setDrawColor(210, 210, 210);
+    doc.line(M, HEAD + 4, PW - M, HEAD + 4);
+
+    var page = 1;
+    var startY = HEAD + 9;
+    var col = 0, row = 0;
+
+    rows.forEach(function (r, idx) {
+      if (row >= ROWS) {
+        drawFooter(page);
+        doc.addPage(); page++;
+        drawHeader(false);
+        startY = 20; row = 0; col = 0;
+      }
+
+      var x = M + col * (CW + GAP);
+      var y = startY + row * (CH + GAP);
+
+      // Bingkai kad
+      doc.setDrawColor(220, 220, 220);
+      doc.setFillColor(250, 250, 251);
+      doc.roundedRect(x, y, CW, CH, 2, 2, 'FD');
+
+      // Gambar, muat dalam kotak tanpa memotong nisbah
+      var uri = photos[r.regNo];
+      var bx = x + 2, by = y + 2, bw = CW - 4, bh = PHOTO_H;
+      if (uri) {
+        try {
+          var props = doc.getImageProperties(uri);
+          var scale = Math.min(bw / props.width, bh / props.height);
+          var iw = props.width * scale, ih = props.height * scale;
+          doc.addImage(uri, bx + (bw - iw) / 2, by + (bh - ih) / 2, iw, ih);
+        } catch (e) {
+          uri = null;   // imej rosak — jatuh ke pemegang tempat
+        }
+      }
+      if (!uri) {
+        doc.setFillColor(232, 232, 236);
+        doc.rect(bx, by, bw, bh, 'F');
+        doc.setFontSize(7);
+        doc.setTextColor(140, 140, 140);
+        doc.text('TIADA GAMBAR', bx + bw / 2, by + bh / 2, { align: 'center' });
+        doc.setTextColor(0, 0, 0);
+      }
+
+      var ty = y + PHOTO_H + 6;
+      var tw = CW - 4;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      var nameLines = doc.splitTextToSize(esc(r.name), tw).slice(0, 2);
+      doc.text(nameLines, x + 2, ty);
+      ty += nameLines.length * 3.6 + 0.6;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.8);
+      doc.setTextColor(90, 90, 90);
+      doc.text(esc(r.regNo) + '  ·  ' + esc(r.staffId), x + 2, ty);
+      ty += 3.2;
+      doc.text(doc.splitTextToSize(esc(r.contingent || '-'), tw).slice(0, 1), x + 2, ty);
+      ty += 3.2;
+
+      var sports = [r.sport1, r.sport2].filter(Boolean)
+        .map(function (s) { return names.sport[s] || s; }).join(', ');
+      doc.text(doc.splitTextToSize(sports || '-', tw).slice(0, 2), x + 2, ty);
+
+      // Lencana status
+      var st = String(r.status || '').toLowerCase();
+      if (st === 'cancelled') doc.setTextColor(200, 40, 40);
+      else if (st === 'pending') doc.setTextColor(190, 130, 10);
+      else doc.setTextColor(30, 140, 70);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.text(esc(r.status).toUpperCase(), x + CW - 2, y + CH - 2.5, { align: 'right' });
+      doc.setTextColor(0, 0, 0);
+
+      col++;
+      if (col >= COLS) { col = 0; row++; }
+    });
+
+    drawFooter(page);
+    return doc;
+  },
+
   exportStaffCSV: function () {
-    var rows = adminApp.data.staff.map(function (r) {
+    var picked = adminApp.filteredReportStaff();
+    if (!picked.length) { alert('Tiada rekod sepadan dengan penapis semasa. Tiada fail dijana.'); return; }
+    var rows = picked.map(function (r) {
       return { StaffID: r.staffId, Nama: r.name, Jabatan: r.department, Jawatan: r.position,
                Kontinjen: r.contingent, Jantina: r.gender, Emel: r.email, Telefon: r.phone };
     });
@@ -2450,6 +3038,7 @@ var adminApp = {
   saveConfig: async function () {
     var keys = ['EVENT_NAME', 'EVENT_SHORT', 'REG_OPEN', 'REG_CLOSE', 'MAX_SPORTS', 'PHOTO_MAX_KB',
                 'PORTAL_URL', 'DRIVE_FOLDER_ID', 'SUPPORT_CONTACT', 'REQUIRE_SECOND_FACTOR',
+                'REQUIRE_CONTACT_INFO',
                 'PUBLIC_STATS', 'MAINTENANCE_MODE',
                 'SCOREBOARD_ENABLED', 'SCOREBOARD_PUBLIC', 'SCORE_REQUIRE_VERIFY',
                 'SCORE_POLL_SECONDS'];
