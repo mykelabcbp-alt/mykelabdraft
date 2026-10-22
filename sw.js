@@ -16,7 +16,7 @@
    - Fon & pustaka CDN             -> cache-first (jarang berubah).
    ========================================================================== */
 
-var VERSION = 'csc2026-v3.5.0';  // v3.1 backend: tukar gambar + perlawanan VS
+var VERSION = 'csc2026-v3.5.1';  // v3.1: muka depan Keputusan Terkini + auto-refresh
 var SHELL_CACHE = VERSION + '-shell';
 var CDN_CACHE = VERSION + '-cdn';
 

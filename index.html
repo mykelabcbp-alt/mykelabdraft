@@ -306,8 +306,25 @@
                 <h3 class="font-bold text-lg text-slate-800 dark:text-white flex items-center justify-between">
                     Menu Utama
                 </h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="glass-card p-5 flex flex-col gap-3 cursor-pointer border border-transparent hover:border-orange-500 dark:hover:border-motorsport-accentCyan transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('catalog')">
+
+                <!-- v3.1: Keputusan terkini terus di muka depan (diisi oleh app.score.render) -->
+                <div class="flex flex-col gap-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-sport font-bold text-base text-slate-800 dark:text-white flex items-center gap-2">
+                            <i data-lucide="flag" class="w-4 h-4 text-motorsport-accent"></i> Keputusan Terkini
+                        </h4>
+                        <span class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500">
+                            <span id="home-live-dot" class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                            <span id="home-live-text">Menyambung…</span>
+                        </span>
+                    </div>
+                    <div id="home-latest" class="flex flex-col gap-3"></div>
+                </div>
+                <!-- /v3.1 -->
+
+                <!-- v3.1: Senarai Sukan disembunyikan dari muka depan (kekal dalam kod) -->
+                <div>
+                    <div class="hide glass-card p-5 flex flex-col gap-3 cursor-pointer border border-transparent hover:border-orange-500 dark:hover:border-motorsport-accentCyan transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('catalog')">
                         <div class="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400">
                             <i data-lucide="medal" class="w-5 h-5"></i>
                         </div>
@@ -317,7 +334,8 @@
                         </div>
                     </div>
                     
-                    <div class="glass-card p-5 flex flex-col gap-3 cursor-pointer border border-transparent hover:border-orange-500 dark:hover:border-motorsport-accentCyan transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('login')">
+                <!-- v3.1: Login kini kad penuh (Senarai Sukan disembunyikan) -->
+                <div class="glass-card p-5 flex flex-col gap-3 cursor-pointer border border-transparent hover:border-orange-500 dark:hover:border-motorsport-accentCyan transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('login')">
                          <div class="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-500/10 flex items-center justify-center text-orange-600 dark:text-orange-400">
                             <i data-lucide="user-check" class="w-5 h-5"></i>
                         </div>
@@ -326,7 +344,7 @@
                             <p class="text-[10px] text-slate-500 mt-1 leading-tight">Mula daftar / semak</p>
                         </div>
                     </div>
-                </div>
+                <!-- /v3.1 -->
 
                 <div class="glass-card p-5 mt-2 flex items-center justify-between cursor-pointer border border-transparent hover:border-motorsport-accent transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('news')">
                     <div class="flex items-center gap-4">
@@ -342,7 +360,8 @@
                 </div>
 
                 <!-- NEW: PUBLIC DASHBOARD BUTTON -->
-                <div class="glass-card p-5 mt-2 flex items-center justify-between cursor-pointer border border-transparent hover:border-motorsport-accentCyan transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('public-dashboard')">
+                <!-- v3.1: disembunyikan dari muka depan (kekal dalam kod) -->
+                <div class="hide glass-card p-5 mt-2 flex items-center justify-between cursor-pointer border border-transparent hover:border-motorsport-accentCyan transition-all shadow-md bg-white dark:bg-[#111118]" onclick="app.navigate('public-dashboard')">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-xl bg-cyan-100 dark:bg-cyan-500/10 flex items-center justify-center text-motorsport-accentCyan">
                             <i data-lucide="pie-chart" class="w-6 h-6"></i>
@@ -1298,7 +1317,7 @@ var QR = (function () {
    ========================================================================== */
 
 /* ---------- KONFIGURASI ---------- */
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqz0DAPtWCc53pOLJA_6b63YaualrRdC9jc3zzTr7O_UL-6XjRWnTbxWgsw1JgdMyT/exec';
+var SCRIPT_URL = 'GANTI_DENGAN_URL_WEB_APP_BARU';
 
 /* v3.1: fetch dengan had masa. Tanpa ini, sambungan yang tergantung
    (cold start Apps Script yang tersangkut, rangkaian venue yang menelan
@@ -1451,6 +1470,8 @@ var app = {
       // Satu bacaan papan markah supaya kad portal ada isi sebelum pengguna
       // membukanya. Polling sebenar hanya bermula selepas skrin dibuka.
       app.score.refresh(true).catch(function () { });
+      // v3.1: portal ialah skrin lalai — mula polling tanpa menunggu navigate().
+      if (!app.state.view || app.state.view === 'portal') app.score.start();
     } catch (e) {
       app.setTicker('Tidak dapat menyambung ke pelayan. Sila semak sambungan internet anda.');
       var cat = document.getElementById('catalog-container');
@@ -1513,7 +1534,8 @@ var app = {
     // Polling papan markah hanya berjalan semasa skrin itu dibuka.
     // Meninggalkannya berjalan di latar belakang ialah cara paling mudah
     // untuk membazirkan kuota Apps Script tanpa sesiapa pun melihat hasilnya.
-    if (view === 'scoreboard') app.score.start(); else app.score.stop();
+    // v3.1: muka depan turut dikemas kini secara automatik (Keputusan Terkini).
+    if (view === 'scoreboard' || view === 'portal') app.score.start(); else app.score.stop();
 
     app.renderNavActions();
     app.refreshIcons();
@@ -1615,7 +1637,7 @@ var app = {
       if (slot) {
         var img = document.createElement('img');
         img.alt = b.name || 'Logo';
-        img.className = 'w-6 h-6 object-contain';
+        img.className = 'w-6 h-6'; img.style.objectFit = 'contain';
         img.src = b.logoUrl;
         slot.innerHTML = '';
         slot.appendChild(img);
@@ -1970,6 +1992,9 @@ var app = {
     start: function () {
       if (app.score.running) return;
       app.score.running = true;
+      // v3.1: muka depan juga berpolling, jadi start() dipanggil lebih kerap.
+      // Data yang baru sahaja diambil tidak ditarik semula.
+      if (app.score.data && Date.now() - app.score.lastAt < 15000) { app.score.schedule(); return; }
       app.score.refresh(false);
     },
 
@@ -2012,7 +2037,21 @@ var app = {
       app.score.schedule();
     },
 
-    refresh: async function (silent) {
+    // v3.1: satu permintaan sahaja pada satu masa. Muka depan, skrin Papan
+    // Markah dan butang Segarkan boleh memanggil ini serentak; tanpa ini
+    // pelayan menerima 2-3 tarikan penuh untuk satu paparan.
+    _inflight: null,
+    refresh: function (silent) {
+      if (app.score._inflight) return app.score._inflight;
+      app.score._inflight = app.score._refresh(silent).then(function (r) {
+        app.score._inflight = null; return r;
+      }, function (e) {
+        app.score._inflight = null; throw e;
+      });
+      return app.score._inflight;
+    },
+
+    _refresh: async function (silent) {
       if (!silent) app.score.setLive('loading');
       try {
         var params = { action: 'scoreboard' };
@@ -2039,6 +2078,14 @@ var app = {
     },
 
     setLive: function (mode) {
+      // v3.1: penunjuk ringkas di muka depan
+      var hd = document.getElementById('home-live-dot');
+      var ht = document.getElementById('home-live-text');
+      if (hd && ht) {
+        hd.className = 'w-2 h-2 rounded-full ' + (mode === 'offline' ? 'bg-red-500' :
+          mode === 'loading' ? 'bg-yellow-500 animate-pulse' : 'bg-green-500 animate-pulse');
+        ht.textContent = mode === 'offline' ? 'Luar talian' : mode === 'loading' ? 'Memuatkan…' : 'Langsung';
+      }
       var dot = document.getElementById('score-live-dot');
       var txt = document.getElementById('score-live-text');
       if (!dot || !txt) return;
@@ -2059,6 +2106,8 @@ var app = {
     },
 
     renderError: function (msg) {
+      var home = document.getElementById('home-latest');
+      if (home) home.innerHTML = app.emptyCard('flag', 'Belum Ada Keputusan', msg);
       var el = document.getElementById('score-standings');
       if (el) el.innerHTML = app.emptyCard('trophy', 'Belum Ada Markah', msg);
       app.refreshIcons();
@@ -2245,6 +2294,13 @@ var app = {
     },
 
     renderLatest: function (list) {
+      // v3.1: muka depan juga papar keputusan terkini (3 acara teratas).
+      var home = document.getElementById('home-latest');
+      if (home) {
+        home.innerHTML = list.length ? app.score.latestHtml(list.slice(0, 3))
+          : app.emptyCard('flag', 'Belum Ada Keputusan',
+              'Keputusan acara akan muncul di sini sebaik sahaja disahkan.');
+      }
       var el = document.getElementById('score-latest');
       if (!el) return;
       if (!list.length) {
@@ -2252,8 +2308,12 @@ var app = {
           'Keputusan acara akan muncul di sini sebaik sahaja disahkan.');
         return;
       }
+      el.innerHTML = app.score.latestHtml(list);
+    },
+
+    latestHtml: function (list) {
       var badge = ['', 'bg-yellow-400 text-yellow-950', 'bg-slate-400 text-white', 'bg-amber-700 text-white'];
-      el.innerHTML = list.map(function (e) {
+      return list.map(function (e) {
         var rows = e.results.map(function (r) {
           var b = badge[r.placing] || 'bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-gray-300';
           return '<div class="flex items-center gap-2 text-xs py-1.5 border-t border-slate-100 dark:border-white/5">' +
@@ -2984,6 +3044,12 @@ var app = {
       v.addEventListener('input', function () { this.value = this.value.replace(/\D/g, '').slice(0, 4); });
       v.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); app.login(); } });
     }
+    // v3.1: tab yang tersorok tidak berpolling; bila pengguna kembali, semak
+    // terus supaya tidak menunggu sehingga 25 saat untuk melihat markah baharu.
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden && app.score.running) app.score.tick();
+    });
+
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') { app.closeAlert(); app.closeNewsModal(); app.closePhotoModal(); }
     });
